@@ -1,0 +1,10 @@
+.cproject
+.project
+.settings/
+bin/
+obj/
+src/compiler/grammar/parser.cpp
+src/compiler/grammar/parser.hpp
+src/compiler/grammar/parser.output
+src/compiler/grammar/lexer.cpp
+
