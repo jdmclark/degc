@@ -1,0 +1,9 @@
+module ca.ualberta.cs
+from ca.ualberta import Program as UalbertaProgram
+from ca.ualberta import (Program as UalbertaProgram)
+from ca.ualberta import (Program as UalbertaProgram,
+						 Course as UalbertaCourse,
+						 )
+from ca.ualberta import (Program,
+						 Course as UalbertaCourse,
+						 )

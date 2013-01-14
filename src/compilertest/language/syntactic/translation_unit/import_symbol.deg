@@ -1,0 +1,5 @@
+module ca.ualberta.science
+from ca import RootProgram
+from ca.ualberta import Program
+from ca.macewan import Course
+from ca.ualberta.cs import CsProgram

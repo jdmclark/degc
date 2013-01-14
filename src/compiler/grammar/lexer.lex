@@ -88,6 +88,13 @@ E			[Ee][+-]?{D}+
 	
 	{L}({L}|{D})*	{ yylval->string = strdup(yytext); return IDENTIFIER; }
 	
+	"("				{ yyextra->PushParentheses(); return '('; }
+	")"				{ yyextra->PopParentheses(); return ')'; }
+	"["				{ yyextra->PushParentheses(); return '['; }
+	"]"				{ yyextra->PopParentheses(); return ']'; }
+	"{"				{ yyextra->PushParentheses(); return '{'; }
+	"}"				{ yyextra->PopParentheses(); return '}'; }
+	
 	"\n"			{
 						if(!yyextra->IsInsideParentheses()) {
 							yyextra->CurrentLineIndentation = 0;

@@ -13,12 +13,32 @@ BeginSuiteFixture(TranslationUnitSyntacticTest, TranslationUnitSyntacticTestFixt
 
 Case(Empty) {
 	ParseFile("empty.deg");
-	AssertResult(0, 0);
+	AssertResult(1, 0);
 }
 
 Case(FileDoesNotExist) {
 	ParseFile("filedoesnotexist.deg");
 	AssertResult(1, 0);
+}
+
+Case(ImportSymbolAs) {
+	ParseFile("import_symbol_as.deg");
+	AssertResult(0, 0);
+}
+
+Case(ImportSymbolList) {
+	ParseFile("import_symbol_list.deg");
+	AssertResult(0, 0);
+}
+
+Case(ImportSymbol) {
+	ParseFile("import_symbol.deg");
+	AssertResult(0, 0);
+}
+
+Case(ModuleDefinition) {
+	ParseFile("module_definition.deg");
+	AssertResult(0, 0);
 }
 
 EndSuite(TranslationUnitSyntacticTest);
