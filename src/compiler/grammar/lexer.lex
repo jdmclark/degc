@@ -86,7 +86,15 @@ E			[Ee][+-]?{D}+
 <NORMAL>{
 	"#"				{ yy_push_state(LINE_COMMENT, yyextra->GetScanner()); }
 	
+	"as"			{ return AS; }
+	"from"			{ return FROM; }
+	"import"		{ return IMPORT; }
+	"module"		{ return MODULE; }
+	
 	{L}({L}|{D})*	{ yylval->string = strdup(yytext); return IDENTIFIER; }
+	
+	","				{ return ','; }
+	"."				{ return '.'; }
 	
 	"("				{ yyextra->PushParentheses(); return '('; }
 	")"				{ yyextra->PopParentheses(); return ')'; }

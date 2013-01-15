@@ -27,6 +27,7 @@
 }
 
 /* Keywords */
+%token AS FROM IMPORT MODULE
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN
@@ -60,6 +61,41 @@
 
 /********** Translation Unit **********/
 
+module_name
+	: IDENTIFIER
+	| module_name '.' IDENTIFIER
+	;
+
+module_declaration
+	: MODULE module_name ENDLN
+	;
+	
+symbol_import_declaration
+	: IDENTIFIER
+	| IDENTIFIER AS IDENTIFIER
+	;
+	
+symbol_import_declaration_list
+	: ')'
+	| symbol_import_declaration ')'
+	| symbol_import_declaration ',' symbol_import_declaration_list
+	;
+	
+import_declaration
+	: FROM module_name IMPORT symbol_import_declaration ENDLN
+	| FROM module_name IMPORT '(' symbol_import_declaration_list ENDLN
+	;
+	
+import_declaration_list
+	: import_declaration
+	| import_declaration_list import_declaration
+	;
+	
+import_declaration_part
+	: import_declaration_list
+	| /* Blank */
+	;
+
 translation_unit
-	: /* Empty */ { instance->SetReturnValue($$ = ast->MakeTranslationUnit(@$)); }
+	: module_declaration import_declaration_part { instance->SetReturnValue($$ = ast->MakeTranslationUnit(@$)); }
 	;
