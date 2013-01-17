@@ -1,0 +1,56 @@
+module ca.ualberta.cs
+from ca.ualberta import (TakenCourse,
+						 Subject,
+						 )
+						 
+enum TermType:
+	Fall
+	Winter
+	
+record EnrolledTerm:
+	integer id
+	TermType type
+	
+record EnrolledFallWinterTerm:
+	integer fallId
+	integer winterId
+	
+function GradeMap(TakenCourse course) -> number:
+	course.grade
+	
+function SpecificCourse(Subject sub, integer num) -> set:
+	TakenCourse(subject=sub, number=num)
+	
+function SubjectLevelCourse(Subject sub, integer num) -> set:
+	intersect(TakenCourse(subject=sub, number>=num),
+			  TakenCourse(subject=sub, number<(num + 100)))
+
+program Program:
+	# Global program requirements
+	@grad_credits assert sum(TakenCourse.credits) >= 120
+	@max_junior assert sum(TakenCourse.credits in intersect(TakenCourse(number>=100),
+															TakenCourse(number<200))) <= 42
+	for all(TakenCourse course):
+		assert satisfy(course.requirements)
+
+program HonorsComputingScience extends Program:
+	# Honors program requirements
+	for all(EnrolledFallWinterTerm term):
+		assert mean(TakenCourse(term=term.id), GradeMap) >= 3.0
+	for all(TakenCourse course in TakenCourse(subject=CMPUT)):
+		assert course.grade >= 3.0
+	for all(EnrolledTerm term in union(EnrolledTerm(type=Fall), EnrolledTerm(type=Winter))):
+		assert exists(TakenCourse(subject=CMPUT, number=495, term=term.id))
+	
+	# Course requirements
+	take credits 3 in SubjectLevelCourse(ENGL, 100)
+	take credits 3 in union(SubjectLevelCourse(WRS, 100),
+							SubjectLevelCourse(ENGL, 100))
+	take credits 3 in union(TakenCourse(subject=CMPUT, number=174),
+							TakenCourse(subject=SCI, number=100))
+	take credits 3 in SpecificCourse(CMPUT, 175)
+	take credits 12 in TakenCourse(subject=CMPUT, number>400)
+	take credits 18 in TakenCourse(subject=CMPUT, number>300)
+	take credits 36 in TakenCourse(faculty=SC)
+	take credits 12 in TakenCourse(faculty=AR)
+	take credits 30 in TakenCourse
