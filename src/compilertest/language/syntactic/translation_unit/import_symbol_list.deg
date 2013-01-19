@@ -3,5 +3,5 @@ from ca.ualberta import ()
 from ca.ualberta import (Course)
 from ca.ualberta import (Course, Program)
 from ca.ualberta import (Course,
-						 Program,
-						 )
+                         Program,
+                         )

@@ -55,7 +55,7 @@ E			[Ee][+-]?{D}+
 
 <INITIAL,INDENTATION>{
 	"#"				{ yy_push_state(LINE_COMMENT, yyextra->GetScanner()); }
-	"\t"			{ ++yyextra->CurrentLineIndentation; }
+	"    "			{ ++yyextra->CurrentLineIndentation; }
 	"\n"			{ yyextra->CurrentLineIndentation = 0; }
 	[[:space:]]		/* Ignore other whitespace */
 	<<EOF>>			{
