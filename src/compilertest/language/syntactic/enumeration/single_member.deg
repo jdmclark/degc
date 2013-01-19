@@ -1,0 +1,4 @@
+module ca.ualberta
+
+enum Foo:
+    Member1

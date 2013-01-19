@@ -27,7 +27,7 @@
 }
 
 /* Keywords */
-%token AS FROM IMPORT MODULE
+%token AS ENUM FROM IMPORT MODULE
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN
@@ -58,6 +58,26 @@
 %}
 
 %%
+
+/********** Enumeration **********/
+
+enumeration_member
+	: IDENTIFIER ENDLN
+	;
+
+enumeration_member_seq
+	: enumeration_member_seq enumeration_member
+	| enumeration_member
+	;
+
+enumeration_member_part
+	: INDENT enumeration_member_seq DEDENT
+	| /* Blank */
+	;
+
+enumeration
+	: ENUM IDENTIFIER ':' ENDLN enumeration_member_part
+	;
 
 /********** Translation Unit **********/
 
@@ -95,7 +115,21 @@ import_declaration_part
 	: module_import_declaration_list
 	| /* Blank */
 	;
+	
+global_declaration
+	: enumeration
+	;
+	
+global_declaration_seq
+	: global_declaration_seq global_declaration
+	| global_declaration
+	;
+	
+global_declaration_part
+	: global_declaration_seq
+	| /* Blank */
+	;
 
 translation_unit
-	: module_declaration import_declaration_part { instance->SetReturnValue($$ = ast->MakeTranslationUnit(@$)); }
+	: module_declaration import_declaration_part global_declaration_part { instance->SetReturnValue($$ = ast->MakeTranslationUnit(@$)); }
 	;
