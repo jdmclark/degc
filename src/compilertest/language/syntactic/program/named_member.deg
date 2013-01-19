@@ -1,0 +1,5 @@
+module ca.ualberta
+
+program Foo:
+    @member_name assert true
+    @_123member_name assert true

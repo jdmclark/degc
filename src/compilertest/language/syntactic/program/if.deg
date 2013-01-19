@@ -1,0 +1,11 @@
+module ca.ualberta
+
+program Foo:
+    if true:
+        assert true
+        assert false
+    if false:
+        assert false
+        assert false
+    else:
+        assert true

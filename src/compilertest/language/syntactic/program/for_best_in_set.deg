@@ -1,0 +1,5 @@
+module ca.ualberta
+
+program Foo:
+    for best TakenCourse c by course_order in Bar:
+        assert true

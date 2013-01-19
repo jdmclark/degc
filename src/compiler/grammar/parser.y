@@ -22,18 +22,20 @@
 %union
 {
 	char* string;
+	bool boolean;
 	
 	Deg::Compiler::AST::TranslationUnit* translation_unit;
 }
 
 /* Keywords */
-%token AS ENUM FROM IMPORT MODULE RECORD
+%token ALL ANY ASSERT AS BEST BY ELSE EMBED ENUM EXTENDS FOR FROM IF IMPORT IN MODULE PANIC PROGRAM RECORD TAKE
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN
 
 /* Literals */
-%token <string> IDENTIFIER
+%token <string> IDENTIFIER NUMERIC_LITERAL
+%token <boolean> BOOLEAN_LITERAL
 
 /* AST nodes */
 %type <translation_unit> translation_unit
@@ -58,6 +60,86 @@
 %}
 
 %%
+
+/********** Expressions **********/
+
+literal_expression
+	: NUMERIC_LITERAL
+	| BOOLEAN_LITERAL
+	;
+	
+primary_expression
+	: literal_expression
+	| IDENTIFIER
+	;
+
+expression
+	: primary_expression
+	;
+
+/********** Program Members **********/
+
+assert_statement
+	: ASSERT expression ENDLN
+	;
+	
+embed_statement
+	: EMBED expression ENDLN
+	| EMBED ':' ENDLN program_statement_part
+	;
+	
+iteration_statement
+	: FOR ALL IDENTIFIER IDENTIFIER ':' ENDLN program_statement_part
+	| FOR ALL IDENTIFIER IDENTIFIER IN expression ':' ENDLN program_statement_part
+	;
+	
+selection_statement
+	: FOR ANY IDENTIFIER IDENTIFIER ':' ENDLN program_statement_part
+	| FOR ANY IDENTIFIER IDENTIFIER IN expression ':' ENDLN program_statement_part
+	| FOR BEST IDENTIFIER IDENTIFIER BY IDENTIFIER ':' ENDLN program_statement_part
+	| FOR BEST IDENTIFIER IDENTIFIER BY IDENTIFIER IN expression ':' ENDLN program_statement_part
+	;
+	
+branch_statement
+	: IF expression ':' ENDLN program_statement_part
+	| IF expression ':' ENDLN program_statement_part ELSE branch_statement
+	| IF expression ':' ENDLN program_statement_part ELSE ':' ENDLN program_statement_part
+	;
+	
+take_statement
+	: TAKE NUMERIC_LITERAL IN expression ENDLN
+	;
+
+/********** Program **********/
+
+program_statement
+	: assert_statement
+	| embed_statement
+	| iteration_statement
+	| selection_statement
+	| branch_statement
+	| take_statement
+	;
+
+named_program_statement
+	: '@' IDENTIFIER program_statement
+	| program_statement
+	;
+
+program_statement_seq
+	: program_statement_seq named_program_statement
+	| named_program_statement
+	;
+
+program_statement_part
+	: INDENT program_statement_seq DEDENT
+	| /* Blank */
+	;
+
+program
+	: PROGRAM IDENTIFIER ':' ENDLN program_statement_part
+	| PROGRAM IDENTIFIER EXTENDS IDENTIFIER ':' ENDLN program_statement_part
+	;
 
 /********** Record **********/
 
@@ -137,7 +219,8 @@ import_declaration_part
 	;
 	
 global_declaration
-	: record
+	: program
+	| record
 	| enumeration
 	;
 	

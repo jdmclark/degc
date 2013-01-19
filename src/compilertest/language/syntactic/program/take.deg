@@ -1,0 +1,4 @@
+module ca.ualberta
+
+program Foo:
+    take 5 in Bar

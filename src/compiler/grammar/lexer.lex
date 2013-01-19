@@ -86,14 +86,36 @@ E			[Ee][+-]?{D}+
 <NORMAL>{
 	"#"				{ yy_push_state(LINE_COMMENT, yyextra->GetScanner()); }
 	
+	"all"			{ return ALL; }
+	"any"			{ return ANY; }
+	"assert"		{ return ASSERT; }
 	"as"			{ return AS; }
+	"best"			{ return BEST; }
+	"by"			{ return BY; }
+	"else"			{ return ELSE; }
+	"embed"			{ return EMBED; }
 	"enum"			{ return ENUM; }
+	"extends"		{ return EXTENDS; }
+	"for"			{ return FOR; }
 	"from"			{ return FROM; }
+	"if"			{ return IF; }
 	"import"		{ return IMPORT; }
+	"in"			{ return IN; }
 	"module"		{ return MODULE; }
+	"panic"			{ return PANIC; }
+	"program"		{ return PROGRAM; }
 	"record"		{ return RECORD; }
+	"take"			{ return TAKE; }
+	
+	"true"			{ yylval->boolean = true; return BOOLEAN_LITERAL; }
+	"false"			{ yylval->boolean = false; return BOOLEAN_LITERAL; }
 	
 	{L}({L}|{D})*	{ yylval->string = strdup(yytext); return IDENTIFIER; }
+	
+	{D}+			{ yylval->string = strdup(yytext); return NUMERIC_LITERAL; }
+	{D}*"."{D}+		{ yylval->string = strdup(yytext); return NUMERIC_LITERAL; }
+	
+	"@"				{ return '@'; }
 	
 	":"				{ return ':'; }
 	

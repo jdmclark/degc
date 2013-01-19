@@ -1,0 +1,5 @@
+module ca.ualberta
+
+program Foo:
+    @my_subprogram embed:
+        assert true

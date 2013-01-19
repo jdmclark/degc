@@ -1,0 +1,5 @@
+module ca.ualberta
+
+program Foo:
+    for any TakenCourse course in Bar:
+        assert true

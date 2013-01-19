@@ -1,0 +1,8 @@
+module ca.ualberta
+
+program Foo:
+    assert true
+    
+program Bar:
+    embed Foo
+    assert true
