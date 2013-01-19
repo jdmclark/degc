@@ -1,0 +1,9 @@
+module ca.ualberta
+
+function Foo(Bar a, Bar b):
+    if a = b:
+        true
+    else if a > b:
+        false
+    else:
+        panic

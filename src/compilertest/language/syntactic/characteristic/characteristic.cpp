@@ -11,6 +11,11 @@ public:
 
 BeginSuiteFixture(CharacteristicSyntacticTest, CharacteristicSyntacticTestFixture);
 
+Case(ChooseConcentrations) {
+	ParseFile("choose_concentrations.deg");
+	AssertResult(0, 0);
+}
+
 Case(HonorsComputingScience) {
 	ParseFile("honors_computing_science.deg");
 	AssertResult(0, 0);

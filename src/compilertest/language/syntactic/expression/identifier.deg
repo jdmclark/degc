@@ -3,3 +3,4 @@ module ca.ualberta
 program Foo:
     assert id
     assert _1id
+    assert panic

@@ -29,7 +29,7 @@
 }
 
 /* Keywords */
-%token ALL AND ANY ASSERT AS BEST BY ELSE EMBED ENUM EXTENDS FOR FROM IF IMPORT IN MODULE NOT OR PANIC PROGRAM RECORD SETMINUS TAKE
+%token ALL AND ANY ASSERT AS BEST BY ELSE EMBED ENUM EXTENDS FOR FROM FUNCTION IF IMPORT IN MODULE NOT OR PANIC PROGRAM RECORD TAKE
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN NE_OP GE_OP LE_OP
@@ -83,7 +83,8 @@ set_expression
 	;
 	
 primary_expression
-	: literal_expression
+	: PANIC
+	| literal_expression
 	| set_expression
 	| IDENTIFIER
 	| '(' expression ')'
@@ -223,6 +224,32 @@ program
 	: PROGRAM IDENTIFIER ':' ENDLN program_statement_part
 	| PROGRAM IDENTIFIER EXTENDS IDENTIFIER ':' ENDLN program_statement_part
 	;
+	
+/********** Function **********/
+
+function_selection_expression
+	: IF expression ':' ENDLN function_expression ELSE function_selection_expression
+	| IF expression ':' ENDLN function_expression ELSE ':' ENDLN function_expression
+	;
+
+function_expression
+	: INDENT expression ENDLN DEDENT
+	| INDENT function_selection_expression DEDENT
+	;
+
+function_argument
+	: IDENTIFIER IDENTIFIER
+	;
+
+function_argument_list
+	: ')'
+	| function_argument ')'
+	| function_argument ',' function_argument_list
+	;
+
+function
+	: FUNCTION IDENTIFIER '(' function_argument_list ':' ENDLN function_expression
+	;
 
 /********** Record **********/
 
@@ -303,6 +330,7 @@ import_declaration_part
 	
 global_declaration
 	: program
+	| function
 	| record
 	| enumeration
 	;

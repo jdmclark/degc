@@ -15,42 +15,48 @@ record EnrolledFallWinterTerm:
     integer fallId
     integer winterId
 
-function GradeMap(TakenCourse course) -> number:
+function GradeMap(TakenCourse course):
     course.grade
+    
+function CreditMap(TakenCourse course):
+    course.credits
 
-function SpecificCourse(Subject sub, integer num) -> set:
-    TakenCourse(subject=sub, number=num)
+function SpecificCourse(Subject sub, integer num):
+    {TakenCourse t | t.subject = sub
+                     and t.number = num}
 
-function SubjectLevelCourse(Subject sub, integer num) -> set:
-    intersect(TakenCourse(subject=sub, number>=num),
-              TakenCourse(subject=sub, number<(num + 100)))
+function SubjectLevelCourse(Subject sub, integer num):
+    {TakenCourse t | t.subject = sub
+                     and t.number >= num
+                     and t.number < (num + 100)}
 
 program Program:
     # Global program requirements
-    @grad_credits assert sum(TakenCourse.credits) >= 120
-    @max_junior assert sum(TakenCourse.credits in intersect(TakenCourse(number>=100),
-                                                            TakenCourse(number<200))) <= 42
-    for all(TakenCourse course):
+    @grad_credits assert sum(TakenCourse, CreditMap) >= 120
+    @max_junior assert sum(intersect({TakenCourse t | t.number >= 100},
+                                     {TakenCourse t | t.number < 200}),
+                           CreditMap) <= 42
+    for all TakenCourse course:
         assert satisfy(course.requirements)
 
 program HonorsComputingScience extends Program:
     # Honors program requirements
-    for all(EnrolledFallWinterTerm term):
+    for all EnrolledFallWinterTerm term:
         assert mean(TakenCourse(term=term.id), GradeMap) >= 3.0
-    for all(TakenCourse course in TakenCourse(subject=CMPUT)):
+    for all TakenCourse course in {TakenCourse t | t.subject = CMPUT}:
         assert course.grade >= 3.0
-    for all(EnrolledTerm term in union(EnrolledTerm(type=Fall), EnrolledTerm(type=Winter))):
+    for all EnrolledTerm term in {EnrolledTerm t | t.type = Fall or t.type = Winter}:
         assert exists(TakenCourse(subject=CMPUT, number=495, term=term.id))
     
     # Course requirements
-    take credits 3 in SubjectLevelCourse(ENGL, 100)
-    take credits 3 in union(SubjectLevelCourse(WRS, 100),
-                            SubjectLevelCourse(ENGL, 100))
-    take credits 3 in union(TakenCourse(subject=CMPUT, number=174),
-                            TakenCourse(subject=SCI, number=100))
-    take credits 3 in SpecificCourse(CMPUT, 175)
-    take credits 12 in TakenCourse(subject=CMPUT, number>400)
-    take credits 18 in TakenCourse(subject=CMPUT, number>300)
-    take credits 36 in TakenCourse(faculty=SC)
-    take credits 12 in TakenCourse(faculty=AR)
-    take credits 30 in TakenCourse
+    take 3 in SubjectLevelCourse(ENGL, 100)
+    take 3 in union(SubjectLevelCourse(WRS, 100),
+                    SubjectLevelCourse(ENGL, 100))
+    take 3 in union({TakenCourse t | t.subject = CMPUT and t.number = 174},
+                    {TakenCourse t | t.subject = SCI and t.number = 100})
+    take 3 in SpecificCourse(CMPUT, 175)
+    take 12 in {TakenCourse t | t.subject = CMPUT and t.number >= 400}
+    take 18 in {TakenCourse t | t.subject = CMPUT and t.number >= 300}
+    take 36 in {TakenCourse t | t.faculty = SC}
+    take 12 in {TakenCourse t | t.faculty = AR}
+    take 30 in {TakenCourse}

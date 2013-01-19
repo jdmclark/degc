@@ -1,0 +1,7 @@
+module ca.ualberta
+
+function Foo(Bar a, Bar b):
+    if a.Baz = 3:
+        true
+    else:
+        panic

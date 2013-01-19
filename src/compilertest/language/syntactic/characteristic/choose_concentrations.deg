@@ -1,0 +1,41 @@
+module ca.ualberta
+
+program EnglishFirstConcentration:
+program FrenchFirstConcentration:
+program SpanishFirstConcentration:
+program EnglishSecondConcentration:
+program FrenchSecondConcentration:
+
+enum ConcentrationType:
+    English
+    French
+    Spanish
+    
+function FirstConcentrationMap(Concentration c):
+    if c.Type = English:
+        EnglishFirstConcentration
+    else if c.Type = French:
+        FrenchFirstConcentration
+    else if c.Type = Spanish:
+        SpanishFirstConcentration
+    else:
+        panic
+        
+function SecondConcentrationMap(Concentration c):
+    if c.Type = English:
+        EnglishSecondConcentration
+    else if c.Type = French:
+        FrenchSecondConcentration
+    else:
+        panic
+        
+record Concentration:
+    ConcentrationType Type
+    
+program Language:
+    for any Concentration conc:
+        embed FirstConcentrationMap(conc)
+        for any Concentration conc2 in {Concentration c | c.Type != conc.Type}:
+            embed SecondConcentrationMap(conc2)
+            for any Concentration conc3 in {Concentration c | c.Type != conc.Type and c.Type != conc2.Type}:
+                embed SecondConcentrationMap(conc3)

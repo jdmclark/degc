@@ -99,6 +99,7 @@ E			[Ee][+-]?{D}+
 	"extends"		{ return EXTENDS; }
 	"for"			{ return FOR; }
 	"from"			{ return FROM; }
+	"function"		{ return FUNCTION; }
 	"if"			{ return IF; }
 	"import"		{ return IMPORT; }
 	"in"			{ return IN; }
@@ -108,7 +109,6 @@ E			[Ee][+-]?{D}+
 	"panic"			{ return PANIC; }
 	"program"		{ return PROGRAM; }
 	"record"		{ return RECORD; }
-	"setminus"		{ return SETMINUS; }
 	"take"			{ return TAKE; }
 	
 	"true"			{ yylval->boolean = true; return BOOLEAN_LITERAL; }

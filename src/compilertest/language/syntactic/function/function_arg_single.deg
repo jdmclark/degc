@@ -1,0 +1,8 @@
+module ca.ualberta
+
+function Foo(Bar a):
+    true
+    
+function Foo(Bar a,
+             ):
+    true
