@@ -91,6 +91,7 @@ E			[Ee][+-]?{D}+
 	"from"			{ return FROM; }
 	"import"		{ return IMPORT; }
 	"module"		{ return MODULE; }
+	"record"		{ return RECORD; }
 	
 	{L}({L}|{D})*	{ yylval->string = strdup(yytext); return IDENTIFIER; }
 	

@@ -27,7 +27,7 @@
 }
 
 /* Keywords */
-%token AS ENUM FROM IMPORT MODULE
+%token AS ENUM FROM IMPORT MODULE RECORD
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN
@@ -58,6 +58,26 @@
 %}
 
 %%
+
+/********** Record **********/
+
+record_member
+	: IDENTIFIER IDENTIFIER ENDLN
+	;
+
+record_member_seq
+	: record_member_seq record_member
+	| record_member
+	;
+
+record_member_part
+	: INDENT record_member_seq DEDENT
+	| /* Blank */
+	;
+
+record
+	: RECORD IDENTIFIER ':' ENDLN record_member_part
+	;
 
 /********** Enumeration **********/
 
@@ -117,7 +137,8 @@ import_declaration_part
 	;
 	
 global_declaration
-	: enumeration
+	: record
+	| enumeration
 	;
 	
 global_declaration_seq

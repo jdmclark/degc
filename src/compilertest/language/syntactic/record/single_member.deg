@@ -1,0 +1,4 @@
+module ca.ualberta
+
+record Foo:
+    number Member1

@@ -1,0 +1,10 @@
+module ca.ualberta
+
+record Foo:
+    number Member1
+    quantity Member2
+record Bar:
+record Baz:
+    subject Member1
+    # Comment
+    _2type Member2
