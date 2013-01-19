@@ -87,6 +87,7 @@ E			[Ee][+-]?{D}+
 	"#"				{ yy_push_state(LINE_COMMENT, yyextra->GetScanner()); }
 	
 	"all"			{ return ALL; }
+	"and"			{ return AND; }
 	"any"			{ return ANY; }
 	"assert"		{ return ASSERT; }
 	"as"			{ return AS; }
@@ -102,9 +103,12 @@ E			[Ee][+-]?{D}+
 	"import"		{ return IMPORT; }
 	"in"			{ return IN; }
 	"module"		{ return MODULE; }
+	"not"			{ return NOT; }
+	"or"			{ return OR; }
 	"panic"			{ return PANIC; }
 	"program"		{ return PROGRAM; }
 	"record"		{ return RECORD; }
+	"setminus"		{ return SETMINUS; }
 	"take"			{ return TAKE; }
 	
 	"true"			{ yylval->boolean = true; return BOOLEAN_LITERAL; }
@@ -113,7 +117,7 @@ E			[Ee][+-]?{D}+
 	{L}({L}|{D})*	{ yylval->string = strdup(yytext); return IDENTIFIER; }
 	
 	{D}+			{ yylval->string = strdup(yytext); return NUMERIC_LITERAL; }
-	{D}*"."{D}+		{ yylval->string = strdup(yytext); return NUMERIC_LITERAL; }
+	{D}+"."{D}+		{ yylval->string = strdup(yytext); return NUMERIC_LITERAL; }
 	
 	"@"				{ return '@'; }
 	
@@ -122,12 +126,25 @@ E			[Ee][+-]?{D}+
 	","				{ return ','; }
 	"."				{ return '.'; }
 	
+	"+"				{ return '+'; }
+	"-"				{ return '-'; }
+	"*"				{ return '*'; }
+	"/"				{ return '/'; }
+	
+	"<"				{ return '<'; }
+	"<="			{ return LE_OP; }
+	">"				{ return '>'; }
+	">="			{ return GE_OP; }
+	"="				{ return '='; }
+	"!="			{ return NE_OP; }
+	
 	"("				{ yyextra->PushParentheses(); return '('; }
 	")"				{ yyextra->PopParentheses(); return ')'; }
 	"["				{ yyextra->PushParentheses(); return '['; }
 	"]"				{ yyextra->PopParentheses(); return ']'; }
 	"{"				{ yyextra->PushParentheses(); return '{'; }
 	"}"				{ yyextra->PopParentheses(); return '}'; }
+	"|"				{ return '|'; }
 	
 	"\n"			{
 						if(!yyextra->IsInsideParentheses()) {

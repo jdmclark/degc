@@ -1,0 +1,6 @@
+module ca.ualberta
+
+program Foo:
+    assert (true)
+    assert ((true))
+    assert ((true) or ((false))) and (((false)))

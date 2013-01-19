@@ -1,0 +1,9 @@
+module ca.ualberta
+
+program Foo:
+    assert a and b
+    assert a or b
+    assert not a
+    assert a and b and c
+    assert a and b or c
+    assert not a or b

@@ -1,0 +1,9 @@
+module ca.ualberta
+
+program Foo:
+    assert a > b
+    assert a >= b
+    assert a < b
+    assert a <= b
+    assert a = b
+    assert a != b

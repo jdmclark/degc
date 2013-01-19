@@ -1,0 +1,7 @@
+module ca.ualberta
+
+program Foo:
+    assert 0
+    assert 0.0
+    assert 1.38
+    assert 0.48

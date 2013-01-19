@@ -1,0 +1,8 @@
+module ca.ualberta
+
+program Foo:
+    assert {}
+    assert {Type}
+    assert {Type t}
+    assert {Type t | false}
+    assert {Type t | true or (false or true)}

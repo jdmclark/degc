@@ -3,6 +3,7 @@
 %pure-parser
 %name-prefix="gra_"
 %error-verbose
+%verbose
 %lex-param { void* scanner }
 %parse-param { Deg::Compiler::Grammar::Instance* instance }
 
@@ -28,10 +29,10 @@
 }
 
 /* Keywords */
-%token ALL ANY ASSERT AS BEST BY ELSE EMBED ENUM EXTENDS FOR FROM IF IMPORT IN MODULE PANIC PROGRAM RECORD TAKE
+%token ALL AND ANY ASSERT AS BEST BY ELSE EMBED ENUM EXTENDS FOR FROM IF IMPORT IN MODULE NOT OR PANIC PROGRAM RECORD SETMINUS TAKE
 
 /* Punctuators */
-%token INDENT DEDENT ENDLN
+%token INDENT DEDENT ENDLN NE_OP GE_OP LE_OP
 
 /* Literals */
 %token <string> IDENTIFIER NUMERIC_LITERAL
@@ -63,18 +64,100 @@
 
 /********** Expressions **********/
 
+argument_expression_list
+	: ')'
+	| expression ')'
+	| expression ',' argument_expression_list
+	;
+
 literal_expression
 	: NUMERIC_LITERAL
 	| BOOLEAN_LITERAL
 	;
 	
+set_expression
+	: '{' '}'
+	| '{' IDENTIFIER '}'
+	| '{' IDENTIFIER IDENTIFIER '}'
+	| '{' IDENTIFIER IDENTIFIER '|' expression '}'
+	;
+	
 primary_expression
 	: literal_expression
+	| set_expression
 	| IDENTIFIER
+	| '(' expression ')'
 	;
+	
+postfix_expression
+	: primary_expression
+	| postfix_expression '(' argument_expression_list
+	| postfix_expression '.' IDENTIFIER
+	;
+	
+unary_operator
+	: '-'
+	| NOT
+	;
+	
+unary_expression
+	: postfix_expression
+	| unary_operator postfix_expression
+	;
+	
+multiplicative_operator
+	: '*'
+	| '/'
+	;
+	
+multiplicative_expression
+	: unary_expression
+	| multiplicative_expression multiplicative_operator unary_expression
+	;
+	
+additive_operator
+	: '+'
+	| '-'
+	;
+	
+additive_expression
+	: multiplicative_expression
+	| additive_expression additive_operator multiplicative_expression
+	;
+	
+relational_operator
+	: GE_OP
+	| '>'
+	| LE_OP
+	| '<'
+	;
+	
+relational_expression
+	: additive_expression
+	| relational_expression relational_operator additive_expression
+	;
+	
+equality_operator
+	: '='
+	| NE_OP
+	;
+	
+equality_expression
+	: relational_expression
+	| equality_expression equality_operator relational_expression
+	;
+	
+and_expression
+	: equality_expression
+	| and_expression AND equality_expression
+	;
+	
+or_expression
+	: and_expression
+	| or_expression OR and_expression
 
 expression
-	: primary_expression
+	: or_expression
 	;
 
 /********** Program Members **********/
