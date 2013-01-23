@@ -80,9 +80,7 @@ $(foreach module,$(BIN_MODULES),$(eval $(call BIN_MODULE_template,$(module))))
 $(foreach module,$(TEST_MODULES),$(eval $(call TEST_MODULE_template,$(module))))
 $(foreach module,$(TEST_MODULES),$(eval $(call BIN_MODULE_template,$(module))))
 
-$(compiler_SOURCE_FILES) $(compiler_HEADER_FILES): $(SRC_PATH)/compiler/grammar/parser.hpp
-
-$(SRC_PATH)/compiler/grammar/lexer.cpp: $(SRC_PATH)/compiler/grammar/lexer.lex
+$(SRC_PATH)/compiler/grammar/lexer.cpp: $(SRC_PATH)/compiler/grammar/lexer.lex $(SRC_PATH)/compiler/grammar/parser.hpp
 	flex --outfile=$(SRC_PATH)/compiler/grammar/lexer.cpp $(SRC_PATH)/compiler/grammar/lexer.lex
 	
 $(SRC_PATH)/compiler/grammar/parser.cpp $(SRC_PATH)/compiler/grammar/parser.hpp: $(SRC_PATH)/compiler/grammar/parser.y
