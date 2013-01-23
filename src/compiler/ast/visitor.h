@@ -7,10 +7,53 @@
 #define AVCONSUME(x) virtual void Visit##x(AST::x&);
 #define AVDEFAULTACTION(x) void Deg::Compiler::AST::Visitor::Visit##x(x& e) { DefaultAction(#x, e); }
 
+#define ASTCLASS_EXPRESSION(x) \
+	x(NumericLiteralExpression) \
+	x(BooleanLiteralExpression) \
+	x(EmptySetExpression) \
+	x(UniversalSetExpression) \
+	x(TypedSetExpression) \
+	x(ConstrainedSetExpression) \
+	x(PanicExpression) \
+	x(IdentifierExpression) \
+	x(FunctionCallExpression) \
+	x(MemberAccessExpression) \
+	x(UnaryExpression) \
+	x(InfixExpression) \
+	x(FunctionIfElseExpression)
+
+#define ASTCLASS_STATEMENT(x) \
+	x(CompoundStatement) \
+	x(AssertStatement) \
+	x(EmbedStatement) \
+	x(EmbedInlineStatement) \
+	x(ForAllStatement) \
+	x(ForAnyStatement) \
+	x(ForBestStatement) \
+	x(IfStatement) \
+	x(IfElseStatement) \
+	x(TakeStatement) \
+	x(LimitStatement)
+
+#define ASTCLASS_DECLARATION(x) \
+	x(Program) \
+	x(FunctionArgument) \
+	x(Function)\
+	x(RecordMember) \
+	x(Record) \
+	x(EnumerationMember) \
+	x(Enumeration)
+
 #define ASTCLASS_TRANSLATION_UNIT(x) \
+	x(ModuleName) \
+	x(SymbolImport) \
+	x(ModuleImport) \
 	x(TranslationUnit)
 
 #define ASTCLASS_ALL(x) \
+	ASTCLASS_EXPRESSION(x) \
+	ASTCLASS_STATEMENT(x) \
+	ASTCLASS_DECLARATION(x) \
 	ASTCLASS_TRANSLATION_UNIT(x)
 
 namespace Deg {

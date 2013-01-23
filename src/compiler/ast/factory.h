@@ -49,7 +49,47 @@ public:
 		return &val->Value;
 	}
 
-	TranslationUnit* MakeTranslationUnit(const Diagnostics::ErrorLocation& yyl);
+	NumericLiteralExpression* MakeNumericLiteralExpression(const std::string& Value, const Diagnostics::ErrorLocation& yyl);
+	BooleanLiteralExpression* MakeBooleanLiteralExpression(bool Value, const Diagnostics::ErrorLocation& yyl);
+	EmptySetExpression* MakeEmptySetExpression(const Diagnostics::ErrorLocation& yyl);
+	UniversalSetExpression* MakeUniversalSetExpression(const Diagnostics::ErrorLocation& yyl);
+	TypedSetExpression* MakeTypedSetExpression(const std::string& Typename, const Diagnostics::ErrorLocation& yyl);
+	ConstrainedSetExpression* MakeConstrainedSetExpression(const std::string& Typename, const std::string& ElementName, Expression* Constraint, const Diagnostics::ErrorLocation& yyl);
+	PanicExpression* MakePanicExpression(const Diagnostics::ErrorLocation& yyl);
+	IdentifierExpression* MakeIdentifierExpression(const std::string& Identifier, const Diagnostics::ErrorLocation& yyl);
+	FunctionCallExpression* MakeFunctionCallExpression(Expression* Target, std::vector<Expression*>* Arguments, const Diagnostics::ErrorLocation& yyl);
+	MemberAccessExpression* MakeMemberAccessExpression(Expression* Target, const std::string& MemberName, const Diagnostics::ErrorLocation& yyl);
+	UnaryExpression* MakeUnaryExpression(UnaryOperator Operator, Expression* Value, const Diagnostics::ErrorLocation& yyl);
+	InfixExpression* MakeInfixExpression(InfixOperator Operator, Expression* LeftValue, Expression* RightValue, const Diagnostics::ErrorLocation& yyl);
+	FunctionIfElseExpression* MakeFunctionIfElseExpression(Expression* Predicate, Expression* Code, Expression* ElseCode, const Diagnostics::ErrorLocation& yyl);
+
+	CompoundStatement* MakeCompoundStatement(std::vector<Statement*>* Statements, const Diagnostics::ErrorLocation& yyl);
+	AssertStatement* MakeAssertStatement(Expression* Value, const Diagnostics::ErrorLocation& yyl);
+	EmbedStatement* MakeEmbedStatement(Expression* Value, const Diagnostics::ErrorLocation& yyl);
+	EmbedInlineStatement* MakeEmbedInlineStatement(Statement* Code, const Diagnostics::ErrorLocation& yyl);
+	ForAllStatement* MakeForAllStatement(const std::string& Typename, const std::string& ElementName, Expression* Set, Statement* Code, const Diagnostics::ErrorLocation& yyl);
+	ForAnyStatement* MakeForAnyStatement(const std::string& Typename, const std::string& ElementName, Expression* Set, Statement* Code, const Diagnostics::ErrorLocation& yyl);
+	ForBestStatement* MakeForBestStatement(const std::string& Typename, const std::string& ElementName, Expression* Predicate, Expression* Set, Statement* Code, const Diagnostics::ErrorLocation& yyl);
+	IfStatement* MakeIfStatement(Expression* Predicate, Statement* Code, const Diagnostics::ErrorLocation& yyl);
+	IfElseStatement* MakeIfElseStatement(Expression* Predicate, Statement* Code, Statement* ElseCode, const Diagnostics::ErrorLocation& yyl);
+	TakeStatement* MakeTakeStatement(Expression* Amount, Expression* Set, const Diagnostics::ErrorLocation& yyl);
+	LimitStatement* MakeLimitStatement(Expression* Amount, Expression* Set, const Diagnostics::ErrorLocation& yyl);
+
+	Program* MakeProgram(const std::string& Name, const std::string& Extends, Statement* Code, const Diagnostics::ErrorLocation& yyl);
+
+	FunctionArgument* MakeFunctionArgument(const std::string& Typename, const std::string& Name, const Diagnostics::ErrorLocation& yyl);
+	Function* MakeFunction(const std::string& Name, std::vector<FunctionArgument*>* Arguments, Expression* Code, const Diagnostics::ErrorLocation& yyl);
+
+	RecordMember* MakeRecordMember(const std::string& Typename, const std::string& Name, const Diagnostics::ErrorLocation& yyl);
+	Record* MakeRecord(const std::string& Name, std::vector<RecordMember*>* Members, const Diagnostics::ErrorLocation& yyl);
+
+	EnumerationMember* MakeEnumerationMember(const std::string& Name, const Diagnostics::ErrorLocation& yyl);
+	Enumeration* MakeEnumeration(const std::string& Name, std::vector<EnumerationMember*>* Members, const Diagnostics::ErrorLocation& yyl);
+
+	ModuleName* MakeModuleName(const std::string& Name, const Diagnostics::ErrorLocation& yyl);
+	SymbolImport* MakeSymbolImport(const std::string& OriginalName, const std::string& ImportName, const Diagnostics::ErrorLocation& yyl);
+	ModuleImport* MakeModuleImport(ModuleName* Name, std::vector<SymbolImport*>* Symbols, const Diagnostics::ErrorLocation& yyl);
+	TranslationUnit* MakeTranslationUnit(ModuleName* Name, std::vector<ModuleImport*>* Imports, std::vector<Declaration*>* Declarations, const Diagnostics::ErrorLocation& yyl);
 };
 
 }
