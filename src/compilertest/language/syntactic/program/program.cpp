@@ -81,6 +81,11 @@ Case(If) {
 	AssertResult(0, 0);
 }
 
+Case(Limit) {
+	ParseFile("limit.deg");
+	AssertResult(0, 0);
+}
+
 Case(MultipleMember) {
 	ParseFile("multiple_member.deg");
 	AssertResult(0, 0);

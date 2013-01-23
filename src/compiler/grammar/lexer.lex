@@ -103,6 +103,7 @@ E			[Ee][+-]?{D}+
 	"if"			{ return IF; }
 	"import"		{ return IMPORT; }
 	"in"			{ return IN; }
+	"limit"			{ return LIMIT; }
 	"module"		{ return MODULE; }
 	"not"			{ return NOT; }
 	"or"			{ return OR; }

@@ -33,9 +33,7 @@ function SubjectLevelCourse(Subject sub, integer num):
 program Program:
     # Global program requirements
     @grad_credits assert sum(TakenCourse, CreditMap) >= 120
-    @max_junior assert sum(intersect({TakenCourse t | t.number >= 100},
-                                     {TakenCourse t | t.number < 200}),
-                           CreditMap) <= 42
+    @max_junior limit 42 in {TakenCourse t | t.number >= 100 and t.number < 200}
     for all TakenCourse course:
         assert satisfy(course.requirements)
 

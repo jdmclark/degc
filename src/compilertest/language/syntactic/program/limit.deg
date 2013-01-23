@@ -1,0 +1,4 @@
+module ca.ualberta
+
+program Foo:
+    limit 5 in Bar
