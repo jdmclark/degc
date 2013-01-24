@@ -27,6 +27,7 @@
 	x(AssertStatement) \
 	x(EmbedStatement) \
 	x(EmbedInlineStatement) \
+	x(DisjunctionStatement) \
 	x(ForAllStatement) \
 	x(ForAnyStatement) \
 	x(ForBestStatement) \

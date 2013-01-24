@@ -186,6 +186,28 @@ public:
 	Statement* Code;
 };
 
+class DisjunctionStatement : public Statement {
+	ASTVISITOR_ACCEPT
+public:
+	std::vector<Statement*>* Statements;
+
+	inline std::vector<Statement*>::iterator begin() {
+		return Statements->begin();
+	}
+
+	inline std::vector<Statement*>::iterator begin() const {
+		return Statements->begin();
+	}
+
+	inline std::vector<Statement*>::iterator end() {
+		return Statements->end();
+	}
+
+	inline std::vector<Statement*>::iterator end() const {
+		return Statements->end();
+	}
+};
+
 class ForAllStatement : public Statement {
 	ASTVISITOR_ACCEPT
 public:

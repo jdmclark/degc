@@ -110,6 +110,12 @@ EmbedInlineStatement* Factory::MakeEmbedInlineStatement(Statement* Code, const D
 	return val;
 }
 
+DisjunctionStatement* Factory::MakeDisjunctionStatement(std::vector<Statement*>* Statements, const Diagnostics::ErrorLocation& yyl) {
+	MAKE(DisjunctionStatement);
+	val->Statements = Statements;
+	return val;
+}
+
 ForAllStatement* Factory::MakeForAllStatement(const std::string& Typename, const std::string& ElementName, Expression* Set, Statement* Code, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(ForAllStatement);
 	val->Typename = Typename;

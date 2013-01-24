@@ -1,0 +1,17 @@
+module ca.ualberta
+
+program Foo:
+    either:
+        assert true
+        assert true
+    or:
+        assert true
+    
+    either:
+        assert true
+    or:
+        assert true
+    or:
+        assert true
+    or:
+        assert true

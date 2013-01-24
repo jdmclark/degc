@@ -93,6 +93,7 @@ E			[Ee][+-]?{D}+
 	"as"			{ return AS; }
 	"best"			{ return BEST; }
 	"by"			{ return BY; }
+	"either"		{ return EITHER; }
 	"else"			{ return ELSE; }
 	"embed"			{ return EMBED; }
 	"enum"			{ return ENUM; }

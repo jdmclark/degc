@@ -16,6 +16,11 @@ Case(Assert) {
 	AssertResult(0, 0);
 }
 
+Case(EitherOr) {
+	ParseFile("either_or.deg");
+	AssertResult(0, 0);
+}
+
 Case(EmbedInline) {
 	ParseFile("embed_inline.deg");
 	AssertResult(0, 0);

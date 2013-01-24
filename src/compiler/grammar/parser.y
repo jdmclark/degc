@@ -48,7 +48,8 @@
 }
 
 /* Keywords */
-%token ALL AND ANY ASSERT AS BEST BY ELSE EMBED ENUM EXTENDS FOR FROM FUNCTION IF IMPORT IN LIMIT MODULE NOT OR PANIC PROGRAM RECORD TAKE
+%token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM EXTENDS FOR FROM FUNCTION
+%token IF IMPORT IN LIMIT MODULE NOT OR PANIC PROGRAM RECORD TAKE
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN NE_OP GE_OP LE_OP
@@ -64,9 +65,9 @@
 %type <expression> literal_expression set_expression primary_expression postfix_expression unary_expression
 %type <expression> multiplicative_expression additive_expression relational_expression equality_expression
 %type <expression> and_expression or_expression expression function_selection_expression function_expression
-%type <statement_list> program_statement_seq
-%type <statement> assert_statement embed_statement iteration_statement selection_statement branch_statement
-%type <statement> take_statement program_statement named_program_statement program_statement_part
+%type <statement_list> program_statement_seq disjunction_statement_part_seq
+%type <statement> assert_statement embed_statement disjunction_statement disjunction_statement_part iteration_statement
+%type <statement> selection_statement branch_statement take_statement program_statement named_program_statement program_statement_part
 %type <function_argument> function_argument
 %type <function_argument_list> function_argument_list
 %type <record_member> record_member
@@ -253,6 +254,23 @@ embed_statement
 		{ $$ = ast->MakeEmbedInlineStatement($4, @$); }
 	;
 	
+disjunction_statement_part
+	: OR ':' ENDLN program_statement_part
+		{ $$ = $4; }
+	;
+	
+disjunction_statement_part_seq
+	: disjunction_statement_part
+		{ $$ = ast->MakeList<Statement>($1); }
+	| disjunction_statement_part_seq disjunction_statement_part
+		{ ($1)->push_back($2); $$ = $1; }
+	;
+	
+disjunction_statement
+	: EITHER ':' ENDLN program_statement_part disjunction_statement_part_seq
+		{ ($5)->insert(($5)->begin(), $4); $$ = ast->MakeDisjunctionStatement($5, @$); }
+	;
+	
 iteration_statement
 	: FOR ALL IDENTIFIER IDENTIFIER ':' ENDLN program_statement_part
 		{ $$ = ast->MakeForAllStatement($3, $4, ast->MakeUniversalSetExpression(@5), $7, @$); }
@@ -292,6 +310,7 @@ take_statement
 program_statement
 	: assert_statement
 	| embed_statement
+	| disjunction_statement
 	| iteration_statement
 	| selection_statement
 	| branch_statement
