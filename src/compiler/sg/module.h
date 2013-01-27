@@ -13,7 +13,7 @@ namespace SG {
 
 class Module {
 private:
-	std::vector<std::unique_ptr<Symbol>> symbols;
+	std::vector<std::pair<std::string, std::unique_ptr<Symbol>>> symbols;
 	std::unordered_map<std::string, Symbol*> symbolmap;
 
 public:
@@ -24,8 +24,8 @@ public:
 		}
 
 		T* sym = new T();
-		symbols.push_back(std::unique_ptr<T>(sym));
-		symbolmap.insert(std::make_pair(name, symbols.back().get()));
+		symbols.push_back(std::make_pair(name, std::unique_ptr<T>(sym)));
+		symbolmap.insert(std::make_pair(name, sym));
 		return *sym;
 	}
 
@@ -47,11 +47,11 @@ public:
 		symbolmap.insert(std::make_pair(name, symbol));
 	}
 
-	inline std::vector<std::unique_ptr<Symbol>>::const_iterator begin() const {
+	inline std::vector<std::pair<std::string, std::unique_ptr<Symbol>>>::const_iterator begin() const {
 		return symbols.begin();
 	}
 
-	inline std::vector<std::unique_ptr<Symbol>>::const_iterator end() const {
+	inline std::vector<std::pair<std::string, std::unique_ptr<Symbol>>>::const_iterator end() const {
 		return symbols.end();
 	}
 };

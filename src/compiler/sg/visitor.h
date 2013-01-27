@@ -7,6 +7,10 @@
 #define SGDEFAULTACTION(x) void Deg::Compiler::SG::Visitor::Visit##x(x& e) { DefaultAction(#x, e); }
 
 #define SGCLASS_SYMBOL(x) \
+	x(NumberSymbol) \
+	x(QuantitySymbol) \
+	x(BooleanSymbol) \
+	x(SetSymbol) \
 	x(ProgramSymbol) \
 	x(FunctionSymbol) \
 	x(RecordSymbol) \

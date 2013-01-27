@@ -11,6 +11,10 @@ Deg::Compiler::SG::Node::~Node() {
 		return;											\
 	}
 
+SGVISITOR_ACCEPT_IMPL(NumberSymbol);
+SGVISITOR_ACCEPT_IMPL(QuantitySymbol);
+SGVISITOR_ACCEPT_IMPL(BooleanSymbol);
+SGVISITOR_ACCEPT_IMPL(SetSymbol);
 SGVISITOR_ACCEPT_IMPL(ProgramSymbol);
 SGVISITOR_ACCEPT_IMPL(EnumerationSymbol);
 SGVISITOR_ACCEPT_IMPL(FunctionSymbol);

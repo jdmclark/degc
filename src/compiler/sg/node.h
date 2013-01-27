@@ -30,6 +30,22 @@ class Symbol : public Node {
 	SGVISITOR_ACCEPT_ABSTRACT
 };
 
+class NumberSymbol : public Symbol {
+	SGVISITOR_ACCEPT
+};
+
+class QuantitySymbol : public Symbol {
+	SGVISITOR_ACCEPT
+};
+
+class BooleanSymbol : public Symbol {
+	SGVISITOR_ACCEPT
+};
+
+class SetSymbol : public Symbol {
+	SGVISITOR_ACCEPT
+};
+
 class ProgramSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:

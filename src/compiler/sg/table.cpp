@@ -7,7 +7,16 @@ Deg::Compiler::SG::Module& Deg::Compiler::SG::SymbolTable::CreateModule(const st
 		return *it->second;
 	}
 
-	modules.push_back(std::unique_ptr<Module>(new Module()));
-	modulemap.insert(std::make_pair(name, modules.back().get()));
-	return *modules.back();
+	// Module does not exist and must be added.
+	Module* mod = new Module();
+	modules.push_back(std::unique_ptr<Module>(mod));
+	modulemap.insert(std::make_pair(name, mod));
+
+	// Populate new module with imports from root module.
+	Module& root = GetModule("");
+	for(const auto& it : root) {
+		mod->ImportSymbol(it.first, it.second.get());
+	}
+
+	return *mod;
 }
