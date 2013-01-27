@@ -1,0 +1,4 @@
+module ca.foo
+
+function Far():
+    true

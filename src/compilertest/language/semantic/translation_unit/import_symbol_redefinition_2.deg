@@ -1,0 +1,3 @@
+module ca.bar
+from ca.foo import Foo as Baz
+from ca.foo import Bar as Baz

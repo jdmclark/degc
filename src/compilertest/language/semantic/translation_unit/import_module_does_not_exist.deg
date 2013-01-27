@@ -1,0 +1,2 @@
+module ca.ualberta
+from ca.ualberta.cs import Foo

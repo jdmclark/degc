@@ -4,7 +4,7 @@
 #include "compiler/diagnostics/report.h"
 
 #define AVPROTO(x) virtual void Visit##x(AST::x&);
-#define AVCONSUME(x) virtual void Visit##x(AST::x&);
+#define AVCONSUME(x) virtual void Visit##x(AST::x&) { }
 #define AVDEFAULTACTION(x) void Deg::Compiler::AST::Visitor::Visit##x(x& e) { DefaultAction(#x, e); }
 
 #define ASTCLASS_EXPRESSION(x) \

@@ -1,0 +1,7 @@
+module ca.foo
+
+function Foo():
+    true
+    
+function Bar():
+    true

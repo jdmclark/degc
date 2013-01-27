@@ -1,0 +1,2 @@
+module ca.bar
+from ca.foo import Foo

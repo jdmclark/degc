@@ -2,9 +2,9 @@
 
 #include "language_test_fixture.h"
 
-class SyntacticTestFixture : public LanguageTestFixture {
+class SemanticTestFixture : public LanguageTestFixture {
 protected:
-	SyntacticTestFixture(const boost::filesystem::path& BasePath);
+	SemanticTestFixture(const boost::filesystem::path& BasePath);
 
 public:
 	virtual void ParseFiles(const std::vector<boost::filesystem::path>& files);

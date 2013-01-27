@@ -12,10 +12,22 @@ class Factory;
 class TranslationUnit;
 }
 
+namespace SG {
+class SymbolTable;
+}
+
 namespace Stages {
 
 namespace GenerateAST {
-AST::TranslationUnit* GenerateAST(const boost::filesystem::path& filename, AST::Factory& Factory, Diagnostics::Report& Report);
+AST::TranslationUnit* GenerateAST(const boost::filesystem::path& filename, AST::Factory& factory, Diagnostics::Report& report);
+}
+
+namespace GenerateSG {
+void GenerateSG(const std::vector<AST::TranslationUnit*>& units, SG::SymbolTable& symbolTable, Diagnostics::Report& report);
+}
+
+namespace ResolveImports {
+void ResolveImports(const std::vector<AST::TranslationUnit*>& units, SG::SymbolTable& symbolTable, Diagnostics::Report& report);
 }
 
 }
