@@ -1,0 +1,6 @@
+module ca.ualberta
+
+enum Foo:
+    Bar
+    Baz
+    Bar

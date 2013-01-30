@@ -30,6 +30,10 @@ namespace ResolveImports {
 void ResolveImports(const std::vector<AST::TranslationUnit*>& units, SG::SymbolTable& symbolTable, Diagnostics::Report& report);
 }
 
+namespace GenerateMembers {
+void GenerateMembers(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
+}
+
 }
 }
 }

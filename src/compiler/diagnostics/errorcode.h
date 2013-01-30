@@ -22,6 +22,8 @@ enum class ErrorCode {
 	ImportUndefinedModule		= 4000,
 	ImportUndefinedSymbol		= 4001,
 	SymbolRedefinition			= 4002,
+	RecordMultipleQuantity		= 4003,
+	UndefinedTypename			= 4004,
 };
 
 std::ostream& operator<<(std::ostream&, ErrorCode);
