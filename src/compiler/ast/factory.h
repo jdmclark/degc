@@ -49,6 +49,11 @@ public:
 		return &val->Value;
 	}
 
+	NamedTypename* MakeNamedTypename(const std::string& Value, const Diagnostics::ErrorLocation& yyl);
+	SetTypename* MakeSetTypename(const Diagnostics::ErrorLocation& yyl);
+	ConstrainedSetTypename* MakeConstrainedSetTypename(const std::string& RecordType, const Diagnostics::ErrorLocation& yyl);
+	FunctionTypename* MakeFunctionTypename(std::vector<Typename*>* DomainType, Typename* CodomainType, const Diagnostics::ErrorLocation& yyl);
+
 	NumericLiteralExpression* MakeNumericLiteralExpression(const std::string& Value, const Diagnostics::ErrorLocation& yyl);
 	BooleanLiteralExpression* MakeBooleanLiteralExpression(bool Value, const Diagnostics::ErrorLocation& yyl);
 	EmptySetExpression* MakeEmptySetExpression(const Diagnostics::ErrorLocation& yyl);
@@ -78,10 +83,10 @@ public:
 
 	Program* MakeProgram(const std::string& Name, const std::string& Extends, Statement* Code, const Diagnostics::ErrorLocation& yyl);
 
-	FunctionArgument* MakeFunctionArgument(const std::string& Typename, const std::string& Name, const Diagnostics::ErrorLocation& yyl);
-	Function* MakeFunction(const std::string& Name, std::vector<FunctionArgument*>* Arguments, Expression* Code, const Diagnostics::ErrorLocation& yyl);
+	FunctionArgument* MakeFunctionArgument(Typename* Type, const std::string& Name, const Diagnostics::ErrorLocation& yyl);
+	Function* MakeFunction(const std::string& Name, std::vector<FunctionArgument*>* Arguments, Typename* Codomain, Expression* Code, const Diagnostics::ErrorLocation& yyl);
 
-	RecordMember* MakeRecordMember(const std::string& Typename, const std::string& Name, const Diagnostics::ErrorLocation& yyl);
+	RecordMember* MakeRecordMember(Typename* Type, const std::string& Name, const Diagnostics::ErrorLocation& yyl);
 	Record* MakeRecord(const std::string& Name, std::vector<RecordMember*>* Members, const Diagnostics::ErrorLocation& yyl);
 
 	EnumerationMember* MakeEnumerationMember(const std::string& Name, const Diagnostics::ErrorLocation& yyl);

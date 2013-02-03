@@ -38,6 +38,7 @@ class Symbol : public Node {
 
 class RecordSymbol;
 class EnumerationSymbol;
+class ProgramSymbol;
 
 // Types
 
@@ -57,10 +58,16 @@ class ConstrainedSetType : public Type {
 	SGVISITOR_ACCEPT
 public:
 	RecordSymbol* ElementType;
+
+	ConstrainedSetType(RecordSymbol* ElementType);
 };
 
 class ProgramType : public Type {
 	SGVISITOR_ACCEPT
+public:
+	ProgramSymbol* ElementType;
+
+	ProgramType(ProgramSymbol* ElementType);
 };
 
 class RecordType : public Type {
@@ -142,10 +149,6 @@ class BooleanSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 };
 
-class SetSymbol : public Symbol {
-	SGVISITOR_ACCEPT
-};
-
 class ProgramSymbol : public ParentSymbol {
 	SGVISITOR_ACCEPT
 public:
@@ -186,6 +189,7 @@ class FunctionSymbol : public ParentSymbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Function* ast_function;
+	std::unique_ptr<Type> CodomainType;
 };
 
 class EnumerationMemberSymbol : public Symbol {

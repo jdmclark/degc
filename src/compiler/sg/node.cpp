@@ -11,6 +11,11 @@ Deg::Compiler::SG::Node::~Node() {
 		return;											\
 	}
 
+Deg::Compiler::SG::ConstrainedSetType::ConstrainedSetType(Deg::Compiler::SG::RecordSymbol* ElementType)
+	: ElementType(ElementType) {
+	return;
+}
+
 Deg::Compiler::SG::RecordType::RecordType(Deg::Compiler::SG::RecordSymbol* ElementType)
 	: ElementType(ElementType) {
 	return;
@@ -21,8 +26,13 @@ Deg::Compiler::SG::EnumerationType::EnumerationType(Deg::Compiler::SG::Enumerati
 	return;
 }
 
+Deg::Compiler::SG::ProgramType::ProgramType(Deg::Compiler::SG::ProgramSymbol* ElementType)
+	: ElementType(ElementType) {
+	return;
+}
+
 Deg::Compiler::SG::ProgramSymbol::ProgramSymbol()
-	: Base(nullptr) {
+	: ast_program(nullptr), Base(nullptr) {
 	return;
 }
 
@@ -59,7 +69,6 @@ SGVISITOR_ACCEPT_IMPL(ErrorType);
 SGVISITOR_ACCEPT_IMPL(NumberSymbol);
 SGVISITOR_ACCEPT_IMPL(QuantitySymbol);
 SGVISITOR_ACCEPT_IMPL(BooleanSymbol);
-SGVISITOR_ACCEPT_IMPL(SetSymbol);
 SGVISITOR_ACCEPT_IMPL(ProgramSymbol);
 SGVISITOR_ACCEPT_IMPL(EnumerationMemberSymbol);
 SGVISITOR_ACCEPT_IMPL(EnumerationSymbol);

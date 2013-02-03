@@ -34,6 +34,10 @@ namespace GenerateMembers {
 void GenerateMembers(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
 }
 
+namespace GenerateExpressions {
+void GenerateExpressions(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
+}
+
 }
 }
 }

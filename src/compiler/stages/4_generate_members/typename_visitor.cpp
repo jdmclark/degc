@@ -1,34 +1,65 @@
 #include "typename_visitor.h"
+#include "named_symbol_visitor.h"
+#include "compiler/sg/error_helper.h"
 
-using namespace Deg::Compiler::SG;
+using namespace Deg::Compiler::AST;
 using Deg::Compiler::Stages::GenerateMembers::TypenameVisitor;
 
-TypenameVisitor::TypenameVisitor(Diagnostics::Report& report)
-	: SG::Visitor("GenerateMembers::TypenameVisitor", report), TypenameType(new ErrorType()), IsQuantityType(false) {
+TypenameVisitor::TypenameVisitor(SG::Module& module, Diagnostics::Report& report, bool can_take_quantity)
+	: AST::Visitor("GenerateMembers::TypenameVisitor", report), module(module), can_take_quantity(can_take_quantity),
+	  TypenameType(new SG::ErrorType()), IsQuantityType(false) {
 	return;
 }
 
-void TypenameVisitor::VisitNumberSymbol(NumberSymbol& n) {
-	TypenameType = std::unique_ptr<Type>(new NumberType());
+void TypenameVisitor::VisitNamedTypename(NamedTypename& n) {
+	try {
+		SG::Symbol& type_symbol = module.GetSymbol(n.Value);
+		NamedSymbolVisitor v(Report);
+		type_symbol.Accept(v);
+		TypenameType = std::move(v.TypenameType);
+		IsQuantityType = v.IsQuantityType;
+	}
+	catch(...) {
+		SG::ErrorHelper::UndefinedTypename(Report, VisitorName, n.Location, n.Value);
+	}
+
+	if(!can_take_quantity && IsQuantityType) {
+		SG::ErrorHelper::MeaninglessQuantity(Report, VisitorName, n.Location);
+	}
 }
 
-void TypenameVisitor::VisitQuantitySymbol(QuantitySymbol& n) {
-	TypenameType = std::unique_ptr<Type>(new NumberType());
-	IsQuantityType = true;
+void TypenameVisitor::VisitSetTypename(SetTypename& n) {
+	TypenameType = std::unique_ptr<SG::Type>(new SG::SetType());
 }
 
-void TypenameVisitor::VisitBooleanSymbol(BooleanSymbol& n) {
-	TypenameType = std::unique_ptr<Type>(new BooleanType());
+void TypenameVisitor::VisitConstrainedSetTypename(ConstrainedSetTypename& n) {
+	try {
+		SG::Symbol* type_symbol = &module.GetSymbol(n.RecordType);
+		SG::RecordSymbol* record_symbol = dynamic_cast<SG::RecordSymbol*>(type_symbol);
+		if(record_symbol) {
+			TypenameType = std::unique_ptr<SG::Type>(new SG::ConstrainedSetType(record_symbol));
+		}
+		else {
+			SG::ErrorHelper::RecordNameExpected(Report, VisitorName, n.Location, n.RecordType);
+		}
+	}
+	catch(...) {
+		SG::ErrorHelper::UndefinedTypename(Report, VisitorName, n.Location, n.RecordType);
+	}
 }
 
-void TypenameVisitor::VisitSetSymbol(SetSymbol& n) {
-	TypenameType = std::unique_ptr<Type>(new SetType());
-}
+void TypenameVisitor::VisitFunctionTypename(FunctionTypename& n) {
+	std::unique_ptr<SG::FunctionType> fntype(new SG::FunctionType());
 
-void TypenameVisitor::VisitRecordSymbol(RecordSymbol& n) {
-	TypenameType = std::unique_ptr<Type>(new RecordType(&n));
-}
+	TypenameVisitor codomain_v(module, Report);
+	n.CodomainType->Accept(codomain_v);
+	fntype->ReturnType = std::move(codomain_v.TypenameType);
 
-void TypenameVisitor::VisitEnumerationSymbol(EnumerationSymbol& n) {
-	TypenameType = std::unique_ptr<Type>(new EnumerationType(&n));
+	for(auto arg : *n.DomainType) {
+		TypenameVisitor domain_v(module, Report);
+		arg->Accept(domain_v);
+		fntype->ArgumentTypes.push_back(std::move(domain_v.TypenameType));
+	}
+
+	TypenameType = std::move(fntype);
 }

@@ -16,23 +16,15 @@ void RecordMemberVisitor::VisitRecordMember(RecordMember& member) {
 		return;
 	}
 
-	try {
-		SG::Symbol& type_symbol = module.GetSymbol(member.Typename);
-		TypenameVisitor v(Report);
-		type_symbol.Accept(v);
-		symbol.MakeMember<SG::RecordMemberSymbol>(member.Name, v.TypenameType);
-		if(v.IsQuantityType) {
-			if(symbol.QuantityMember != nullptr) {
-				Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::RecordMultipleQuantity, Diagnostics::ErrorLevel::Error,
-						VisitorName, "record has multiple quantities", member.Location));
-			}
-
-			symbol.QuantityMember = &symbol.GetMember(member.Name);
+	TypenameVisitor v(module, Report, true);
+	member.Type->Accept(v);
+	symbol.MakeMember<SG::RecordMemberSymbol>(member.Name, v.TypenameType);
+	if(v.IsQuantityType) {
+		if(symbol.QuantityMember != nullptr) {
+			Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::RecordMultipleQuantity, Diagnostics::ErrorLevel::Error,
+					VisitorName, "record has multiple quantities", member.Location));
 		}
-	}
-	catch(...) {
-		SG::ErrorHelper::UndefinedTypename(Report, VisitorName, member.Location, member.Typename);
-		std::unique_ptr<SG::Type> errorType(new SG::ErrorType());
-		symbol.MakeMember<SG::RecordMemberSymbol>(member.Name, errorType);
+
+		symbol.QuantityMember = &symbol.GetMember(member.Name);
 	}
 }

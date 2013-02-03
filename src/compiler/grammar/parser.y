@@ -25,6 +25,8 @@
 	char* string;
 	bool boolean;
 	
+	Deg::Compiler::AST::Typename* type_name;
+	std::vector<Deg::Compiler::AST::Typename*>* type_name_list;
 	Deg::Compiler::AST::UnaryOperator unary_operator;
 	Deg::Compiler::AST::InfixOperator infix_operator;
 	Deg::Compiler::AST::Expression* expression;
@@ -48,17 +50,19 @@
 }
 
 /* Keywords */
-%token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM EXTENDS FOR FROM FUNCTION
-%token IF IMPORT IN LIMIT MODULE NOT OR PANIC PROGRAM RECORD TAKE
+%token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM FOR FROM FUNCTION
+%token IF IMPORT IN LIMIT MODULE NOT OR PANIC PROGRAM RECORD SET TAKE
 
 /* Punctuators */
-%token INDENT DEDENT ENDLN NE_OP GE_OP LE_OP
+%token INDENT DEDENT ENDLN MAPS_TO NE_OP GE_OP LE_OP
 
 /* Literals */
 %token <string> IDENTIFIER NUMERIC_LITERAL
 %token <boolean> BOOLEAN_LITERAL
 
 /* AST nodes */
+%type <type_name> typename
+%type <type_name_list> function_typename_argument_list
 %type <expression_list> argument_expression_list
 %type <unary_operator> unary_operator
 %type <infix_operator> multiplicative_operator additive_operator relational_operator equality_operator
@@ -104,6 +108,31 @@
 %}
 
 %%
+
+/********** Typenames **********/
+
+function_typename_argument_list
+	: ')'
+		{ $$ = ast->MakeList<Typename>(); }
+	| typename ')'
+		{ $$ = ast->MakeList<Typename>($1); }
+	| typename ',' function_typename_argument_list
+		{
+			($3)->insert(($3)->begin(), $1);
+			$$ = $3;
+		}
+	;
+
+typename
+	: IDENTIFIER
+		{ $$ = ast->MakeNamedTypename($1, @$); }
+	| SET
+		{ $$ = ast->MakeSetTypename(@$); }
+	| SET '(' IDENTIFIER ')'
+		{ $$ = ast->MakeConstrainedSetTypename($3, @$); }
+	| FUNCTION '(' function_typename_argument_list MAPS_TO typename
+		{ $$ = ast->MakeFunctionTypename($3, $5, @$); }
+	;
 
 /********** Expressions **********/
 
@@ -340,8 +369,8 @@ program_statement_part
 program
 	: PROGRAM IDENTIFIER ':' ENDLN program_statement_part
 		{ $$ = ast->MakeProgram($2, "", $5, @$); }
-	| PROGRAM IDENTIFIER EXTENDS IDENTIFIER ':' ENDLN program_statement_part
-		{ $$ = ast->MakeProgram($2, $4, $7, @$); }
+	| PROGRAM IDENTIFIER '(' IDENTIFIER ')' ':' ENDLN program_statement_part
+		{ $$ = ast->MakeProgram($2, $4, $8, @$); }
 	;
 	
 /********** Function **********/
@@ -361,7 +390,7 @@ function_expression
 	;
 
 function_argument
-	: IDENTIFIER IDENTIFIER
+	: typename IDENTIFIER
 		{ $$ = ast->MakeFunctionArgument($1, $2, @$); }
 	;
 
@@ -375,14 +404,14 @@ function_argument_list
 	;
 
 function
-	: FUNCTION IDENTIFIER '(' function_argument_list ':' ENDLN function_expression
-		{ $$ = ast->MakeFunction($2, $4, $7, @$); }
+	: FUNCTION IDENTIFIER '(' function_argument_list MAPS_TO typename ':' ENDLN function_expression
+		{ $$ = ast->MakeFunction($2, $4, $6, $9, @$); }
 	;
 
 /********** Record **********/
 
 record_member
-	: IDENTIFIER IDENTIFIER ENDLN
+	: typename IDENTIFIER ENDLN
 		{ $$ = ast->MakeRecordMember($1, $2, @$); }
 	;
 

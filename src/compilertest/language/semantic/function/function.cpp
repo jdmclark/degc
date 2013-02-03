@@ -21,4 +21,14 @@ Case(ArgUnknownType) {
 	AssertResult(1, 0);
 }
 
+Case(CodomainMismatch) {
+	ParseFile("codomain_mismatch.deg");
+	AssertResult(0, 0);
+}
+
+Case(MeaninglessQuantity) {
+	ParseFile("meaningless_quantity.deg");
+	AssertResult(0, 1);
+}
+
 EndSuite(FunctionSemanticTest);

@@ -6,10 +6,10 @@
 namespace Deg {
 namespace Compiler {
 namespace Stages {
-namespace GenerateMembers {
+namespace GenerateExpressions {
 
 class DeclarationVisitor : public SG::Visitor {
-protected:
+private:
 	SG::Module& module;
 
 public:
@@ -18,11 +18,11 @@ public:
 	SGCONSUME(NumberSymbol);
 	SGCONSUME(QuantitySymbol);
 	SGCONSUME(BooleanSymbol);
+	SGCONSUME(EnumerationSymbol);
+	SGCONSUME(RecordSymbol);
 
 	void VisitProgramSymbol(SG::ProgramSymbol& n);
-	void VisitRecordSymbol(SG::RecordSymbol& n);
 	void VisitFunctionSymbol(SG::FunctionSymbol& n);
-	void VisitEnumerationSymbol(SG::EnumerationSymbol& n);
 };
 
 }

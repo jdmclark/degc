@@ -2,6 +2,30 @@
 
 using namespace Deg::Compiler::AST;
 
+NamedTypename* Factory::MakeNamedTypename(const std::string& Value, const Diagnostics::ErrorLocation& yyl) {
+	MAKE(NamedTypename);
+	val->Value = Value;
+	return val;
+}
+
+SetTypename* Factory::MakeSetTypename(const Diagnostics::ErrorLocation& yyl) {
+	MAKE(SetTypename);
+	return val;
+}
+
+ConstrainedSetTypename* Factory::MakeConstrainedSetTypename(const std::string& RecordType, const Diagnostics::ErrorLocation& yyl) {
+	MAKE(ConstrainedSetTypename);
+	val->RecordType = RecordType;
+	return val;
+}
+
+FunctionTypename* Factory::MakeFunctionTypename(std::vector<Typename*>* DomainType, Typename* CodomainType, const Diagnostics::ErrorLocation& yyl) {
+	MAKE(FunctionTypename);
+	val->DomainType = DomainType;
+	val->CodomainType = CodomainType;
+	return val;
+}
+
 NumericLiteralExpression* Factory::MakeNumericLiteralExpression(const std::string& Value, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(NumericLiteralExpression);
 	val->Value = Value;
@@ -181,24 +205,25 @@ Program* Factory::MakeProgram(const std::string& Name, const std::string& Extend
 	return val;
 }
 
-FunctionArgument* Factory::MakeFunctionArgument(const std::string& Typename, const std::string& Name, const Diagnostics::ErrorLocation& yyl) {
+FunctionArgument* Factory::MakeFunctionArgument(Typename* Type, const std::string& Name, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(FunctionArgument);
-	val->Typename = Typename;
+	val->Type = Type;
 	val->Name = Name;
 	return val;
 }
 
-Function* Factory::MakeFunction(const std::string& Name, std::vector<FunctionArgument*>* Arguments, Expression* Code, const Diagnostics::ErrorLocation& yyl) {
+Function* Factory::MakeFunction(const std::string& Name, std::vector<FunctionArgument*>* Arguments, Typename* Codomain, Expression* Code, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(Function);
 	val->Name = Name;
 	val->Arguments = Arguments;
+	val->Codomain = Codomain;
 	val->Code = Code;
 	return val;
 }
 
-RecordMember* Factory::MakeRecordMember(const std::string& Typename, const std::string& Name, const Diagnostics::ErrorLocation& yyl) {
+RecordMember* Factory::MakeRecordMember(Typename* Type, const std::string& Name, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(RecordMember);
-	val->Typename = Typename;
+	val->Type = Type;
 	val->Name = Name;
 	return val;
 }

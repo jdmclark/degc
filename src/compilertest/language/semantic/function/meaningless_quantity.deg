@@ -1,0 +1,4 @@
+module ca.ualberta
+
+function Foo(quantity bar) -> bool:
+    true

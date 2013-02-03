@@ -1,12 +1,12 @@
 module ca.ualberta
 
-function Foo(Bar a, Bar b):
+function Foo(Bar a, Bar b) -> bool:
     true
     
-function Foo(Bar a, Bar b,):
+function Foo(Bar a, Bar b,) -> bool:
     true
     
 function Foo(Bar a,
              Bar b,
-             ):
+             ) -> bool:
     true

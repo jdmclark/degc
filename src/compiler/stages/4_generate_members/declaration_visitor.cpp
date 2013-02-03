@@ -3,6 +3,7 @@
 #include "record_member_visitor.h"
 #include "function_argument_visitor.h"
 #include "program_base_visitor.h"
+#include "typename_visitor.h"
 #include "compiler/sg/error_helper.h"
 
 using namespace Deg::Compiler::SG;
@@ -40,6 +41,10 @@ void DeclarationVisitor::VisitEnumerationSymbol(EnumerationSymbol& n) {
 }
 
 void DeclarationVisitor::VisitFunctionSymbol(FunctionSymbol& n) {
+	TypenameVisitor codomain_v(module, Report);
+	n.ast_function->Codomain->Accept(codomain_v);
+	n.CodomainType = std::move(codomain_v.TypenameType);
+
 	FunctionArgumentVisitor v(n, module, Report);
 	for(auto member : *n.ast_function->Arguments) {
 		member->Accept(v);

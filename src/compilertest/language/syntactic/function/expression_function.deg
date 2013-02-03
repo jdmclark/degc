@@ -1,4 +1,4 @@
 module ca.ualberta
 
-function Foo(Bar a, Baz b):
+function Foo(Bar a, Baz b) -> number:
     some_expression(a + b) + c

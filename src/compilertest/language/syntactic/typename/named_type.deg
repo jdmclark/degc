@@ -1,0 +1,10 @@
+module ca.ualberta
+
+record Foo:
+    Bar member1
+    number member2
+    quantity member3
+    bool member4
+
+function Foo(Bar arg1, number arg2) -> bool:
+    true

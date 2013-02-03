@@ -3,5 +3,5 @@ module ca.ualberta
 program BaseProgram:
     assert true
 
-program ChildProgram extends BaseProgram:
+program ChildProgram(BaseProgram):
     assert true

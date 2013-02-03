@@ -1,0 +1,7 @@
+module ca.ualberta
+
+enum Foo:
+    foo
+    
+function Baz() -> Foo:
+    Foo.bar

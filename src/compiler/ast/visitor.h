@@ -7,6 +7,12 @@
 #define AVCONSUME(x) virtual void Visit##x(AST::x&) { }
 #define AVDEFAULTACTION(x) void Deg::Compiler::AST::Visitor::Visit##x(x& e) { DefaultAction(#x, e); }
 
+#define ASTCLASS_TYPENAME(x) \
+	x(NamedTypename) \
+	x(SetTypename) \
+	x(ConstrainedSetTypename) \
+	x(FunctionTypename)
+
 #define ASTCLASS_EXPRESSION(x) \
 	x(NumericLiteralExpression) \
 	x(BooleanLiteralExpression) \
@@ -52,6 +58,7 @@
 	x(TranslationUnit)
 
 #define ASTCLASS_ALL(x) \
+	ASTCLASS_TYPENAME(x) \
 	ASTCLASS_EXPRESSION(x) \
 	ASTCLASS_STATEMENT(x) \
 	ASTCLASS_DECLARATION(x) \

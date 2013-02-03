@@ -1,6 +1,8 @@
 #pragma once
 
-#include "compiler/sg/visitor.h"
+#include "compiler/ast/visitor.h"
+#include "compiler/sg/node.h"
+#include "compiler/sg/module.h"
 #include <memory>
 
 namespace Deg {
@@ -8,19 +10,20 @@ namespace Compiler {
 namespace Stages {
 namespace GenerateMembers {
 
-class TypenameVisitor : public SG::Visitor {
+class TypenameVisitor : public AST::Visitor {
+private:
+	SG::Module& module;
+	bool can_take_quantity;
 public:
-	TypenameVisitor(Diagnostics::Report& report);
+	TypenameVisitor(SG::Module& module, Diagnostics::Report& report, bool can_take_quantity = false);
 
 	std::unique_ptr<SG::Type> TypenameType;
 	bool IsQuantityType;
 
-	void VisitNumberSymbol(SG::NumberSymbol& n);
-	void VisitQuantitySymbol(SG::QuantitySymbol& n);
-	void VisitBooleanSymbol(SG::BooleanSymbol& n);
-	void VisitSetSymbol(SG::SetSymbol& n);
-	void VisitRecordSymbol(SG::RecordSymbol& n);
-	void VisitEnumerationSymbol(SG::EnumerationSymbol& n);
+	void VisitNamedTypename(AST::NamedTypename& n);
+	void VisitSetTypename(AST::SetTypename& n);
+	void VisitConstrainedSetTypename(AST::ConstrainedSetTypename& n);
+	void VisitFunctionTypename(AST::FunctionTypename& n);
 };
 
 }

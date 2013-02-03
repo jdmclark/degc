@@ -97,7 +97,6 @@ E			[Ee][+-]?{D}+
 	"else"			{ return ELSE; }
 	"embed"			{ return EMBED; }
 	"enum"			{ return ENUM; }
-	"extends"		{ return EXTENDS; }
 	"for"			{ return FOR; }
 	"from"			{ return FROM; }
 	"function"		{ return FUNCTION; }
@@ -111,6 +110,7 @@ E			[Ee][+-]?{D}+
 	"panic"			{ return PANIC; }
 	"program"		{ return PROGRAM; }
 	"record"		{ return RECORD; }
+	"set"			{ return SET; }
 	"take"			{ return TAKE; }
 	
 	"true"			{ yylval->boolean = true; return BOOLEAN_LITERAL; }
@@ -127,6 +127,8 @@ E			[Ee][+-]?{D}+
 	
 	","				{ return ','; }
 	"."				{ return '.'; }
+	
+	"->"			{ return MAPS_TO; }
 	
 	"+"				{ return '+'; }
 	"-"				{ return '-'; }

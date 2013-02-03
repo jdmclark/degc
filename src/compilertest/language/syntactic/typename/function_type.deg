@@ -1,0 +1,13 @@
+module ca.ualberta
+
+record Foo:
+    function()->bool bar
+    function(TakenCourse, TakenCourse, TakenCourse)->function(TakenCourse, TakenCourse, TakenCourse)->function()->bool bar
+    function(A, B, C,)->D bar
+    function(A,
+             B,
+             C,
+             )->D bar
+
+function Foo(function(function(function()->function()->bool)->bool)->function()->bool fn)->function()->function()->function()->bool:
+    true

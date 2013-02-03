@@ -10,7 +10,6 @@ void Deg::Compiler::Stages::GenerateSG::GenerateSG(const std::vector<AST::Transl
 	root.MakeSymbol<SG::NumberSymbol>("number");
 	root.MakeSymbol<SG::QuantitySymbol>("quantity");
 	root.MakeSymbol<SG::BooleanSymbol>("bool");
-	root.MakeSymbol<SG::SetSymbol>("set");
 
 	for(auto unit : units) {
 		SG::Module& mod = symbolTable.CreateModule(unit->Name->Name);

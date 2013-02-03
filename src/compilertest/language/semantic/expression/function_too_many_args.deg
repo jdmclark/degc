@@ -1,0 +1,7 @@
+module ca.ualberta
+
+function Foo(number a, number b) -> bool:
+    true
+    
+program Bar:
+    assert Foo(1, 2, 3)

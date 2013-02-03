@@ -1,4 +1,4 @@
 module ca.ualberta
 
-function Foo(Bar baz):
+function Foo(Bar baz) -> bool:
     true

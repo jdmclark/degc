@@ -1,6 +1,7 @@
 module ca.ualberta.cs
 from ca.ualberta import (TakenCourse,
                          Subject,
+                         Faculty,
                          )
 
 enum TermType:
@@ -15,17 +16,17 @@ record EnrolledFallWinterTerm:
     integer fallId
     integer winterId
 
-function GradeMap(TakenCourse course):
+function GradeMap(TakenCourse course) -> number:
     course.grade
     
-function CreditMap(TakenCourse course):
+function CreditMap(TakenCourse course) -> number:
     course.credits
 
-function SpecificCourse(Subject sub, integer num):
+function SpecificCourse(Subject sub, integer num) -> set(TakenCourse):
     {TakenCourse t | t.subject = sub
                      and t.number = num}
 
-function SubjectLevelCourse(Subject sub, integer num):
+function SubjectLevelCourse(Subject sub, integer num) -> set(TakenCourse):
     {TakenCourse t | t.subject = sub
                      and t.number >= num
                      and t.number < (num + 100)}
@@ -37,24 +38,24 @@ program Program:
     for all TakenCourse course:
         assert satisfy(course.requirements)
 
-program HonorsComputingScience extends Program:
+program HonorsComputingScience(Program):
     # Honors program requirements
     for all EnrolledFallWinterTerm term:
         assert mean(TakenCourse(term=term.id), GradeMap) >= 3.0
-    for all TakenCourse course in {TakenCourse t | t.subject = CMPUT}:
+    for all TakenCourse course in {TakenCourse t | t.subject = Subject.CMPUT}:
         assert course.grade >= 3.0
     for all EnrolledTerm term in {EnrolledTerm t | t.type = Fall or t.type = Winter}:
-        assert exists(TakenCourse(subject=CMPUT, number=495, term=term.id))
+        assert exists({TakenCourse t | t.subject = Subject.CMPUT and t.number = 495 and t.term = term.id})
     
     # Course requirements
-    take 3 in SubjectLevelCourse(ENGL, 100)
-    take 3 in union(SubjectLevelCourse(WRS, 100),
-                    SubjectLevelCourse(ENGL, 100))
-    take 3 in union({TakenCourse t | t.subject = CMPUT and t.number = 174},
-                    {TakenCourse t | t.subject = SCI and t.number = 100})
-    take 3 in SpecificCourse(CMPUT, 175)
-    take 12 in {TakenCourse t | t.subject = CMPUT and t.number >= 400}
-    take 18 in {TakenCourse t | t.subject = CMPUT and t.number >= 300}
-    take 36 in {TakenCourse t | t.faculty = SC}
-    take 12 in {TakenCourse t | t.faculty = AR}
+    take 3 in SubjectLevelCourse(Subject.ENGL, 100)
+    take 3 in union(SubjectLevelCourse(Subject.WRS, 100),
+                    SubjectLevelCourse(Subject.ENGL, 100))
+    take 3 in union({TakenCourse t | t.subject = Subject.CMPUT and t.number = 174},
+                    {TakenCourse t | t.subject = Subject.SCI and t.number = 100})
+    take 3 in SpecificCourse(Subject.CMPUT, 175)
+    take 12 in {TakenCourse t | t.subject = Subject.CMPUT and t.number >= 400}
+    take 18 in {TakenCourse t | t.subject = Subject.CMPUT and t.number >= 300}
+    take 36 in {TakenCourse t | t.faculty = Faculty.SC}
+    take 12 in {TakenCourse t | t.faculty = Faculty.AR}
     take 30 in {TakenCourse}

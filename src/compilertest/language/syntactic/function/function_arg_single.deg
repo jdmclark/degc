@@ -1,8 +1,8 @@
 module ca.ualberta
 
-function Foo(Bar a):
+function Foo(Bar a) -> bool:
     true
     
 function Foo(Bar a,
-             ):
+             ) -> bool:
     true

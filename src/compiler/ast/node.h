@@ -37,6 +37,33 @@ class Declaration : public Node {
 	ASTVISITOR_ACCEPT_ABSTRACT
 };
 
+class Typename : public Node {
+	ASTVISITOR_ACCEPT_ABSTRACT
+};
+
+class NamedTypename : public Typename {
+	ASTVISITOR_ACCEPT
+public:
+	std::string Value;
+};
+
+class SetTypename : public Typename {
+	ASTVISITOR_ACCEPT
+};
+
+class ConstrainedSetTypename : public Typename {
+	ASTVISITOR_ACCEPT
+public:
+	std::string RecordType;
+};
+
+class FunctionTypename : public Typename {
+	ASTVISITOR_ACCEPT
+public:
+	std::vector<Typename*>* DomainType;
+	Typename* CodomainType;
+};
+
 /* Expressions */
 
 class Expression : public Node {
@@ -288,7 +315,7 @@ public:
 class FunctionArgument : public Expression {
 	ASTVISITOR_ACCEPT
 public:
-	std::string Typename;
+	Typename* Type;
 	std::string Name;
 };
 
@@ -297,6 +324,7 @@ class Function : public Declaration {
 public:
 	std::string Name;
 	std::vector<FunctionArgument*>* Arguments;
+	Typename* Codomain;
 	Expression* Code;
 };
 
@@ -305,7 +333,7 @@ public:
 class RecordMember : public Node {
 	ASTVISITOR_ACCEPT
 public:
-	std::string Typename;
+	Typename* Type;
 	std::string Name;
 };
 

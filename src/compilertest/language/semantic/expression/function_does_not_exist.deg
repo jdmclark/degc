@@ -1,0 +1,4 @@
+module ca.ualberta
+
+program Foo:
+    assert Bar(1, 2)

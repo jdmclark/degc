@@ -1,6 +1,6 @@
 module ca.ualberta
 
-function Foo(Bar a, Bar b):
+function Foo(Bar a, Bar b) -> bool:
     if a = b:
         true
     else if a > b:
