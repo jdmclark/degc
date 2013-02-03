@@ -24,6 +24,8 @@ enum class ErrorCode {
 	SymbolRedefinition			= 4002,
 	RecordMultipleQuantity		= 4003,
 	UndefinedTypename			= 4004,
+	UndefinedSymbol				= 4005,
+	ProgramExpected				= 4006
 };
 
 std::ostream& operator<<(std::ostream&, ErrorCode);

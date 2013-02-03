@@ -1,0 +1,4 @@
+module ca.ualberta
+
+program Derived extends Base:
+    assert true

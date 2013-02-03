@@ -15,5 +15,5 @@ void EnumerationMemberVisitor::VisitEnumerationMember(EnumerationMember& n) {
 		return;
 	}
 
-	symbol.MakeMember(n.Name, n.Name, symbol.children_size());
+	symbol.MakeMember<SG::EnumerationMemberSymbol>(n.Name, symbol.children_size());
 }

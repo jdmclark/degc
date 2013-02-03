@@ -20,11 +20,11 @@ void FunctionArgumentVisitor::VisitFunctionArgument(FunctionArgument& n) {
 		SG::Symbol& type_symbol = module.GetSymbol(n.Typename);
 		TypenameVisitor v(Report);
 		type_symbol.Accept(v);
-		symbol.MakeMember(n.Name, n.Name, v.TypenameType);
+		symbol.MakeMember<SG::FunctionArgumentSymbol>(n.Name, v.TypenameType);
 	}
 	catch(...) {
 		SG::ErrorHelper::UndefinedTypename(Report, VisitorName, n.Location, n.Typename);
 		std::unique_ptr<SG::Type> errorType(new SG::ErrorType());
-		symbol.MakeMember(n.Name, n.Name, errorType);
+		symbol.MakeMember<SG::FunctionArgumentSymbol>(n.Name, errorType);
 	}
 }

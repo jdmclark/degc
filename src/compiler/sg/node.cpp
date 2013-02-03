@@ -21,23 +21,28 @@ Deg::Compiler::SG::EnumerationType::EnumerationType(Deg::Compiler::SG::Enumerati
 	return;
 }
 
-Deg::Compiler::SG::RecordMemberSymbol::RecordMemberSymbol(const std::string& Name, std::unique_ptr<Type>& InputType)
-	: Name(Name), InputType(std::move(InputType)), Offset(0) {
+Deg::Compiler::SG::ProgramSymbol::ProgramSymbol()
+	: Base(nullptr) {
+	return;
+}
+
+Deg::Compiler::SG::RecordMemberSymbol::RecordMemberSymbol(std::unique_ptr<Type>& InputType)
+	: InputType(std::move(InputType)), Offset(0) {
 	return;
 }
 
 Deg::Compiler::SG::RecordSymbol::RecordSymbol()
-	: QuantityMember(nullptr) {
+	: ast_record(nullptr), QuantityMember(nullptr) {
 	return;
 }
 
-Deg::Compiler::SG::FunctionArgumentSymbol::FunctionArgumentSymbol(const std::string& Name, std::unique_ptr<Type>& InputType)
-	: Name(Name), InputType(std::move(InputType)), Offset(0) {
+Deg::Compiler::SG::FunctionArgumentSymbol::FunctionArgumentSymbol(std::unique_ptr<Type>& InputType)
+	: InputType(std::move(InputType)), Offset(0) {
 	return;
 }
 
-Deg::Compiler::SG::EnumerationMemberSymbol::EnumerationMemberSymbol(const std::string& Name, unsigned int Value)
-	: Name(Name), Value(Value) {
+Deg::Compiler::SG::EnumerationMemberSymbol::EnumerationMemberSymbol(unsigned int Value)
+	: Value(Value) {
 	return;
 }
 

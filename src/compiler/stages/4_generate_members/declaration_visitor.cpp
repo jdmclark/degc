@@ -2,6 +2,8 @@
 #include "enumeration_member_visitor.h"
 #include "record_member_visitor.h"
 #include "function_argument_visitor.h"
+#include "program_base_visitor.h"
+#include "compiler/sg/error_helper.h"
 
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateMembers::DeclarationVisitor;
@@ -12,6 +14,20 @@ DeclarationVisitor::DeclarationVisitor(Module& module, Deg::Compiler::Diagnostic
 }
 
 void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
+	if(n.ast_program->Extends.empty()) {
+		n.Base = nullptr;
+	}
+	else {
+		try {
+			SG::Symbol& baseSymbol = module.GetSymbol(n.ast_program->Extends);
+			ProgramBaseVisitor v(n, Report);
+			baseSymbol.Accept(v);
+		}
+		catch(...) {
+			n.Base = nullptr;
+			SG::ErrorHelper::UndefinedSymbol(Report, VisitorName, n.ast_program->Location, n.ast_program->Extends);
+		}
+	}
 	return;
 }
 

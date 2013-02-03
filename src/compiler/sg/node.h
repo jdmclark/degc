@@ -92,22 +92,23 @@ class ErrorType : public Type {
 
 // Symbols
 
-template <typename T> class ParentSymbol : public Symbol {
+class ParentSymbol : public Symbol {
 	SGVISITOR_ACCEPT_ABSTRACT
 private:
-	std::vector<std::unique_ptr<T>> children;
-	std::unordered_map<std::string, T*> children_map;
+	std::vector<std::unique_ptr<Symbol>> children;
+	std::unordered_map<std::string, Symbol*> children_map;
+
 public:
-	bool IsMember(const std::string& name) const {
+	inline bool IsMember(const std::string& name) const {
 		return children_map.count(name) > 0;
 	}
 
-	template <typename... Args> void MakeMember(const std::string& name, Args&&... args) {
+	template <typename T, typename... Args> void MakeMember(const std::string& name, Args&&... args) {
 		children.push_back(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
 		children_map.insert(std::make_pair(name, children.back().get()));
 	}
 
-	T& GetMember(const std::string& name) {
+	Symbol& GetMember(const std::string& name) {
 		auto it = children_map.find(name);
 		if(it == children_map.end()) {
 			throw std::exception();
@@ -116,11 +117,11 @@ public:
 		return *it->second;
 	}
 
-	std::vector<std::unique_ptr<T>> begin() {
+	std::vector<std::unique_ptr<Symbol>>::iterator begin() {
 		return children.begin();
 	}
 
-	std::vector<std::unique_ptr<T>> end() {
+	std::vector<std::unique_ptr<Symbol>>::iterator end() {
 		return children.end();
 	}
 
@@ -145,27 +146,29 @@ class SetSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 };
 
-class ProgramSymbol : public Symbol {
+class ProgramSymbol : public ParentSymbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Program* ast_program;
+	Symbol* Base;
+
+	ProgramSymbol();
 };
 
 class RecordMemberSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
-	std::string Name;
 	std::unique_ptr<Type> InputType;
 	unsigned int Offset;
 
-	RecordMemberSymbol(const std::string& Name, std::unique_ptr<Type>& InputType);
+	RecordMemberSymbol(std::unique_ptr<Type>& InputType);
 };
 
-class RecordSymbol : public ParentSymbol<RecordMemberSymbol> {
+class RecordSymbol : public ParentSymbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Record* ast_record;
-	RecordMemberSymbol* QuantityMember;
+	Symbol* QuantityMember;
 
 	RecordSymbol();
 };
@@ -173,14 +176,13 @@ public:
 class FunctionArgumentSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
-	std::string Name;
 	std::unique_ptr<Type> InputType;
 	unsigned int Offset;
 
-	FunctionArgumentSymbol(const std::string& Name, std::unique_ptr<Type>& InputType);
+	FunctionArgumentSymbol(std::unique_ptr<Type>& InputType);
 };
 
-class FunctionSymbol : public ParentSymbol<FunctionArgumentSymbol> {
+class FunctionSymbol : public ParentSymbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Function* ast_function;
@@ -189,13 +191,12 @@ public:
 class EnumerationMemberSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
-	std::string Name;
 	unsigned int Value;
 
-	EnumerationMemberSymbol(const std::string& Name, unsigned int Value);
+	EnumerationMemberSymbol(unsigned int Value);
 };
 
-class EnumerationSymbol : public ParentSymbol<EnumerationMemberSymbol> {
+class EnumerationSymbol : public ParentSymbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Enumeration* ast_enumeration;
