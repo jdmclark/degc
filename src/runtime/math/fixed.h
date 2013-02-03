@@ -2,6 +2,7 @@
 
 #include <string>
 #include <sstream>
+#include <limits>
 
 namespace Deg {
 namespace Runtime {
@@ -154,4 +155,30 @@ typedef Fixed<int, 4> DefaultFixed;
 
 }
 }
+}
+
+namespace std {
+
+template <typename T, size_t Q> class numeric_limits<Deg::Runtime::Math::Fixed<T, Q>> {
+	typedef Deg::Runtime::Math::Fixed<T, Q> fixed;
+
+	static const bool is_specialized = true;
+
+	static constexpr T min() {
+		return fixed(1);
+	}
+
+	static constexpr T max() {
+		return fixed(numeric_limits<T>::max());
+	}
+
+	static constexpr T lowest() {
+		return fixed(numeric_limits<T>::lowest());
+	}
+
+	static constexpr T epsilon() {
+		return fixed(1);
+	}
+};
+
 }
