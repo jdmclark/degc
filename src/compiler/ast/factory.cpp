@@ -28,7 +28,7 @@ FunctionTypename* Factory::MakeFunctionTypename(std::vector<Typename*>* DomainTy
 
 NumericLiteralExpression* Factory::MakeNumericLiteralExpression(const std::string& Value, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(NumericLiteralExpression);
-	val->Value = Value;
+	val->Value = Runtime::Math::DefaultFixed(Value);
 	return val;
 }
 
@@ -54,10 +54,9 @@ TypedSetExpression* Factory::MakeTypedSetExpression(const std::string& Typename,
 	return val;
 }
 
-ConstrainedSetExpression* Factory::MakeConstrainedSetExpression(const std::string& Typename, const std::string& ElementName, Expression* Constraint, const Diagnostics::ErrorLocation& yyl) {
+ConstrainedSetExpression* Factory::MakeConstrainedSetExpression(const std::string& Typename, Expression* Constraint, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(ConstrainedSetExpression);
 	val->Typename = Typename;
-	val->ElementName = ElementName;
 	val->Constraint = Constraint;
 	return val;
 }

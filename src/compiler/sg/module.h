@@ -13,8 +13,8 @@ namespace SG {
 
 class Module {
 private:
-	std::vector<std::pair<std::string, std::unique_ptr<Symbol>>> symbols;
-	std::unordered_map<std::string, Symbol*> symbolmap;
+	std::vector<std::pair<std::string, std::unique_ptr<Node>>> symbols;
+	std::unordered_map<std::string, Node*> symbolmap;
 
 public:
 	template <typename T> T& MakeSymbol(const std::string& name) {
@@ -29,7 +29,7 @@ public:
 		return *sym;
 	}
 
-	inline Symbol& GetSymbol(const std::string& name) const {
+	inline Node& GetSymbol(const std::string& name) const {
 		auto it = symbolmap.find(name);
 		if(it == symbolmap.end()) {
 			throw std::exception();
@@ -38,7 +38,7 @@ public:
 		return *it->second;
 	}
 
-	inline void ImportSymbol(const std::string& name, Symbol* symbol) {
+	inline void ImportSymbol(const std::string& name, Node* symbol) {
 		auto it = symbolmap.find(name);
 		if(it != symbolmap.end()) {
 			throw std::exception();
@@ -47,11 +47,11 @@ public:
 		symbolmap.insert(std::make_pair(name, symbol));
 	}
 
-	inline std::vector<std::pair<std::string, std::unique_ptr<Symbol>>>::const_iterator begin() const {
+	inline std::vector<std::pair<std::string, std::unique_ptr<Node>>>::const_iterator begin() const {
 		return symbols.begin();
 	}
 
-	inline std::vector<std::pair<std::string, std::unique_ptr<Symbol>>>::const_iterator end() const {
+	inline std::vector<std::pair<std::string, std::unique_ptr<Node>>>::const_iterator end() const {
 		return symbols.end();
 	}
 };

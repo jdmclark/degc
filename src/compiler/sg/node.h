@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include "compiler/ast/node.h"
+#include "scope.h"
 
 #define SGVISITOR_ACCEPT_ABSTRACT								\
 	public:														\
@@ -30,9 +31,18 @@ public:
 
 class Type : public Node {
 	SGVISITOR_ACCEPT_ABSTRACT
+
+public:
+	virtual ~Type();
+
+	virtual bool CanAcceptValueOfType(const Type&) const = 0;
 };
 
 class Symbol : public Node {
+	SGVISITOR_ACCEPT_ABSTRACT
+};
+
+class Expression : public Node {
 	SGVISITOR_ACCEPT_ABSTRACT
 };
 
@@ -44,14 +54,20 @@ class ProgramSymbol;
 
 class NumberType : public Type {
 	SGVISITOR_ACCEPT
+public:
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class BooleanType : public Type {
 	SGVISITOR_ACCEPT
+public:
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class SetType : public Type {
 	SGVISITOR_ACCEPT
+public:
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class ConstrainedSetType : public Type {
@@ -60,6 +76,7 @@ public:
 	RecordSymbol* ElementType;
 
 	ConstrainedSetType(RecordSymbol* ElementType);
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class ProgramType : public Type {
@@ -68,6 +85,7 @@ public:
 	ProgramSymbol* ElementType;
 
 	ProgramType(ProgramSymbol* ElementType);
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class RecordType : public Type {
@@ -76,6 +94,7 @@ public:
 	RecordSymbol* ElementType;
 
 	RecordType(RecordSymbol* ElementType);
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class FunctionType : public Type {
@@ -83,6 +102,7 @@ class FunctionType : public Type {
 public:
 	std::unique_ptr<Type> ReturnType;
 	std::vector<std::unique_ptr<Type>> ArgumentTypes;
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class EnumerationType : public Type {
@@ -91,51 +111,16 @@ public:
 	EnumerationSymbol* ElementType;
 
 	EnumerationType(EnumerationSymbol* ElementType);
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class ErrorType : public Type {
 	SGVISITOR_ACCEPT
+public:
+	bool CanAcceptValueOfType(const Type&) const;
 };
 
 // Symbols
-
-class ParentSymbol : public Symbol {
-	SGVISITOR_ACCEPT_ABSTRACT
-private:
-	std::vector<std::unique_ptr<Symbol>> children;
-	std::unordered_map<std::string, Symbol*> children_map;
-
-public:
-	inline bool IsMember(const std::string& name) const {
-		return children_map.count(name) > 0;
-	}
-
-	template <typename T, typename... Args> void MakeMember(const std::string& name, Args&&... args) {
-		children.push_back(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
-		children_map.insert(std::make_pair(name, children.back().get()));
-	}
-
-	Symbol& GetMember(const std::string& name) {
-		auto it = children_map.find(name);
-		if(it == children_map.end()) {
-			throw std::exception();
-		}
-
-		return *it->second;
-	}
-
-	std::vector<std::unique_ptr<Symbol>>::iterator begin() {
-		return children.begin();
-	}
-
-	std::vector<std::unique_ptr<Symbol>>::iterator end() {
-		return children.end();
-	}
-
-	size_t children_size() const {
-		return children.size();
-	}
-};
 
 class NumberSymbol : public Symbol {
 	SGVISITOR_ACCEPT
@@ -149,11 +134,12 @@ class BooleanSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 };
 
-class ProgramSymbol : public ParentSymbol {
+class ProgramSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Program* ast_program;
 	Symbol* Base;
+	Scope Statements;
 
 	ProgramSymbol();
 };
@@ -167,11 +153,12 @@ public:
 	RecordMemberSymbol(std::unique_ptr<Type>& InputType);
 };
 
-class RecordSymbol : public ParentSymbol {
+class RecordSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Record* ast_record;
-	Symbol* QuantityMember;
+	Node* QuantityMember;
+	Scope Members;
 
 	RecordSymbol();
 };
@@ -185,11 +172,13 @@ public:
 	FunctionArgumentSymbol(std::unique_ptr<Type>& InputType);
 };
 
-class FunctionSymbol : public ParentSymbol {
+class FunctionSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Function* ast_function;
 	std::unique_ptr<Type> CodomainType;
+	Scope Arguments;
+	std::unique_ptr<Expression> Code;
 };
 
 class EnumerationMemberSymbol : public Symbol {
@@ -200,14 +189,53 @@ public:
 	EnumerationMemberSymbol(unsigned int Value);
 };
 
-class EnumerationSymbol : public ParentSymbol {
+class EnumerationSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Enumeration* ast_enumeration;
+	Scope Values;
 };
 
 class ErrorSymbol : public Symbol {
 	SGVISITOR_ACCEPT
+};
+
+// Expressions
+
+class ErrorExpression : public Expression {
+	SGVISITOR_ACCEPT
+};
+
+class NumericExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	Runtime::Math::DefaultFixed Value;
+
+	NumericExpression(Runtime::Math::DefaultFixed Value);
+};
+
+class BooleanExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	bool Value;
+
+	BooleanExpression(bool Value);
+};
+
+class EmptySetExpression : public Expression {
+	SGVISITOR_ACCEPT
+};
+
+class UniversalSetExpression : public Expression {
+	SGVISITOR_ACCEPT
+};
+
+class TypedSetExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	RecordSymbol* ElementType;
+
+	TypedSetExpression(RecordSymbol* ElementType);
 };
 
 }

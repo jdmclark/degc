@@ -31,9 +31,18 @@
 	x(EnumerationSymbol) \
 	x(ErrorSymbol)
 
+#define SGCLASS_EXPRESSION(x) \
+	x(ErrorExpression) \
+	x(NumericExpression) \
+	x(BooleanExpression) \
+	x(EmptySetExpression) \
+	x(UniversalSetExpression) \
+	x(TypedSetExpression)
+
 #define SGCLASS_ALL(x) \
 	SGCLASS_TYPE(x) \
-	SGCLASS_SYMBOL(x)
+	SGCLASS_SYMBOL(x) \
+	SGCLASS_EXPRESSION(x)
 
 namespace Deg {
 namespace Compiler {

@@ -11,7 +11,7 @@
 %expect-rr 0
 
 %code top {
-	#include "instance.h"	
+	#include "instance.h"
 	#define YYLTYPE Deg::Compiler::Diagnostics::ErrorLocation
 }
 
@@ -51,7 +51,8 @@
 
 /* Keywords */
 %token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM FOR FROM FUNCTION
-%token IF IMPORT IN LIMIT MODULE NOT OR PANIC PROGRAM RECORD SET TAKE
+%token IF IMPORT INTERSECT IN LIMIT MODULE NOT OR PANIC PROGRAM RECORD SETMINUS
+%token SET TAKE UNION UNIVERSE
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN MAPS_TO NE_OP GE_OP LE_OP
@@ -160,10 +161,10 @@ set_expression
 		{ $$ = ast->MakeEmptySetExpression(@$); }
 	| '{' IDENTIFIER '}'
 		{ $$ = ast->MakeTypedSetExpression($2, @$); }
-	| '{' IDENTIFIER IDENTIFIER '}'
-		{ $$ = ast->MakeConstrainedSetExpression($2, $3, ast->MakeBooleanLiteralExpression(true, @1), @$); }
-	| '{' IDENTIFIER IDENTIFIER '|' expression '}'
-		{ $$ = ast->MakeConstrainedSetExpression($2, $3, $5, @$); }
+	| '{' IDENTIFIER '|' expression '}'
+		{ $$ = ast->MakeConstrainedSetExpression($2, $4, @$); }
+	| UNIVERSE
+		{ $$ = ast->MakeUniversalSetExpression(@$); }
 	;
 	
 primary_expression
@@ -216,6 +217,8 @@ additive_operator
 		{ $$ = InfixOperator::Addition; }
 	| '-'
 		{ $$ = InfixOperator::Subtraction; }
+	| SETMINUS
+		{ $$ = InfixOperator::SetMinus; }
 	;
 	
 additive_expression
@@ -258,12 +261,17 @@ and_expression
 	: equality_expression
 	| and_expression AND equality_expression
 		{ $$ = ast->MakeInfixExpression(InfixOperator::And, $1, $3, @$); }
+	| and_expression INTERSECT equality_expression
+		{ $$ = ast->MakeInfixExpression(InfixOperator::Intersect, $1, $3, @$); }
 	;
 	
 or_expression
 	: and_expression
 	| or_expression OR and_expression
 		{ $$ = ast->MakeInfixExpression(InfixOperator::Or, $1, $3, @$); }
+	| or_expression UNION and_expression
+		{ $$ = ast->MakeInfixExpression(InfixOperator::Union, $1, $3, @$); }
+	;
 
 expression
 	: or_expression

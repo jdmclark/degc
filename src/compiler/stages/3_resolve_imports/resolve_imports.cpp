@@ -9,7 +9,7 @@ namespace Compiler {
 namespace Stages {
 namespace ResolveImports {
 
-void AddModuleImport(SG::Module& mod, const std::string& name, SG::Symbol* sym, AST::SymbolImport& isym, Diagnostics::Report& report) {
+void AddModuleImport(SG::Module& mod, const std::string& name, SG::Node* sym, AST::SymbolImport& isym, Diagnostics::Report& report) {
 	try {
 		mod.ImportSymbol(name, sym);
 	}
@@ -37,7 +37,7 @@ void ResolveImports(const std::vector<AST::TranslationUnit*>& units, SG::SymbolT
 
 				for(auto isym : *imod->Symbols) {
 					try {
-						SG::Symbol& symbol = imports.GetSymbol(isym->OriginalName);
+						SG::Node& symbol = imports.GetSymbol(isym->OriginalName);
 						AddModuleImport(mod, isym->ImportName, &symbol, *isym, report);
 					}
 					catch(...) {

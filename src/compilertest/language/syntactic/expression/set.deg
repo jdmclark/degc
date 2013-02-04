@@ -3,6 +3,14 @@ module ca.ualberta
 program Foo:
     assert {}
     assert {Type}
-    assert {Type t}
-    assert {Type t | false}
-    assert {Type t | true or (false or true)}
+    assert {Type | false}
+    assert {Type | true or (false or true)}
+    assert {} union {}
+    assert {} union {} union {}
+    assert {} intersect {}
+    assert {} setminus {}
+    assert ({} union
+            {} union
+            {} setminus
+            {})
+    assert universe

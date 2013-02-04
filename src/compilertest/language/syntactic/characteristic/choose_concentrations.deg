@@ -37,7 +37,7 @@ record Concentration:
 program Language:
     for any Concentration conc:
         embed FirstConcentrationMap(conc)
-        for any Concentration conc2 in {Concentration c | c.Type != conc.Type}:
+        for any Concentration conc2 in {Concentration | Type != conc.Type}:
             embed SecondConcentrationMap(conc2)
-            for any Concentration conc3 in {Concentration c | c.Type != conc.Type and c.Type != conc2.Type}:
+            for any Concentration conc3 in {Concentration | Type != conc.Type and Type != conc2.Type}:
                 embed SecondConcentrationMap(conc3)

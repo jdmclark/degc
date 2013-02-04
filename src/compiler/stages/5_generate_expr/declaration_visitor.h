@@ -1,7 +1,7 @@
 #pragma once
 
 #include "compiler/sg/visitor.h"
-#include "compiler/sg/module.h"
+#include "compiler/sg/scope_stack.h"
 
 namespace Deg {
 namespace Compiler {
@@ -10,10 +10,10 @@ namespace GenerateExpressions {
 
 class DeclarationVisitor : public SG::Visitor {
 private:
-	SG::Module& module;
+	SG::ScopeStack& scope;
 
 public:
-	DeclarationVisitor(SG::Module& module, Diagnostics::Report& report);
+	DeclarationVisitor(SG::ScopeStack& scope, Diagnostics::Report& report);
 
 	SGCONSUME(NumberSymbol);
 	SGCONSUME(QuantitySymbol);

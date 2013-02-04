@@ -102,6 +102,7 @@ E			[Ee][+-]?{D}+
 	"function"		{ return FUNCTION; }
 	"if"			{ return IF; }
 	"import"		{ return IMPORT; }
+	"intersect"		{ return INTERSECT; }
 	"in"			{ return IN; }
 	"limit"			{ return LIMIT; }
 	"module"		{ return MODULE; }
@@ -110,8 +111,11 @@ E			[Ee][+-]?{D}+
 	"panic"			{ return PANIC; }
 	"program"		{ return PROGRAM; }
 	"record"		{ return RECORD; }
+	"setminus"		{ return SETMINUS; }
 	"set"			{ return SET; }
 	"take"			{ return TAKE; }
+	"union"			{ return UNION; }
+	"universe"		{ return UNIVERSE; }
 	
 	"true"			{ yylval->boolean = true; return BOOLEAN_LITERAL; }
 	"false"			{ yylval->boolean = false; return BOOLEAN_LITERAL; }

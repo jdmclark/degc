@@ -11,12 +11,12 @@ FunctionArgumentVisitor::FunctionArgumentVisitor(SG::FunctionSymbol& symbol, SG:
 }
 
 void FunctionArgumentVisitor::VisitFunctionArgument(FunctionArgument& n) {
-	if(symbol.IsMember(n.Name)) {
+	if(symbol.Arguments.IsMember(n.Name)) {
 		SG::ErrorHelper::SymbolRedefinition(Report, VisitorName, n.Location, n.Name);
 		return;
 	}
 
 	TypenameVisitor v(module, Report);
 	n.Type->Accept(v);
-	symbol.MakeMember<SG::FunctionArgumentSymbol>(n.Name, v.TypenameType);
+	symbol.Arguments.MakeMember<SG::FunctionArgumentSymbol>(n.Name, v.TypenameType);
 }

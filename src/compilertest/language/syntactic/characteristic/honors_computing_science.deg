@@ -23,39 +23,38 @@ function CreditMap(TakenCourse course) -> number:
     course.credits
 
 function SpecificCourse(Subject sub, integer num) -> set(TakenCourse):
-    {TakenCourse t | t.subject = sub
-                     and t.number = num}
+    {TakenCourse | subject = sub
+                   and number = num}
 
 function SubjectLevelCourse(Subject sub, integer num) -> set(TakenCourse):
-    {TakenCourse t | t.subject = sub
-                     and t.number >= num
-                     and t.number < (num + 100)}
+    {TakenCourse | subject = sub
+                   and number >= num
+                   and number < (num + 100)}
 
 program Program:
     # Global program requirements
     @grad_credits assert sum(TakenCourse, CreditMap) >= 120
-    @max_junior limit 42 in {TakenCourse t | t.number >= 100 and t.number < 200}
+    @max_junior limit 42 in {TakenCourse | number >= 100 and number < 200}
     for all TakenCourse course:
         assert satisfy(course.requirements)
 
 program HonorsComputingScience(Program):
     # Honors program requirements
     for all EnrolledFallWinterTerm term:
-        assert mean(TakenCourse(term=term.id), GradeMap) >= 3.0
-    for all TakenCourse course in {TakenCourse t | t.subject = Subject.CMPUT}:
+        assert mean({TakenCourse | term=term.id}, GradeMap) >= 3.0
+    for all TakenCourse course in {TakenCourse | subject = Subject.CMPUT}:
         assert course.grade >= 3.0
-    for all EnrolledTerm term in {EnrolledTerm t | t.type = Fall or t.type = Winter}:
-        assert exists({TakenCourse t | t.subject = Subject.CMPUT and t.number = 495 and t.term = term.id})
+    for all EnrolledTerm term in {EnrolledTerm | type = Fall or type = Winter}:
+        assert exists({TakenCourse | subject = Subject.CMPUT and number = 495 and term = term.id})
     
     # Course requirements
     take 3 in SubjectLevelCourse(Subject.ENGL, 100)
-    take 3 in union(SubjectLevelCourse(Subject.WRS, 100),
-                    SubjectLevelCourse(Subject.ENGL, 100))
-    take 3 in union({TakenCourse t | t.subject = Subject.CMPUT and t.number = 174},
-                    {TakenCourse t | t.subject = Subject.SCI and t.number = 100})
+    take 3 in SubjectLevelCourse(Subject.WRS, 100) union SubjectLevelCourse(Subject.ENGL, 100)
+    take 3 in ({TakenCourse | subject = Subject.CMPUT and number = 174}
+               union {TakenCourse | subject = Subject.SCI and number = 100})
     take 3 in SpecificCourse(Subject.CMPUT, 175)
-    take 12 in {TakenCourse t | t.subject = Subject.CMPUT and t.number >= 400}
-    take 18 in {TakenCourse t | t.subject = Subject.CMPUT and t.number >= 300}
-    take 36 in {TakenCourse t | t.faculty = Faculty.SC}
-    take 12 in {TakenCourse t | t.faculty = Faculty.AR}
+    take 12 in {TakenCourse | subject = Subject.CMPUT and number >= 400}
+    take 18 in {TakenCourse | subject = Subject.CMPUT and number >= 300}
+    take 36 in {TakenCourse | faculty = Faculty.SC}
+    take 12 in {TakenCourse | faculty = Faculty.AR}
     take 30 in {TakenCourse}

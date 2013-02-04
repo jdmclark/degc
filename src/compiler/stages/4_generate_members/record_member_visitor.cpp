@@ -11,20 +11,20 @@ RecordMemberVisitor::RecordMemberVisitor(SG::RecordSymbol& symbol, SG::Module& m
 }
 
 void RecordMemberVisitor::VisitRecordMember(RecordMember& member) {
-	if(symbol.IsMember(member.Name)) {
+	if(symbol.Members.IsMember(member.Name)) {
 		SG::ErrorHelper::SymbolRedefinition(Report, VisitorName, member.Location, member.Name);
 		return;
 	}
 
 	TypenameVisitor v(module, Report, true);
 	member.Type->Accept(v);
-	symbol.MakeMember<SG::RecordMemberSymbol>(member.Name, v.TypenameType);
+	symbol.Members.MakeMember<SG::RecordMemberSymbol>(member.Name, v.TypenameType);
 	if(v.IsQuantityType) {
 		if(symbol.QuantityMember != nullptr) {
 			Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::RecordMultipleQuantity, Diagnostics::ErrorLevel::Error,
 					VisitorName, "record has multiple quantities", member.Location));
 		}
 
-		symbol.QuantityMember = &symbol.GetMember(member.Name);
+		symbol.QuantityMember = &symbol.Members.GetMember(member.Name);
 	}
 }

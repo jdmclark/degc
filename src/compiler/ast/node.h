@@ -1,5 +1,6 @@
 #pragma once
 
+#include "runtime/math/fixed.h"
 #include "compiler/diagnostics/errorlocation.h"
 #include <string>
 #include <vector>
@@ -73,7 +74,7 @@ class Expression : public Node {
 class NumericLiteralExpression : public Expression {
 	ASTVISITOR_ACCEPT
 public:
-	std::string Value;
+	Runtime::Math::DefaultFixed Value;
 };
 
 class BooleanLiteralExpression : public Expression {
@@ -154,7 +155,11 @@ enum class InfixOperator {
 	NotEqual,
 
 	And,
-	Or
+	Or,
+
+	Union,
+	Intersect,
+	SetMinus
 };
 
 class InfixExpression : public Expression {

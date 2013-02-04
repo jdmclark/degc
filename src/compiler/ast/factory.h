@@ -59,7 +59,7 @@ public:
 	EmptySetExpression* MakeEmptySetExpression(const Diagnostics::ErrorLocation& yyl);
 	UniversalSetExpression* MakeUniversalSetExpression(const Diagnostics::ErrorLocation& yyl);
 	TypedSetExpression* MakeTypedSetExpression(const std::string& Typename, const Diagnostics::ErrorLocation& yyl);
-	ConstrainedSetExpression* MakeConstrainedSetExpression(const std::string& Typename, const std::string& ElementName, Expression* Constraint, const Diagnostics::ErrorLocation& yyl);
+	ConstrainedSetExpression* MakeConstrainedSetExpression(const std::string& Typename, Expression* Constraint, const Diagnostics::ErrorLocation& yyl);
 	PanicExpression* MakePanicExpression(const Diagnostics::ErrorLocation& yyl);
 	IdentifierExpression* MakeIdentifierExpression(const std::string& Identifier, const Diagnostics::ErrorLocation& yyl);
 	FunctionCallExpression* MakeFunctionCallExpression(Expression* Target, std::vector<Expression*>* Arguments, const Diagnostics::ErrorLocation& yyl);

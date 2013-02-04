@@ -20,7 +20,7 @@ void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
 	}
 	else {
 		try {
-			SG::Symbol& baseSymbol = module.GetSymbol(n.ast_program->Extends);
+			SG::Node& baseSymbol = module.GetSymbol(n.ast_program->Extends);
 			ProgramBaseVisitor v(n, Report);
 			baseSymbol.Accept(v);
 		}

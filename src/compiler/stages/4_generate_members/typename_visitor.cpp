@@ -13,7 +13,7 @@ TypenameVisitor::TypenameVisitor(SG::Module& module, Diagnostics::Report& report
 
 void TypenameVisitor::VisitNamedTypename(NamedTypename& n) {
 	try {
-		SG::Symbol& type_symbol = module.GetSymbol(n.Value);
+		SG::Node& type_symbol = module.GetSymbol(n.Value);
 		NamedSymbolVisitor v(Report);
 		type_symbol.Accept(v);
 		TypenameType = std::move(v.TypenameType);
@@ -34,7 +34,7 @@ void TypenameVisitor::VisitSetTypename(SetTypename& n) {
 
 void TypenameVisitor::VisitConstrainedSetTypename(ConstrainedSetTypename& n) {
 	try {
-		SG::Symbol* type_symbol = &module.GetSymbol(n.RecordType);
+		SG::Node* type_symbol = &module.GetSymbol(n.RecordType);
 		SG::RecordSymbol* record_symbol = dynamic_cast<SG::RecordSymbol*>(type_symbol);
 		if(record_symbol) {
 			TypenameType = std::unique_ptr<SG::Type>(new SG::ConstrainedSetType(record_symbol));

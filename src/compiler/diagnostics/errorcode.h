@@ -27,7 +27,8 @@ enum class ErrorCode {
 	UndefinedSymbol				= 4005,
 	ProgramExpected				= 4006,
 	RecordNameExpected			= 4007,
-	MeaninglessQuantity			= 4008
+	MeaninglessQuantity			= 4008,
+	CodomainTypeMismatch		= 4009
 };
 
 std::ostream& operator<<(std::ostream&, ErrorCode);

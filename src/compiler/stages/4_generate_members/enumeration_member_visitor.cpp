@@ -10,10 +10,10 @@ EnumerationMemberVisitor::EnumerationMemberVisitor(Deg::Compiler::SG::Enumeratio
 }
 
 void EnumerationMemberVisitor::VisitEnumerationMember(EnumerationMember& n) {
-	if(symbol.IsMember(n.Name)) {
+	if(symbol.Values.IsMember(n.Name)) {
 		SG::ErrorHelper::SymbolRedefinition(Report, VisitorName, n.Location, n.Name);
 		return;
 	}
 
-	symbol.MakeMember<SG::EnumerationMemberSymbol>(n.Name, symbol.children_size());
+	symbol.Values.MakeMember<SG::EnumerationMemberSymbol>(n.Name, symbol.Values.children_size());
 }
