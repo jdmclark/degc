@@ -151,7 +151,7 @@ public:
 	}
 };
 
-typedef Fixed<int, 4> DefaultFixed;
+using DefaultFixed = Fixed<int, 4>;
 
 }
 }

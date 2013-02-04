@@ -88,7 +88,7 @@ bool Deg::Compiler::SG::FunctionType::CanAcceptValueOfType(const Type& t) const 
 		b &= ArgumentTypes.size() == nt->ArgumentTypes.size();
 		if(b) {
 			for(size_t i = 0; i < ArgumentTypes.size(); ++i) {
-				b &= ArgumentTypes[i]->CanAcceptValueOfType(*nt->ArgumentTypes[i]);
+				b &= nt->ArgumentTypes[i]->CanAcceptValueOfType(*ArgumentTypes[i]);
 			}
 		}
 		return b;
