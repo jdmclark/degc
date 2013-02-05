@@ -94,6 +94,13 @@ FunctionIfElseExpression* Factory::MakeFunctionIfElseExpression(Expression* Pred
 	return val;
 }
 
+NamedStatement* Factory::MakeNamedStatement(const std::string& Name, Statement* Code, const Diagnostics::ErrorLocation& yyl) {
+	MAKE(NamedStatement);
+	val->Name = Name;
+	val->Code = Code;
+	return val;
+}
+
 CompoundStatement* Factory::MakeCompoundStatement(std::vector<Statement*>* Statements, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(CompoundStatement);
 	val->Statements = Statements;

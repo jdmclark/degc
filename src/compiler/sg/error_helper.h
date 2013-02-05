@@ -19,6 +19,8 @@ void SetExpected(Diagnostics::Report& report, const std::string& stage, const Di
 void SetDomainMismatch(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
 void SymbolNotExpression(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& name);
 void TypeDoesNotHaveMembers(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void SetDoesNotHaveQuantity(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void PredicateSignatureMismatch(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& signature);
 
 }
 }

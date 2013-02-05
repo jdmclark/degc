@@ -190,6 +190,11 @@ EnumerationMemberSymbol::EnumerationMemberSymbol(unsigned int Value)
 	return;
 }
 
+VariableSymbol::VariableSymbol(RecordSymbol* ElementType)
+	: ElementType(ElementType) {
+	return;
+}
+
 NumericExpression::NumericExpression(Deg::Runtime::Math::DefaultFixed Value)
 	: Value(Value) {
 	return;
@@ -235,6 +240,36 @@ FunctionIfElseExpression::FunctionIfElseExpression(std::unique_ptr<Expression>& 
 	return;
 }
 
+AssertStatement::AssertStatement(std::unique_ptr<Expression>& Value)
+	: Value(std::move(Value)) {
+	return;
+}
+
+EmbedStatement::EmbedStatement(std::unique_ptr<Expression>& Value)
+	: Value(std::move(Value)) {
+	return;
+}
+
+IfStatement::IfStatement(std::unique_ptr<Expression>& Predicate, std::unique_ptr<Statement>& Code)
+	: Predicate(std::move(Predicate)), Code(std::move(Code)) {
+	return;
+}
+
+IfElseStatement::IfElseStatement(std::unique_ptr<Expression>& Predicate, std::unique_ptr<Statement>& Code, std::unique_ptr<Statement>& ElseCode)
+	: Predicate(std::move(Predicate)), Code(std::move(Code)), ElseCode(std::move(ElseCode)) {
+	return;
+}
+
+TakeStatement::TakeStatement(std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set)
+	: Amount(std::move(Amount)), Set(std::move(Set)) {
+	return;
+}
+
+LimitStatement::LimitStatement(std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set)
+	: Amount(std::move(Amount)), Set(std::move(Set)) {
+	return;
+}
+
 SGVISITOR_ACCEPT_IMPL(NumberType);
 SGVISITOR_ACCEPT_IMPL(BooleanType);
 SGVISITOR_ACCEPT_IMPL(SetType);
@@ -254,6 +289,7 @@ SGVISITOR_ACCEPT_IMPL(FunctionArgumentSymbol);
 SGVISITOR_ACCEPT_IMPL(FunctionSymbol);
 SGVISITOR_ACCEPT_IMPL(RecordMemberSymbol);
 SGVISITOR_ACCEPT_IMPL(RecordSymbol);
+SGVISITOR_ACCEPT_IMPL(VariableSymbol);
 SGVISITOR_ACCEPT_IMPL(ErrorSymbol);
 
 SGVISITOR_ACCEPT_IMPL(ErrorExpression);
@@ -268,3 +304,16 @@ SGVISITOR_ACCEPT_IMPL(MemberAccessExpression);
 SGVISITOR_ACCEPT_IMPL(UnaryExpression);
 SGVISITOR_ACCEPT_IMPL(InfixExpression);
 SGVISITOR_ACCEPT_IMPL(FunctionIfElseExpression);
+
+SGVISITOR_ACCEPT_IMPL(CompoundStatement);
+SGVISITOR_ACCEPT_IMPL(AssertStatement);
+SGVISITOR_ACCEPT_IMPL(EmbedStatement);
+SGVISITOR_ACCEPT_IMPL(DisjunctionStatement);
+SGVISITOR_ACCEPT_IMPL(ForAllStatement);
+SGVISITOR_ACCEPT_IMPL(ForAnyStatement);
+SGVISITOR_ACCEPT_IMPL(ForBestStatement);
+SGVISITOR_ACCEPT_IMPL(IfStatement);
+SGVISITOR_ACCEPT_IMPL(IfElseStatement);
+SGVISITOR_ACCEPT_IMPL(TakeStatement);
+SGVISITOR_ACCEPT_IMPL(LimitStatement);
+SGVISITOR_ACCEPT_IMPL(ErrorStatement);

@@ -55,3 +55,13 @@ void Deg::Compiler::SG::ErrorHelper::TypeDoesNotHaveMembers(Diagnostics::Report&
 	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::TypeDoesNotHaveMembers, Diagnostics::ErrorLevel::Error,
 			stage, "expression type does not have members to access", location));
 }
+
+void Deg::Compiler::SG::ErrorHelper::SetDoesNotHaveQuantity(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SetDoesNotHaveQuantity, Diagnostics::ErrorLevel::Error,
+			stage, "set type does not have quantity", location));
+}
+
+void Deg::Compiler::SG::ErrorHelper::PredicateSignatureMismatch(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& signature) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::PredicateSignatureMismatch, Diagnostics::ErrorLevel::Error,
+			stage, boost::str(boost::format("expected function of type \'%s\'") % signature), location));
+}

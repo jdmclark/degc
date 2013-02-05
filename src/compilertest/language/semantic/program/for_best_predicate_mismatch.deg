@@ -1,0 +1,10 @@
+module ca.ualberta
+
+record Foo:
+record Bar:
+
+function bar_pred(Bar a, Bar b) -> Bar:
+    a
+
+program Baz:
+    for best Foo a by bar_pred in {Foo}

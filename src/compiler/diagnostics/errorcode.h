@@ -41,7 +41,13 @@ enum class ErrorCode {
 	ComparisonTypeMismatch		= 4019,
 	TypeDoesNotHaveMembers		= 4020,
 	RecordMissingMember			= 4021,
-	EnumMissingMember			= 4022
+	EnumMissingMember			= 4022,
+	StatementNameRedefinition	= 4023,
+	SetDoesNotHaveQuantity		= 4024,
+	PredicateSignatureMismatch	= 4025,
+	EmbedInsideLoop				= 4026,
+	TakeInsideLoop				= 4027,
+	LimitInsideLoop				= 4028
 };
 
 std::ostream& operator<<(std::ostream&, ErrorCode);

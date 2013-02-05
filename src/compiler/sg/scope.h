@@ -21,6 +21,11 @@ public:
 		return children_map.count(name) > 0;
 	}
 
+	template <typename T> void AddMember(const std::string& name, std::unique_ptr<T>& member) {
+		children.push_back(std::move(member));
+		children_map.insert(std::make_pair(name, children.back().get()));
+	}
+
 	template <typename T, typename... Args> void MakeMember(const std::string& name, Args&&... args) {
 		children.push_back(std::unique_ptr<T>(new T(std::forward<Args>(args)...)));
 		children_map.insert(std::make_pair(name, children.back().get()));

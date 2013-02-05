@@ -1,0 +1,13 @@
+module ca.ualberta
+
+record Foo:
+    quantity bar
+
+program Baz:
+    for all Foo b:
+        limit 5 in {Foo}
+
+program Qux:
+    for all Foo b:
+        embed:
+            limit 5 in {Foo}

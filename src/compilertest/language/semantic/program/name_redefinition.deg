@@ -1,0 +1,5 @@
+module ca.ualberta
+
+program Foo:
+    @StatementName assert true
+    @StatementName assert false

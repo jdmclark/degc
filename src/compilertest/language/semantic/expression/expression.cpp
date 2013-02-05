@@ -33,17 +33,17 @@ Case(EnumMemberDoesNotExist) {
 
 Case(FunctionDoesNotExist) {
 	ParseFile("function_does_not_exist.deg");
-	AssertResult(0, 0);
+	AssertResult(1, 0);
 }
 
 Case(FunctionInsufficientArgs) {
 	ParseFile("function_insufficient_args.deg");
-	AssertResult(0, 0);
+	AssertResult(1, 0);
 }
 
 Case(FunctionTooManyArgs) {
 	ParseFile("function_too_many_args.deg");
-	AssertResult(0, 0);
+	AssertResult(1, 0);
 }
 
 EndSuite(ExpressionSemanticTest);

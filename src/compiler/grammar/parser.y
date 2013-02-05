@@ -91,8 +91,8 @@
 %type <expression> multiplicative_expression additive_expression relational_expression equality_expression
 %type <expression> and_expression or_expression expression function_selection_expression function_expression
 %type <statement_list> program_statement_seq disjunction_statement_part_seq
-%type <statement> assert_statement embed_statement disjunction_statement disjunction_statement_part iteration_statement
-%type <statement> selection_statement branch_statement take_statement program_statement named_program_statement program_statement_part
+%type <statement> named_statement assert_statement embed_statement disjunction_statement disjunction_statement_part iteration_statement
+%type <statement> selection_statement branch_statement take_statement program_statement program_statement_part
 %type <function_argument> function_argument
 %type <function_argument_list> function_argument_list
 %type <record_member> record_member
@@ -293,6 +293,11 @@ expression
 
 /********** Program Members **********/
 
+named_statement
+	: '@' IDENTIFIER program_statement
+		{ $$ = ast->MakeNamedStatement($2, $3, @$); }
+	;
+
 assert_statement
 	: ASSERT expression ENDLN
 		{ $$ = ast->MakeAssertStatement($2, @$); }
@@ -359,7 +364,8 @@ take_statement
 /********** Program **********/
 
 program_statement
-	: assert_statement
+	: named_statement
+	| assert_statement
 	| embed_statement
 	| disjunction_statement
 	| iteration_statement
@@ -368,16 +374,10 @@ program_statement
 	| take_statement
 	;
 
-named_program_statement
-	: '@' IDENTIFIER program_statement
-		{ ($3)->StatementName = $2; $$ = $3; }
-	| program_statement
-	;
-
 program_statement_seq
-	: program_statement_seq named_program_statement
+	: program_statement_seq program_statement
 		{ ($1)->push_back($2); $$ = $1; }
-	| named_program_statement
+	| program_statement
 		{ $$ = ast->MakeList<Statement>($1); }
 	;
 

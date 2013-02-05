@@ -1,0 +1,14 @@
+module ca.ualberta
+
+record Foo:
+    quantity bar
+
+program Baz:
+    for all Foo b:
+        take 5 in {Foo}
+        
+program Qux:
+    for all Foo b:
+        embed:
+            take 5 in {Foo}
+

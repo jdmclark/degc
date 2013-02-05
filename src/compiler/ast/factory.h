@@ -66,6 +66,7 @@ public:
 	InfixExpression* MakeInfixExpression(InfixOperator Operator, Expression* LeftValue, Expression* RightValue, const Diagnostics::ErrorLocation& yyl);
 	FunctionIfElseExpression* MakeFunctionIfElseExpression(Expression* Predicate, Expression* Code, Expression* ElseCode, const Diagnostics::ErrorLocation& yyl);
 
+	NamedStatement* MakeNamedStatement(const std::string& Name, Statement* Code, const Diagnostics::ErrorLocation& yyl);
 	CompoundStatement* MakeCompoundStatement(std::vector<Statement*>* Statements, const Diagnostics::ErrorLocation& yyl);
 	AssertStatement* MakeAssertStatement(Expression* Value, const Diagnostics::ErrorLocation& yyl);
 	EmbedStatement* MakeEmbedStatement(Expression* Value, const Diagnostics::ErrorLocation& yyl);

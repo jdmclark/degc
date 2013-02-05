@@ -1,0 +1,7 @@
+module ca.ualberta
+
+record Foo:
+record Bar:
+
+program Baz:
+    for any Foo a in {Bar}

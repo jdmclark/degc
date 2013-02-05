@@ -1,0 +1,17 @@
+module ca.ualberta
+
+record Foo:
+    quantity bar
+    
+program Bar:
+    assert true
+
+program Baz:
+    for all Foo b:
+        embed Bar
+        
+program Qux:
+    for all Foo b:
+        embed:
+            assert true
+            assert false

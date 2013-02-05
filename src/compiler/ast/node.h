@@ -162,8 +162,13 @@ public:
 
 class Statement : public Node {
 	ASTVISITOR_ACCEPT_ABSTRACT
+};
+
+class NamedStatement : public Statement {
+	ASTVISITOR_ACCEPT
 public:
-	std::string StatementName;
+	std::string Name;
+	Statement* Code;
 };
 
 class CompoundStatement : public Statement {

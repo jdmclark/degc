@@ -47,6 +47,10 @@ class Expression : public Node {
 	SGVISITOR_ACCEPT_ABSTRACT
 };
 
+class Statement : public Node {
+	SGVISITOR_ACCEPT_ABSTRACT
+};
+
 class RecordSymbol;
 class EnumerationSymbol;
 class ProgramSymbol;
@@ -142,7 +146,7 @@ class ProgramSymbol : public Symbol {
 public:
 	AST::Program* ast_program;
 	ProgramSymbol* Base;
-	Scope Statements;
+	std::unique_ptr<Statement> Statements;
 
 	ProgramSymbol();
 	bool InheritsFrom(const ProgramSymbol& program) const;
@@ -198,6 +202,15 @@ class EnumerationSymbol : public Symbol {
 public:
 	AST::Enumeration* ast_enumeration;
 	Scope Values;
+};
+
+class VariableSymbol : public Symbol {
+	SGVISITOR_ACCEPT
+public:
+	RecordSymbol* ElementType;
+	unsigned int Offset;
+
+	VariableSymbol(RecordSymbol* ElementType);
 };
 
 class ErrorSymbol : public Symbol {
@@ -303,6 +316,118 @@ public:
 	std::unique_ptr<Expression> IfCode, ElseCode;
 
 	FunctionIfElseExpression(std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode);
+};
+
+// Statements
+
+class CompoundStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	Scope Statements;
+};
+
+class AssertStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Value;
+
+	AssertStatement(std::unique_ptr<Expression>& Value);
+};
+
+class EmbedStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Value;
+
+	EmbedStatement(std::unique_ptr<Expression>& Value);
+};
+
+class DisjunctionStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	std::vector<std::unique_ptr<Statement>> Statements;
+
+	inline std::vector<std::unique_ptr<Statement>>::iterator begin() {
+		return Statements.begin();
+	}
+
+	inline std::vector<std::unique_ptr<Statement>>::const_iterator begin() const {
+		return Statements.begin();
+	}
+
+	inline std::vector<std::unique_ptr<Statement>>::iterator end() {
+		return Statements.end();
+	}
+
+	inline std::vector<std::unique_ptr<Statement>>::const_iterator end() const {
+		return Statements.end();
+	}
+};
+
+class ForAllStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	Scope Iterators;
+	std::unique_ptr<Expression> Set;
+	std::unique_ptr<Statement> Code;
+};
+
+class ForAnyStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	Scope Iterators;
+	std::unique_ptr<Expression> Set;
+	std::unique_ptr<Statement> Code;
+};
+
+class ForBestStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	Scope Iterators;
+	std::unique_ptr<Expression> Predicate;
+	std::unique_ptr<Expression> Set;
+	std::unique_ptr<Statement> Code;
+};
+
+class IfStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Predicate;
+	std::unique_ptr<Statement> Code;
+
+	IfStatement(std::unique_ptr<Expression>& Predicate, std::unique_ptr<Statement>& Code);
+};
+
+class IfElseStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Predicate;
+	std::unique_ptr<Statement> Code;
+	std::unique_ptr<Statement> ElseCode;
+
+	IfElseStatement(std::unique_ptr<Expression>& Predicate, std::unique_ptr<Statement>& Code, std::unique_ptr<Statement>& ElseCode);
+};
+
+class TakeStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Amount;
+	std::unique_ptr<Expression> Set;
+
+	TakeStatement(std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set);
+};
+
+class LimitStatement : public Statement {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Amount;
+	std::unique_ptr<Expression> Set;
+
+	LimitStatement(std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set);
+};
+
+class ErrorStatement : public Statement {
+	SGVISITOR_ACCEPT
 };
 
 }

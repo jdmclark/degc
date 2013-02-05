@@ -26,6 +26,7 @@
 	x(FunctionIfElseExpression)
 
 #define ASTCLASS_STATEMENT(x) \
+	x(NamedStatement) \
 	x(CompoundStatement) \
 	x(AssertStatement) \
 	x(EmbedStatement) \

@@ -28,6 +28,7 @@
 	x(RecordSymbol) \
 	x(EnumerationMemberSymbol) \
 	x(EnumerationSymbol) \
+	x(VariableSymbol) \
 	x(ErrorSymbol)
 
 #define SGCLASS_EXPRESSION(x) \
@@ -44,10 +45,25 @@
 	x(InfixExpression) \
 	x(FunctionIfElseExpression)
 
+#define SGCLASS_STATEMENT(x) \
+	x(CompoundStatement) \
+	x(AssertStatement) \
+	x(EmbedStatement) \
+	x(DisjunctionStatement) \
+	x(ForAllStatement) \
+	x(ForAnyStatement) \
+	x(ForBestStatement) \
+	x(IfStatement) \
+	x(IfElseStatement) \
+	x(TakeStatement) \
+	x(LimitStatement) \
+	x(ErrorStatement)
+
 #define SGCLASS_ALL(x) \
 	SGCLASS_TYPE(x) \
 	SGCLASS_SYMBOL(x) \
-	SGCLASS_EXPRESSION(x)
+	SGCLASS_EXPRESSION(x) \
+	SGCLASS_STATEMENT(x)
 
 namespace Deg {
 namespace Compiler {
