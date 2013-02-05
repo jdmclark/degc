@@ -23,6 +23,11 @@ public:
 	bool IsConstantValue;
 	std::unique_ptr<SG::Expression> GeneratedExpression;
 	std::unique_ptr<SG::Type> GeneratedExpressionType;
+
+	void VisitProgramSymbol(SG::ProgramSymbol& n);
+	void VisitRecordMemberSymbol(SG::RecordMemberSymbol& n);
+	void VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n);
+	void VisitFunctionSymbol(SG::FunctionSymbol& n);
 };
 
 }

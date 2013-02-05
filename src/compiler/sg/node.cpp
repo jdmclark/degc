@@ -215,6 +215,11 @@ IdentifierExpression::IdentifierExpression(Node* ReferencedNode)
 	return;
 }
 
+MemberAccessExpression::MemberAccessExpression(std::unique_ptr<Expression>& Base, RecordMemberSymbol* Member)
+	: Base(std::move(Base)), Member(Member) {
+	return;
+}
+
 UnaryExpression::UnaryExpression(std::unique_ptr<Expression>& Value, AST::UnaryOperator Operator)
 	: Value(std::move(Value)), Operator(Operator) {
 	return;
@@ -259,7 +264,7 @@ SGVISITOR_ACCEPT_IMPL(ConstrainedSetExpression);
 SGVISITOR_ACCEPT_IMPL(PanicExpression);
 SGVISITOR_ACCEPT_IMPL(IdentifierExpression);
 SGVISITOR_ACCEPT_IMPL(FunctionCallExpression);
-
+SGVISITOR_ACCEPT_IMPL(MemberAccessExpression);
 SGVISITOR_ACCEPT_IMPL(UnaryExpression);
 SGVISITOR_ACCEPT_IMPL(InfixExpression);
 SGVISITOR_ACCEPT_IMPL(FunctionIfElseExpression);

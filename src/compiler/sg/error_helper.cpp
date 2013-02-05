@@ -50,3 +50,8 @@ void Deg::Compiler::SG::ErrorHelper::SymbolNotExpression(Diagnostics::Report& re
 	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SymbolNotExpression, Diagnostics::ErrorLevel::Error,
 			stage, boost::str(boost::format("symbol \'%s\' is not a value") % name), location));
 }
+
+void Deg::Compiler::SG::ErrorHelper::TypeDoesNotHaveMembers(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::TypeDoesNotHaveMembers, Diagnostics::ErrorLevel::Error,
+			stage, "expression type does not have members to access", location));
+}

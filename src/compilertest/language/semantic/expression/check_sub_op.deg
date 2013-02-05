@@ -1,0 +1,81 @@
+module optest.add
+from optest import (TestRecord,
+                    TestEnum,
+                    TestFunction,
+                    )
+
+# Pass
+function NumNum(number a, number b) -> number:
+    a - b
+
+# Fail
+function NumBool(number a, bool b) -> number:
+    a - b
+    
+# Fail
+function BoolNum(bool a, number b) -> number:
+    a - b
+
+# Pass
+function NumRecNum(number a, TestRecord b) -> number:
+    a - b.NumberMember
+    
+# Pass
+function RecNumNum(TestRecord a, number b) -> number:
+    a.NumberMember - b
+
+# Pass
+function NumRecQuan(number a, TestRecord b) -> number:
+    a - b.QuantityMember
+    
+# Pass
+function RecQuanNum(TestRecord a, number b) -> number:
+    a.QuantityMember - b
+    
+# Fail
+function NumRecEnum(number a, TestRecord b) -> number:
+    a - b.EnumMember
+    
+# Fail
+function RecEnumNum(TestRecord a, number b) -> number:
+    a.EnumMember - b
+    
+# Fail
+function NumRecFn(number a, TestRecord b) -> number:
+    a - b.FunctionMember
+    
+# Fail
+function RecFnNum(TestRecord a, number b) -> number:
+    a.FunctionMember - b
+
+# Fail
+function NumRec(number a, TestRecord b) -> number:
+    a - b
+    
+# Fail
+function RecNum(TestRecord a, number b) -> number:
+    a - b
+
+# Fail
+function NumFn(number a, function(number, number)->bool b) -> number:
+    a - b
+    
+# Fail
+function FnNum(function(number, number)->bool a, number b) -> number:
+    a - b
+    
+# Fail
+function NumFnLiteral(number a) -> number:
+    a - TestFunction
+    
+# Fail
+function FnLiteralNum(number a) -> number:
+    TestFunction - a
+    
+# Fail
+function NumEnumLiteral(number a) -> number:
+    a - TestEnum.TestEnumMember1
+    
+# Fail
+function EnumLiteralNum(number a) -> number:
+    TestEnum.TestEnumMember2 - a

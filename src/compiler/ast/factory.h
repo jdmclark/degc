@@ -35,6 +35,7 @@ private:
 public:
 	template <typename T> T* StoreValue(const T& value) {
 		MAKE_NOLINES(ValueStorageNode<T>);
+		val->Value = value;
 		return &val->Value;
 	}
 

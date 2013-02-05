@@ -13,7 +13,9 @@ public:
 
 	ErrorLocation();
 	ErrorLocation(const char* filename, unsigned int first_line, unsigned int first_column, unsigned int last_line, unsigned int last_column);
+	ErrorLocation(const ErrorLocation& loc);
 
+	const ErrorLocation& operator=(const ErrorLocation& loc);
 	bool operator==(const ErrorLocation&) const;
 };
 

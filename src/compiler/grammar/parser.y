@@ -10,14 +10,34 @@
 %expect 0
 %expect-rr 0
 
-%code top {
-	#include "instance.h"
-	#define YYLTYPE Deg::Compiler::Diagnostics::ErrorLocation
+%code requires {
+	#include "compiler/diagnostics/errorlocation.h"
+	#define YYLTYPE YYLTYPE
+	typedef Deg::Compiler::Diagnostics::ErrorLocation YYLTYPE;
+	
+	#define YYLLOC_DEFAULT(Cur, Rhs, N)                        \
+     do                                                        \
+       if (N)                                                  \
+         {                                                     \
+           (Cur).first_line   = YYRHSLOC(Rhs, 1).first_line;   \
+           (Cur).first_column = YYRHSLOC(Rhs, 1).first_column; \
+           (Cur).last_line    = YYRHSLOC(Rhs, N).last_line;    \
+           (Cur).last_column  = YYRHSLOC(Rhs, N).last_column;  \
+           (Cur).filename     = YYRHSLOC(Rhs, N).filename;     \
+         }                                                     \
+       else                                                    \
+         {                                                     \
+           (Cur).first_line   = (Cur).last_line   =            \
+             YYRHSLOC(Rhs, 0).last_line;                       \
+           (Cur).first_column = (Cur).last_column =            \
+             YYRHSLOC(Rhs, 0).last_column;                     \
+           (Cur).filename = YYRHSLOC(Rhs, 0).filename;         \
+         }                                                     \
+     while (0)
 }
 
-%code provides {
-	#include "compiler/diagnostics/errorlocation.h"
-	#define YYLTYPE Deg::Compiler::Diagnostics::ErrorLocation
+%code top {
+	#include "instance.h"
 }
 
 %union
@@ -97,9 +117,9 @@
 	using namespace Deg::Compiler;
 	using namespace Deg::Compiler::AST;
 	
-	int yylex(YYSTYPE* lvalp, YYLTYPE* llocp, void* scanner);
+	int yylex(YYSTYPE* lvalp, Deg::Compiler::Diagnostics::ErrorLocation* llocp, void* scanner);
 		
-	void yyerror(YYLTYPE* llocp, Deg::Compiler::Grammar::Instance* instance, const char* err) {
+	void yyerror(Deg::Compiler::Diagnostics::ErrorLocation* llocp, Deg::Compiler::Grammar::Instance* instance, const char* err) {
 		instance->Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SyntaxError,
 			Diagnostics::ErrorLevel::Error, "Parser", err, *llocp));
 	}

@@ -270,6 +270,15 @@ public:
 	std::vector<std::unique_ptr<Expression>> ArgumentExpressions;
 };
 
+class MemberAccessExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Base;
+	RecordMemberSymbol* Member;
+
+	MemberAccessExpression(std::unique_ptr<Expression>& Base, RecordMemberSymbol* Member);
+};
+
 class UnaryExpression : public Expression {
 	SGVISITOR_ACCEPT
 public:

@@ -39,6 +39,7 @@
 	x(PanicExpression) \
 	x(IdentifierExpression) \
 	x(FunctionCallExpression) \
+	x(MemberAccessExpression) \
 	x(UnaryExpression) \
 	x(InfixExpression) \
 	x(FunctionIfElseExpression)

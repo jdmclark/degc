@@ -165,9 +165,69 @@ void ExpressionVisitor::VisitFunctionCallExpression(AST::FunctionCallExpression&
 }
 
 void ExpressionVisitor::VisitMemberAccessExpression(AST::MemberAccessExpression& n) {
-	// TODO: This needs to be implemented.
+	AST::IdentifierExpression* id_expr = dynamic_cast<IdentifierExpression*>(n.Target);
+	if(id_expr) {
+		// Test for special case - enumerations.
+		try {
+			SG::EnumerationSymbol& enum_node = dynamic_cast<SG::EnumerationSymbol&>(scope.GetSymbol(id_expr->Identifier));
+			if(enum_node.Values.IsMember(n.MemberName)) {
+				IsConstantValue = true;
+				GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&enum_node.Values.GetMember(n.MemberName)));
+				GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::EnumerationType(&enum_node));
+				return;
+			}
+			else {
+				Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::EnumMissingMember, Diagnostics::ErrorLevel::Error,
+						VisitorName, boost::str(boost::format("enumeration \'%s\' does not have value \'%s\'") % id_expr->Identifier % n.MemberName),
+						n.Location));
+				GenerateErrorResult();
+				return;
+			}
+		}
+		catch(...) {
+			// Not an enumeration.
+			// Silently consume error and continue.
+		}
+	}
+
+	ExpressionVisitor v(scope, Report);
+	n.Target->Accept(v);
+
+	SG::ErrorExpression* err_exp = dynamic_cast<SG::ErrorExpression*>(v.GeneratedExpression.get());
+	if(err_exp) {
+		// Expression is already an error type.
+		// Silently consume error.
+		GenerateErrorResult();
+		return;
+	}
+
+	SG::RecordType* rt = dynamic_cast<SG::RecordType*>(v.GeneratedExpressionType.get());
+	if(rt) {
+		try {
+			if(rt->ElementType->Members.IsMember(n.MemberName)) {
+				SG::RecordMemberSymbol& rec_member = dynamic_cast<SG::RecordMemberSymbol&>(rt->ElementType->Members.GetMember(n.MemberName));
+				IsConstantValue = true;
+				GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::MemberAccessExpression(v.GeneratedExpression, &rec_member));
+				GeneratedExpressionType = rec_member.InputType->Clone();
+				return;
+			}
+			else {
+				GenerateErrorResult();
+				Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::RecordMissingMember, Diagnostics::ErrorLevel::Error,
+						VisitorName, boost::str(boost::format("record value does not have member \'%s\'") % n.MemberName), n.Location));
+				return;
+			}
+		}
+		catch(...) {
+			GenerateErrorResult();
+			Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::FeatureNotImplemented, Diagnostics::ErrorLevel::CriticalError,
+					VisitorName, "unimplemented record member type", n.Location));
+			return;
+		}
+	}
+
 	GenerateErrorResult();
-	DefaultAction("MemberAccessExpression", n);
+	SG::ErrorHelper::TypeDoesNotHaveMembers(Report, VisitorName, n.Location);
 }
 
 void ExpressionVisitor::VisitUnaryExpression(AST::UnaryExpression& n) {

@@ -1,0 +1,16 @@
+# Provides base types for operator semantic test cases.
+module optest
+
+record TestRecord:
+    number NumberMember
+    quantity QuantityMember
+    bool BoolMember
+    TestEnum EnumMember
+    function(number, number)->bool FunctionMember
+
+enum TestEnum:
+    TestEnumMember1
+    TestEnumMember2
+
+function TestFunction(number a, number b) -> bool:
+    a = b

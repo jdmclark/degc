@@ -39,6 +39,9 @@ enum class ErrorCode {
 	FunctionCallToNonFunction	= 4017,
 	ConditionalDomainMismatch	= 4018,
 	ComparisonTypeMismatch		= 4019,
+	TypeDoesNotHaveMembers		= 4020,
+	RecordMissingMember			= 4021,
+	EnumMissingMember			= 4022
 };
 
 std::ostream& operator<<(std::ostream&, ErrorCode);

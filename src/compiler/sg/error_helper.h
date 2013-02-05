@@ -18,6 +18,7 @@ void NumberExpected(Diagnostics::Report& report, const std::string& stage, const
 void SetExpected(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
 void SetDomainMismatch(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
 void SymbolNotExpression(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& name);
+void TypeDoesNotHaveMembers(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
 
 }
 }
