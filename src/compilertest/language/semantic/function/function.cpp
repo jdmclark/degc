@@ -23,12 +23,17 @@ Case(ArgUnknownType) {
 
 Case(CodomainMismatch) {
 	ParseFile("codomain_mismatch.deg");
-	AssertResult(0, 0);
+	AssertResult(1, 0);
 }
 
 Case(MeaninglessQuantity) {
 	ParseFile("meaningless_quantity.deg");
 	AssertResult(0, 1);
+}
+
+Case(ReturnMismatch) {
+	ParseFile("return_mismatch.deg");
+	AssertResult(1, 0);
 }
 
 EndSuite(FunctionSemanticTest);

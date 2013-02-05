@@ -25,3 +25,28 @@ void Deg::Compiler::SG::ErrorHelper::MeaninglessQuantity(Diagnostics::Report& re
 	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::MeaninglessQuantity, Diagnostics::ErrorLevel::Warning,
 			stage, "quantity treated as number outside of record", location));
 }
+
+void Deg::Compiler::SG::ErrorHelper::BooleanExpected(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::BooleanExpected, Diagnostics::ErrorLevel::Error,
+			stage, "boolean expression expected", location));
+}
+
+void Deg::Compiler::SG::ErrorHelper::NumberExpected(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::NumberExpected, Diagnostics::ErrorLevel::Error,
+			stage, "number expression expected", location));
+}
+
+void Deg::Compiler::SG::ErrorHelper::SetExpected(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SetExpected, Diagnostics::ErrorLevel::Error,
+			stage, "set expression expected", location));
+}
+
+void Deg::Compiler::SG::ErrorHelper::SetDomainMismatch(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SetDomainMismatch, Diagnostics::ErrorLevel::Error,
+			stage, "set domain mismatch", location));
+}
+
+void Deg::Compiler::SG::ErrorHelper::SymbolNotExpression(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& name) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SymbolNotExpression, Diagnostics::ErrorLevel::Error,
+			stage, boost::str(boost::format("symbol \'%s\' is not a value") % name), location));
+}

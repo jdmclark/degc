@@ -13,6 +13,8 @@ class ExpressionVisitor : public AST::Visitor {
 private:
 	SG::ScopeStack& scope;
 
+	void GenerateErrorResult();
+
 public:
 	ExpressionVisitor(SG::ScopeStack& scope, Diagnostics::Report& report);
 
@@ -23,14 +25,14 @@ public:
 	void VisitNumericLiteralExpression(AST::NumericLiteralExpression& n);
 	void VisitBooleanLiteralExpression(AST::BooleanLiteralExpression& n);
 	void VisitTypedSetExpression(AST::TypedSetExpression& n);
-	/*void VisitConstrainedSetExpression(AST::ConstrainedSetExpression& n);
+	void VisitConstrainedSetExpression(AST::ConstrainedSetExpression& n);
 	void VisitPanicExpression(AST::PanicExpression& n);
 	void VisitIdentifierExpression(AST::IdentifierExpression& n);
 	void VisitFunctionCallExpression(AST::FunctionCallExpression& n);
 	void VisitMemberAccessExpression(AST::MemberAccessExpression& n);
 	void VisitUnaryExpression(AST::UnaryExpression& n);
 	void VisitInfixExpression(AST::InfixExpression& n);
-	void VisitFunctionIfElseExpression(AST::FunctionIfElseExpression& n);*/
+	void VisitFunctionIfElseExpression(AST::FunctionIfElseExpression& n);
 };
 
 }

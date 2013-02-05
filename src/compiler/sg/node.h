@@ -35,6 +35,7 @@ class Type : public Node {
 public:
 	virtual ~Type();
 
+	virtual std::unique_ptr<Type> Clone() const = 0;
 	virtual bool CanAcceptValueOfType(const Type&) const = 0;
 };
 
@@ -55,12 +56,14 @@ class ProgramSymbol;
 class NumberType : public Type {
 	SGVISITOR_ACCEPT
 public:
+	std::unique_ptr<Type> Clone() const;
 	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class BooleanType : public Type {
 	SGVISITOR_ACCEPT
 public:
+	std::unique_ptr<Type> Clone() const;
 	bool CanAcceptValueOfType(const Type&) const;
 };
 
@@ -70,6 +73,7 @@ public:
 	RecordSymbol* ElementType;
 
 	SetType(RecordSymbol* ElementType);
+	std::unique_ptr<Type> Clone() const;
 	bool CanAcceptValueOfType(const Type&) const;
 };
 
@@ -79,6 +83,7 @@ public:
 	ProgramSymbol* ElementType;
 
 	ProgramType(ProgramSymbol* ElementType);
+	std::unique_ptr<Type> Clone() const;
 	bool CanAcceptValueOfType(const Type&) const;
 };
 
@@ -88,6 +93,7 @@ public:
 	RecordSymbol* ElementType;
 
 	RecordType(RecordSymbol* ElementType);
+	std::unique_ptr<Type> Clone() const;
 	bool CanAcceptValueOfType(const Type&) const;
 };
 
@@ -96,6 +102,7 @@ class FunctionType : public Type {
 public:
 	std::unique_ptr<Type> ReturnType;
 	std::vector<std::unique_ptr<Type>> ArgumentTypes;
+	std::unique_ptr<Type> Clone() const;
 	bool CanAcceptValueOfType(const Type&) const;
 };
 
@@ -105,12 +112,14 @@ public:
 	EnumerationSymbol* ElementType;
 
 	EnumerationType(EnumerationSymbol* ElementType);
+	std::unique_ptr<Type> Clone() const;
 	bool CanAcceptValueOfType(const Type&) const;
 };
 
 class ErrorType : public Type {
 	SGVISITOR_ACCEPT
 public:
+	std::unique_ptr<Type> Clone() const;
 	bool CanAcceptValueOfType(const Type&) const;
 };
 
@@ -132,10 +141,11 @@ class ProgramSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
 	AST::Program* ast_program;
-	Symbol* Base;
+	ProgramSymbol* Base;
 	Scope Statements;
 
 	ProgramSymbol();
+	bool InheritsFrom(const ProgramSymbol& program) const;
 };
 
 class RecordMemberSymbol : public Symbol {
@@ -230,6 +240,60 @@ public:
 	RecordSymbol* ElementType;
 
 	TypedSetExpression(RecordSymbol* ElementType);
+};
+
+class ConstrainedSetExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	RecordSymbol* ElementType;
+	std::unique_ptr<Expression> Filter;
+
+	ConstrainedSetExpression(RecordSymbol* ElementType, std::unique_ptr<Expression>& Filter);
+};
+
+class PanicExpression : public Expression {
+	SGVISITOR_ACCEPT
+};
+
+class IdentifierExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	Node* ReferencedNode;
+
+	IdentifierExpression(Node* ReferencedNode);
+};
+
+class FunctionCallExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> FunctionTargetExpression;
+	std::vector<std::unique_ptr<Expression>> ArgumentExpressions;
+};
+
+class UnaryExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Value;
+	AST::UnaryOperator Operator;
+
+	UnaryExpression(std::unique_ptr<Expression>& Value, AST::UnaryOperator Operator);
+};
+
+class InfixExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> LeftValue, RightValue;
+	AST::InfixOperator Operator;
+
+	InfixExpression(std::unique_ptr<Expression>& LeftValue, std::unique_ptr<Expression>& RightValue, AST::InfixOperator Operator);
+};
+
+class FunctionIfElseExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> IfCode, ElseCode;
+
+	FunctionIfElseExpression(std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode);
 };
 
 }

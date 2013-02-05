@@ -1,7 +1,9 @@
 #include "node.h"
 #include "visitor.h"
 
-Deg::Compiler::SG::Node::~Node() {
+using namespace Deg::Compiler::SG;
+
+Node::~Node() {
 	return;
 }
 
@@ -11,66 +13,100 @@ Deg::Compiler::SG::Node::~Node() {
 		return;											\
 	}
 
-Deg::Compiler::SG::Type::~Type() {
+Type::~Type() {
 	return;
 }
 
-bool Deg::Compiler::SG::NumberType::CanAcceptValueOfType(const Type& t) const {
+std::unique_ptr<Type> NumberType::Clone() const {
+	return std::unique_ptr<Type>(new NumberType());
+}
+
+bool NumberType::CanAcceptValueOfType(const Type& t) const {
+	const ErrorType* et = dynamic_cast<const ErrorType*>(&t);
 	const NumberType* nt = dynamic_cast<const NumberType*>(&t);
-	return nt != nullptr;
+	return et != nullptr || nt != nullptr;
 }
 
-bool Deg::Compiler::SG::BooleanType::CanAcceptValueOfType(const Type& t) const {
+std::unique_ptr<Type> BooleanType::Clone() const {
+	return std::unique_ptr<Type>(new BooleanType());
+}
+
+bool BooleanType::CanAcceptValueOfType(const Type& t) const {
+	const ErrorType* et = dynamic_cast<const ErrorType*>(&t);
 	const BooleanType* nt = dynamic_cast<const BooleanType*>(&t);
-	return nt != nullptr;
+	return et != nullptr || nt != nullptr;
 }
 
-Deg::Compiler::SG::SetType::SetType(Deg::Compiler::SG::RecordSymbol* ElementType)
+SetType::SetType(RecordSymbol* ElementType)
 	: ElementType(ElementType) {
 	return;
 }
 
-bool Deg::Compiler::SG::SetType::CanAcceptValueOfType(const Type& t) const {
+std::unique_ptr<Type> SetType::Clone() const {
+	return std::unique_ptr<Type>(new SetType(ElementType));
+}
+
+bool SetType::CanAcceptValueOfType(const Type& t) const {
 	const SetType* nt = dynamic_cast<const SetType*>(&t);
 	if(nt) {
 		return nt->ElementType == ElementType;
 	}
 	else {
-		return false;
+		const ErrorType* et = dynamic_cast<const ErrorType*>(&t);
+		return et != nullptr;
 	}
 }
 
-Deg::Compiler::SG::ProgramType::ProgramType(Deg::Compiler::SG::ProgramSymbol* ElementType)
+ProgramType::ProgramType(ProgramSymbol* ElementType)
 	: ElementType(ElementType) {
 	return;
 }
 
-bool Deg::Compiler::SG::ProgramType::CanAcceptValueOfType(const Type& t) const {
+std::unique_ptr<Type> ProgramType::Clone() const {
+	return std::unique_ptr<Type>(new ProgramType(ElementType));
+}
+
+bool ProgramType::CanAcceptValueOfType(const Type& t) const {
 	const ProgramType* nt = dynamic_cast<const ProgramType*>(&t);
 	if(nt) {
-		return nt->ElementType == ElementType;
+		return nt->ElementType->InheritsFrom(*ElementType);
 	}
 	else {
-		return false;
+		const ErrorType* et = dynamic_cast<const ErrorType*>(&t);
+		return et != nullptr;
 	}
 }
 
-Deg::Compiler::SG::RecordType::RecordType(Deg::Compiler::SG::RecordSymbol* ElementType)
+RecordType::RecordType(RecordSymbol* ElementType)
 	: ElementType(ElementType) {
 	return;
 }
 
-bool Deg::Compiler::SG::RecordType::CanAcceptValueOfType(const Type& t) const {
+std::unique_ptr<Type> RecordType::Clone() const {
+	return std::unique_ptr<Type>(new RecordType(ElementType));
+}
+
+bool RecordType::CanAcceptValueOfType(const Type& t) const {
 	const RecordType* nt = dynamic_cast<const RecordType*>(&t);
 	if(nt) {
 		return nt->ElementType == ElementType;
 	}
 	else {
-		return false;
+		const ErrorType* et = dynamic_cast<const ErrorType*>(&t);
+		return et != nullptr;
 	}
 }
 
-bool Deg::Compiler::SG::FunctionType::CanAcceptValueOfType(const Type& t) const {
+std::unique_ptr<Type> FunctionType::Clone() const {
+	std::unique_ptr<FunctionType> ft(new FunctionType());
+	ft->ReturnType = ReturnType->Clone();
+	for(const auto& arg : ArgumentTypes) {
+		ft->ArgumentTypes.push_back(arg->Clone());
+	}
+	return std::move(ft);
+}
+
+bool FunctionType::CanAcceptValueOfType(const Type& t) const {
 	const FunctionType* nt = dynamic_cast<const FunctionType*>(&t);
 	if(nt) {
 		bool b = true;
@@ -84,66 +120,113 @@ bool Deg::Compiler::SG::FunctionType::CanAcceptValueOfType(const Type& t) const 
 		return b;
 	}
 	else {
-		return false;
+		const ErrorType* et = dynamic_cast<const ErrorType*>(&t);
+		return et != nullptr;
 	}
 }
 
-Deg::Compiler::SG::EnumerationType::EnumerationType(Deg::Compiler::SG::EnumerationSymbol* ElementType)
+EnumerationType::EnumerationType(EnumerationSymbol* ElementType)
 	: ElementType(ElementType) {
 	return;
 }
 
-bool Deg::Compiler::SG::EnumerationType::CanAcceptValueOfType(const Type& t) const {
+std::unique_ptr<Type> EnumerationType::Clone() const {
+	return std::unique_ptr<Type>(new EnumerationType(ElementType));
+}
+
+bool EnumerationType::CanAcceptValueOfType(const Type& t) const {
 	const EnumerationType* nt = dynamic_cast<const EnumerationType*>(&t);
 	if(nt) {
 		return nt->ElementType == ElementType;
+	}
+	else {
+		const ErrorType* et = dynamic_cast<const ErrorType*>(&t);
+		return et != nullptr;
+	}
+}
+
+std::unique_ptr<Type> ErrorType::Clone() const {
+	return std::unique_ptr<Type>(new ErrorType());
+}
+
+bool ErrorType::CanAcceptValueOfType(const Type& t) const {
+	return true;
+}
+
+ProgramSymbol::ProgramSymbol()
+	: ast_program(nullptr), Base(nullptr) {
+	return;
+}
+
+bool ProgramSymbol::InheritsFrom(const ProgramSymbol& p) const {
+	if(this == &p) {
+		return true;
+	}
+	else if(Base) {
+		return Base->InheritsFrom(p);
 	}
 	else {
 		return false;
 	}
 }
 
-bool Deg::Compiler::SG::ErrorType::CanAcceptValueOfType(const Type& t) const {
-	return true;
-}
-
-Deg::Compiler::SG::ProgramSymbol::ProgramSymbol()
-	: ast_program(nullptr), Base(nullptr) {
-	return;
-}
-
-Deg::Compiler::SG::RecordMemberSymbol::RecordMemberSymbol(std::unique_ptr<Type>& InputType)
+RecordMemberSymbol::RecordMemberSymbol(std::unique_ptr<Type>& InputType)
 	: InputType(std::move(InputType)), Offset(0) {
 	return;
 }
 
-Deg::Compiler::SG::RecordSymbol::RecordSymbol()
+RecordSymbol::RecordSymbol()
 	: ast_record(nullptr), QuantityMember(nullptr) {
 	return;
 }
 
-Deg::Compiler::SG::FunctionArgumentSymbol::FunctionArgumentSymbol(std::unique_ptr<Type>& InputType)
+FunctionArgumentSymbol::FunctionArgumentSymbol(std::unique_ptr<Type>& InputType)
 	: InputType(std::move(InputType)), Offset(0) {
 	return;
 }
 
-Deg::Compiler::SG::EnumerationMemberSymbol::EnumerationMemberSymbol(unsigned int Value)
+EnumerationMemberSymbol::EnumerationMemberSymbol(unsigned int Value)
 	: Value(Value) {
 	return;
 }
 
-Deg::Compiler::SG::NumericExpression::NumericExpression(Deg::Runtime::Math::DefaultFixed Value)
+NumericExpression::NumericExpression(Deg::Runtime::Math::DefaultFixed Value)
 	: Value(Value) {
 	return;
 }
 
-Deg::Compiler::SG::BooleanExpression::BooleanExpression(bool Value)
+BooleanExpression::BooleanExpression(bool Value)
 	: Value(Value) {
 	return;
 }
 
-Deg::Compiler::SG::TypedSetExpression::TypedSetExpression(Deg::Compiler::SG::RecordSymbol* ElementType)
+TypedSetExpression::TypedSetExpression(Deg::Compiler::SG::RecordSymbol* ElementType)
 	: ElementType(ElementType) {
+	return;
+}
+
+ConstrainedSetExpression::ConstrainedSetExpression(RecordSymbol* ElementType, std::unique_ptr<Expression>& Filter)
+	: ElementType(ElementType), Filter(std::move(Filter)) {
+	return;
+}
+
+IdentifierExpression::IdentifierExpression(Node* ReferencedNode)
+	: ReferencedNode(ReferencedNode) {
+	return;
+}
+
+UnaryExpression::UnaryExpression(std::unique_ptr<Expression>& Value, AST::UnaryOperator Operator)
+	: Value(std::move(Value)), Operator(Operator) {
+	return;
+}
+
+InfixExpression::InfixExpression(std::unique_ptr<Expression>& LeftValue, std::unique_ptr<Expression>& RightValue, AST::InfixOperator Operator)
+	: LeftValue(std::move(LeftValue)), RightValue(std::move(RightValue)), Operator(Operator) {
+	return;
+}
+
+FunctionIfElseExpression::FunctionIfElseExpression(std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode)
+	: IfCode(std::move(IfCode)), ElseCode(std::move(ElseCode)) {
 	return;
 }
 
@@ -172,3 +255,11 @@ SGVISITOR_ACCEPT_IMPL(ErrorExpression);
 SGVISITOR_ACCEPT_IMPL(NumericExpression);
 SGVISITOR_ACCEPT_IMPL(BooleanExpression);
 SGVISITOR_ACCEPT_IMPL(TypedSetExpression);
+SGVISITOR_ACCEPT_IMPL(ConstrainedSetExpression);
+SGVISITOR_ACCEPT_IMPL(PanicExpression);
+SGVISITOR_ACCEPT_IMPL(IdentifierExpression);
+SGVISITOR_ACCEPT_IMPL(FunctionCallExpression);
+
+SGVISITOR_ACCEPT_IMPL(UnaryExpression);
+SGVISITOR_ACCEPT_IMPL(InfixExpression);
+SGVISITOR_ACCEPT_IMPL(FunctionIfElseExpression);

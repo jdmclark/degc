@@ -13,6 +13,11 @@ void UndefinedTypename(Diagnostics::Report& report, const std::string& stage, co
 void UndefinedSymbol(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& name);
 void RecordNameExpected(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& name);
 void MeaninglessQuantity(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void BooleanExpected(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void NumberExpected(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void SetExpected(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void SetDomainMismatch(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void SymbolNotExpression(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& name);
 
 }
 }

@@ -34,7 +34,14 @@
 	x(ErrorExpression) \
 	x(NumericExpression) \
 	x(BooleanExpression) \
-	x(TypedSetExpression)
+	x(TypedSetExpression) \
+	x(ConstrainedSetExpression) \
+	x(PanicExpression) \
+	x(IdentifierExpression) \
+	x(FunctionCallExpression) \
+	x(UnaryExpression) \
+	x(InfixExpression) \
+	x(FunctionIfElseExpression)
 
 #define SGCLASS_ALL(x) \
 	SGCLASS_TYPE(x) \
