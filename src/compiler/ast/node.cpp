@@ -17,13 +17,10 @@ Deg::Compiler::AST::Node::~Node() {
 
 ASTVISITOR_ACCEPT_IMPL(NamedTypename);
 ASTVISITOR_ACCEPT_IMPL(SetTypename);
-ASTVISITOR_ACCEPT_IMPL(ConstrainedSetTypename);
 ASTVISITOR_ACCEPT_IMPL(FunctionTypename);
 
 ASTVISITOR_ACCEPT_IMPL(NumericLiteralExpression);
 ASTVISITOR_ACCEPT_IMPL(BooleanLiteralExpression);
-ASTVISITOR_ACCEPT_IMPL(EmptySetExpression);
-ASTVISITOR_ACCEPT_IMPL(UniversalSetExpression);
 ASTVISITOR_ACCEPT_IMPL(TypedSetExpression);
 ASTVISITOR_ACCEPT_IMPL(ConstrainedSetExpression);
 ASTVISITOR_ACCEPT_IMPL(PanicExpression);

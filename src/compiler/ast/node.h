@@ -50,10 +50,6 @@ public:
 
 class SetTypename : public Typename {
 	ASTVISITOR_ACCEPT
-};
-
-class ConstrainedSetTypename : public Typename {
-	ASTVISITOR_ACCEPT
 public:
 	std::string RecordType;
 };
@@ -81,14 +77,6 @@ class BooleanLiteralExpression : public Expression {
 	ASTVISITOR_ACCEPT
 public:
 	bool Value;
-};
-
-class EmptySetExpression : public Expression {
-	ASTVISITOR_ACCEPT
-};
-
-class UniversalSetExpression : public Expression {
-	ASTVISITOR_ACCEPT
 };
 
 class TypedSetExpression : public Expression {

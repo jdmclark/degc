@@ -22,8 +22,6 @@ public:
 
 	void VisitNumericLiteralExpression(AST::NumericLiteralExpression& n);
 	void VisitBooleanLiteralExpression(AST::BooleanLiteralExpression& n);
-	void VisitEmptySetExpression(AST::EmptySetExpression& n);
-	void VisitUniversalSetExpression(AST::UniversalSetExpression& n);
 	void VisitTypedSetExpression(AST::TypedSetExpression& n);
 	/*void VisitConstrainedSetExpression(AST::ConstrainedSetExpression& n);
 	void VisitPanicExpression(AST::PanicExpression& n);

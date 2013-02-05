@@ -52,7 +52,7 @@
 /* Keywords */
 %token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM FOR FROM FUNCTION
 %token IF IMPORT INTERSECT IN LIMIT MODULE NOT OR PANIC PROGRAM RECORD SETMINUS
-%token SET TAKE UNION UNIVERSE
+%token SET TAKE UNION
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN MAPS_TO NE_OP GE_OP LE_OP
@@ -127,10 +127,8 @@ function_typename_argument_list
 typename
 	: IDENTIFIER
 		{ $$ = ast->MakeNamedTypename($1, @$); }
-	| SET
-		{ $$ = ast->MakeSetTypename(@$); }
 	| SET '(' IDENTIFIER ')'
-		{ $$ = ast->MakeConstrainedSetTypename($3, @$); }
+		{ $$ = ast->MakeSetTypename($3, @$); }
 	| FUNCTION '(' function_typename_argument_list MAPS_TO typename
 		{ $$ = ast->MakeFunctionTypename($3, $5, @$); }
 	;
@@ -157,14 +155,10 @@ literal_expression
 	;
 	
 set_expression
-	: '{' '}'
-		{ $$ = ast->MakeEmptySetExpression(@$); }
-	| '{' IDENTIFIER '}'
+	: '{' IDENTIFIER '}'
 		{ $$ = ast->MakeTypedSetExpression($2, @$); }
 	| '{' IDENTIFIER '|' expression '}'
 		{ $$ = ast->MakeConstrainedSetExpression($2, $4, @$); }
-	| UNIVERSE
-		{ $$ = ast->MakeUniversalSetExpression(@$); }
 	;
 	
 primary_expression
@@ -310,18 +304,18 @@ disjunction_statement
 	
 iteration_statement
 	: FOR ALL IDENTIFIER IDENTIFIER ':' ENDLN program_statement_part
-		{ $$ = ast->MakeForAllStatement($3, $4, ast->MakeUniversalSetExpression(@5), $7, @$); }
+		{ $$ = ast->MakeForAllStatement($3, $4, ast->MakeTypedSetExpression($3, @5), $7, @$); }
 	| FOR ALL IDENTIFIER IDENTIFIER IN expression ':' ENDLN program_statement_part
 		{ $$ = ast->MakeForAllStatement($3, $4, $6, $9, @$); }
 	;
 	
 selection_statement
 	: FOR ANY IDENTIFIER IDENTIFIER ':' ENDLN program_statement_part
-		{ $$ = ast->MakeForAnyStatement($3, $4, ast->MakeUniversalSetExpression(@5), $7, @$); }
+		{ $$ = ast->MakeForAnyStatement($3, $4, ast->MakeTypedSetExpression($3, @5), $7, @$); }
 	| FOR ANY IDENTIFIER IDENTIFIER IN expression ':' ENDLN program_statement_part
 		{ $$ = ast->MakeForAnyStatement($3, $4, $6, $9, @$); }
 	| FOR BEST IDENTIFIER IDENTIFIER BY expression ':' ENDLN program_statement_part
-		{ $$ = ast->MakeForBestStatement($3, $4, $6, ast->MakeUniversalSetExpression(@7), $9, @$); }
+		{ $$ = ast->MakeForBestStatement($3, $4, $6, ast->MakeTypedSetExpression($3, @7), $9, @$); }
 	| FOR BEST IDENTIFIER IDENTIFIER BY expression IN expression ':' ENDLN program_statement_part
 		{ $$ = ast->MakeForBestStatement($3, $4, $6, $8, $11, @$); }
 	;

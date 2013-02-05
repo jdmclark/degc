@@ -10,14 +10,11 @@
 #define ASTCLASS_TYPENAME(x) \
 	x(NamedTypename) \
 	x(SetTypename) \
-	x(ConstrainedSetTypename) \
 	x(FunctionTypename)
 
 #define ASTCLASS_EXPRESSION(x) \
 	x(NumericLiteralExpression) \
 	x(BooleanLiteralExpression) \
-	x(EmptySetExpression) \
-	x(UniversalSetExpression) \
 	x(TypedSetExpression) \
 	x(ConstrainedSetExpression) \
 	x(PanicExpression) \

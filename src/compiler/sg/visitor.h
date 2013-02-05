@@ -11,7 +11,6 @@
 	x(NumberType) \
 	x(BooleanType) \
 	x(SetType) \
-	x(ConstrainedSetType) \
 	x(ProgramType) \
 	x(RecordType) \
 	x(FunctionType) \
@@ -35,8 +34,6 @@
 	x(ErrorExpression) \
 	x(NumericExpression) \
 	x(BooleanExpression) \
-	x(EmptySetExpression) \
-	x(UniversalSetExpression) \
 	x(TypedSetExpression)
 
 #define SGCLASS_ALL(x) \

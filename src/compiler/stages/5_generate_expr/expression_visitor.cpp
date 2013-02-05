@@ -21,18 +21,6 @@ void ExpressionVisitor::VisitBooleanLiteralExpression(AST::BooleanLiteralExpress
 	GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
 }
 
-void ExpressionVisitor::VisitEmptySetExpression(AST::EmptySetExpression& n) {
-	IsConstantValue = true;
-	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::EmptySetExpression());
-	GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::SetType());
-}
-
-void ExpressionVisitor::VisitUniversalSetExpression(AST::UniversalSetExpression& n) {
-	IsConstantValue = true;
-	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::UniversalSetExpression());
-	GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::SetType());
-}
-
 void ExpressionVisitor::VisitTypedSetExpression(AST::TypedSetExpression& n) {
 	IsConstantValue = true;
 
@@ -41,7 +29,7 @@ void ExpressionVisitor::VisitTypedSetExpression(AST::TypedSetExpression& n) {
 		SG::RecordSymbol* rec_node = dynamic_cast<SG::RecordSymbol*>(&element_node);
 		if(rec_node) {
 			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::TypedSetExpression(rec_node));
-			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::ConstrainedSetType(rec_node));
+			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::SetType(rec_node));
 			return;
 		}
 	}

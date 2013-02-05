@@ -25,23 +25,13 @@ bool Deg::Compiler::SG::BooleanType::CanAcceptValueOfType(const Type& t) const {
 	return nt != nullptr;
 }
 
-bool Deg::Compiler::SG::SetType::CanAcceptValueOfType(const Type& t) const {
-	const SetType* nt = dynamic_cast<const SetType*>(&t);
-	if(nt) {
-		return true;
-	}
-
-	const ConstrainedSetType* cnt = dynamic_cast<const ConstrainedSetType*>(&t);
-	return nt != nullptr;
-}
-
-Deg::Compiler::SG::ConstrainedSetType::ConstrainedSetType(Deg::Compiler::SG::RecordSymbol* ElementType)
+Deg::Compiler::SG::SetType::SetType(Deg::Compiler::SG::RecordSymbol* ElementType)
 	: ElementType(ElementType) {
 	return;
 }
 
-bool Deg::Compiler::SG::ConstrainedSetType::CanAcceptValueOfType(const Type& t) const {
-	const ConstrainedSetType* nt = dynamic_cast<const ConstrainedSetType*>(&t);
+bool Deg::Compiler::SG::SetType::CanAcceptValueOfType(const Type& t) const {
+	const SetType* nt = dynamic_cast<const SetType*>(&t);
 	if(nt) {
 		return nt->ElementType == ElementType;
 	}
@@ -160,7 +150,6 @@ Deg::Compiler::SG::TypedSetExpression::TypedSetExpression(Deg::Compiler::SG::Rec
 SGVISITOR_ACCEPT_IMPL(NumberType);
 SGVISITOR_ACCEPT_IMPL(BooleanType);
 SGVISITOR_ACCEPT_IMPL(SetType);
-SGVISITOR_ACCEPT_IMPL(ConstrainedSetType);
 SGVISITOR_ACCEPT_IMPL(ProgramType);
 SGVISITOR_ACCEPT_IMPL(RecordType);
 SGVISITOR_ACCEPT_IMPL(FunctionType);
@@ -182,6 +171,4 @@ SGVISITOR_ACCEPT_IMPL(ErrorSymbol);
 SGVISITOR_ACCEPT_IMPL(ErrorExpression);
 SGVISITOR_ACCEPT_IMPL(NumericExpression);
 SGVISITOR_ACCEPT_IMPL(BooleanExpression);
-SGVISITOR_ACCEPT_IMPL(EmptySetExpression);
-SGVISITOR_ACCEPT_IMPL(UniversalSetExpression);
 SGVISITOR_ACCEPT_IMPL(TypedSetExpression);

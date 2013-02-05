@@ -22,7 +22,6 @@ public:
 
 	void VisitNamedTypename(AST::NamedTypename& n);
 	void VisitSetTypename(AST::SetTypename& n);
-	void VisitConstrainedSetTypename(AST::ConstrainedSetTypename& n);
 	void VisitFunctionTypename(AST::FunctionTypename& n);
 };
 

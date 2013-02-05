@@ -11,11 +11,6 @@ public:
 
 BeginSuiteFixture(TypenameSyntacticTest, TypenameSyntacticTestFixture);
 
-Case(ConstrainedSetType) {
-	ParseFile("constrained_set_type.deg");
-	AssertResult(0, 0);
-}
-
 Case(FunctionType) {
 	ParseFile("function_type.deg");
 	AssertResult(0, 0);

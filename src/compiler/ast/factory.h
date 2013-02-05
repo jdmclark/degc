@@ -50,14 +50,11 @@ public:
 	}
 
 	NamedTypename* MakeNamedTypename(const std::string& Value, const Diagnostics::ErrorLocation& yyl);
-	SetTypename* MakeSetTypename(const Diagnostics::ErrorLocation& yyl);
-	ConstrainedSetTypename* MakeConstrainedSetTypename(const std::string& RecordType, const Diagnostics::ErrorLocation& yyl);
+	SetTypename* MakeSetTypename(const std::string& RecordType, const Diagnostics::ErrorLocation& yyl);
 	FunctionTypename* MakeFunctionTypename(std::vector<Typename*>* DomainType, Typename* CodomainType, const Diagnostics::ErrorLocation& yyl);
 
 	NumericLiteralExpression* MakeNumericLiteralExpression(const std::string& Value, const Diagnostics::ErrorLocation& yyl);
 	BooleanLiteralExpression* MakeBooleanLiteralExpression(bool Value, const Diagnostics::ErrorLocation& yyl);
-	EmptySetExpression* MakeEmptySetExpression(const Diagnostics::ErrorLocation& yyl);
-	UniversalSetExpression* MakeUniversalSetExpression(const Diagnostics::ErrorLocation& yyl);
 	TypedSetExpression* MakeTypedSetExpression(const std::string& Typename, const Diagnostics::ErrorLocation& yyl);
 	ConstrainedSetExpression* MakeConstrainedSetExpression(const std::string& Typename, Expression* Constraint, const Diagnostics::ErrorLocation& yyl);
 	PanicExpression* MakePanicExpression(const Diagnostics::ErrorLocation& yyl);

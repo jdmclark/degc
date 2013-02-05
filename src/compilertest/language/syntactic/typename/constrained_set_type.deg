@@ -1,7 +1,0 @@
-module ca.ualberta
-
-record Foo:
-    set(TakenCourse) bar
-    
-function Foo(set(TakenCourse) a, set(TakenCourse) b) -> set(TakenCourse):
-    true

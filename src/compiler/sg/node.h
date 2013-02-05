@@ -67,15 +67,9 @@ public:
 class SetType : public Type {
 	SGVISITOR_ACCEPT
 public:
-	bool CanAcceptValueOfType(const Type&) const;
-};
-
-class ConstrainedSetType : public Type {
-	SGVISITOR_ACCEPT
-public:
 	RecordSymbol* ElementType;
 
-	ConstrainedSetType(RecordSymbol* ElementType);
+	SetType(RecordSymbol* ElementType);
 	bool CanAcceptValueOfType(const Type&) const;
 };
 

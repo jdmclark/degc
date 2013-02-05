@@ -8,13 +8,8 @@ NamedTypename* Factory::MakeNamedTypename(const std::string& Value, const Diagno
 	return val;
 }
 
-SetTypename* Factory::MakeSetTypename(const Diagnostics::ErrorLocation& yyl) {
+SetTypename* Factory::MakeSetTypename(const std::string& RecordType, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(SetTypename);
-	return val;
-}
-
-ConstrainedSetTypename* Factory::MakeConstrainedSetTypename(const std::string& RecordType, const Diagnostics::ErrorLocation& yyl) {
-	MAKE(ConstrainedSetTypename);
 	val->RecordType = RecordType;
 	return val;
 }
@@ -35,16 +30,6 @@ NumericLiteralExpression* Factory::MakeNumericLiteralExpression(const std::strin
 BooleanLiteralExpression* Factory::MakeBooleanLiteralExpression(bool Value, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(BooleanLiteralExpression);
 	val->Value = Value;
-	return val;
-}
-
-EmptySetExpression* Factory::MakeEmptySetExpression(const Diagnostics::ErrorLocation& yyl) {
-	MAKE(EmptySetExpression);
-	return val;
-}
-
-UniversalSetExpression* Factory::MakeUniversalSetExpression(const Diagnostics::ErrorLocation& yyl) {
-	MAKE(UniversalSetExpression);
 	return val;
 }
 

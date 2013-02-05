@@ -29,15 +29,11 @@ void TypenameVisitor::VisitNamedTypename(NamedTypename& n) {
 }
 
 void TypenameVisitor::VisitSetTypename(SetTypename& n) {
-	TypenameType = std::unique_ptr<SG::Type>(new SG::SetType());
-}
-
-void TypenameVisitor::VisitConstrainedSetTypename(ConstrainedSetTypename& n) {
 	try {
 		SG::Node* type_symbol = &module.GetSymbol(n.RecordType);
 		SG::RecordSymbol* record_symbol = dynamic_cast<SG::RecordSymbol*>(type_symbol);
 		if(record_symbol) {
-			TypenameType = std::unique_ptr<SG::Type>(new SG::ConstrainedSetType(record_symbol));
+			TypenameType = std::unique_ptr<SG::Type>(new SG::SetType(record_symbol));
 		}
 		else {
 			SG::ErrorHelper::RecordNameExpected(Report, VisitorName, n.Location, n.RecordType);
