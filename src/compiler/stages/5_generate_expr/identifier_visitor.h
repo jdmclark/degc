@@ -20,7 +20,6 @@ public:
 	IdentifierVisitor(SG::ScopeStack& scope, const std::string& symbolname, const Diagnostics::ErrorLocation& location, Diagnostics::Report& report);
 	void DefaultAction(const std::string& action, SG::Node& n);
 
-	bool IsConstantValue;
 	std::unique_ptr<SG::Expression> GeneratedExpression;
 	std::unique_ptr<SG::Type> GeneratedExpressionType;
 

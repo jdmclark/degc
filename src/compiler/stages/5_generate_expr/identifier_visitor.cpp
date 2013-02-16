@@ -5,37 +5,32 @@ using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateExpressions::IdentifierVisitor;
 
 IdentifierVisitor::IdentifierVisitor(ScopeStack& scope, const std::string& symbolname, const Diagnostics::ErrorLocation& location, Diagnostics::Report& report)
-	: SG::Visitor("GenerateExpressions::IdentifierVisitor", report), scope(scope), symbolname(symbolname), location(location), IsConstantValue(false) {
+	: SG::Visitor("GenerateExpressions::IdentifierVisitor", report), scope(scope), symbolname(symbolname), location(location) {
 	return;
 }
 
 void IdentifierVisitor::DefaultAction(const std::string& action, Node& n) {
 	ErrorHelper::SymbolNotExpression(Report, VisitorName, location, symbolname);
-	IsConstantValue = true;
 	GeneratedExpression = std::unique_ptr<Expression>(new ErrorExpression());
 	GeneratedExpressionType = std::unique_ptr<Type>(new ErrorType());
 }
 
 void IdentifierVisitor::VisitProgramSymbol(SG::ProgramSymbol& n) {
-	IsConstantValue = true;
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
 	GeneratedExpressionType = std::unique_ptr<Type>(new SG::ProgramType(&n));
 }
 
 void IdentifierVisitor::VisitRecordMemberSymbol(SG::RecordMemberSymbol& n) {
-	IsConstantValue = false;
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
 	GeneratedExpressionType = n.InputType->Clone();
 }
 
 void IdentifierVisitor::VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n) {
-	IsConstantValue = false;
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
 	GeneratedExpressionType = n.InputType->Clone();
 }
 
 void IdentifierVisitor::VisitFunctionSymbol(SG::FunctionSymbol& n) {
-	IsConstantValue = true;
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
 
 	std::unique_ptr<SG::FunctionType> fn_type(new SG::FunctionType());

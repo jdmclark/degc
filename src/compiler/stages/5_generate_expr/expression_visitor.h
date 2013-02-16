@@ -18,7 +18,6 @@ private:
 public:
 	ExpressionVisitor(SG::ScopeStack& scope, Diagnostics::Report& report);
 
-	bool IsConstantValue;
 	std::unique_ptr<SG::Expression> GeneratedExpression;
 	std::unique_ptr<SG::Type> GeneratedExpressionType;
 

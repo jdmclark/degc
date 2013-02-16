@@ -7,31 +7,26 @@ using namespace Deg::Compiler::AST;
 using Deg::Compiler::Stages::GenerateExpressions::ExpressionVisitor;
 
 ExpressionVisitor::ExpressionVisitor(SG::ScopeStack& scope, Diagnostics::Report& report)
-	: AST::Visitor("GenerateExpressions::ExpressionVisitor", report), scope(scope), IsConstantValue(false) {
+	: AST::Visitor("GenerateExpressions::ExpressionVisitor", report), scope(scope) {
 	return;
 }
 
 void ExpressionVisitor::GenerateErrorResult() {
-	IsConstantValue = true;
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ErrorExpression());
 	GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::ErrorType());
 }
 
 void ExpressionVisitor::VisitNumericLiteralExpression(AST::NumericLiteralExpression& n) {
-	IsConstantValue = true;
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::NumericExpression(n.Value));
 	GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::NumberType());
 }
 
 void ExpressionVisitor::VisitBooleanLiteralExpression(AST::BooleanLiteralExpression& n) {
-	IsConstantValue = true;
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::BooleanExpression(n.Value));
 	GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
 }
 
 void ExpressionVisitor::VisitTypedSetExpression(AST::TypedSetExpression& n) {
-	IsConstantValue = true;
-
 	try {
 		SG::Node& element_node = scope.GetSymbol(n.Typename);
 		SG::RecordSymbol* rec_node = dynamic_cast<SG::RecordSymbol*>(&element_node);
@@ -51,8 +46,6 @@ void ExpressionVisitor::VisitTypedSetExpression(AST::TypedSetExpression& n) {
 }
 
 void ExpressionVisitor::VisitConstrainedSetExpression(AST::ConstrainedSetExpression& n) {
-	IsConstantValue = true;
-
 	try {
 		SG::Node& element_node = scope.GetSymbol(n.Typename);
 		SG::RecordSymbol* rec_node = dynamic_cast<SG::RecordSymbol*>(&element_node);
@@ -89,7 +82,6 @@ void ExpressionVisitor::VisitConstrainedSetExpression(AST::ConstrainedSetExpress
 }
 
 void ExpressionVisitor::VisitPanicExpression(AST::PanicExpression& n) {
-	IsConstantValue = true;
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::PanicExpression());
 	GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::ErrorType());
 }
@@ -99,7 +91,6 @@ void ExpressionVisitor::VisitIdentifierExpression(AST::IdentifierExpression& n) 
 		SG::Node& node = scope.GetSymbol(n.Identifier);
 		IdentifierVisitor v(scope, n.Identifier, n.Location, Report);
 		node.Accept(v);
-		IsConstantValue = v.IsConstantValue;
 		GeneratedExpression = std::move(v.GeneratedExpression);
 		GeneratedExpressionType = std::move(v.GeneratedExpressionType);
 	}
@@ -152,7 +143,6 @@ void ExpressionVisitor::VisitFunctionCallExpression(AST::FunctionCallExpression&
 			}
 		}
 
-		IsConstantValue = false;
 		GeneratedExpression = std::move(fexp);
 		GeneratedExpressionType = fn_type->ReturnType->Clone();
 
@@ -171,7 +161,6 @@ void ExpressionVisitor::VisitMemberAccessExpression(AST::MemberAccessExpression&
 		try {
 			SG::EnumerationSymbol& enum_node = dynamic_cast<SG::EnumerationSymbol&>(scope.GetSymbol(id_expr->Identifier));
 			if(enum_node.Values.IsMember(n.MemberName)) {
-				IsConstantValue = true;
 				GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&enum_node.Values.GetMember(n.MemberName)));
 				GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::EnumerationType(&enum_node));
 				return;
@@ -206,7 +195,6 @@ void ExpressionVisitor::VisitMemberAccessExpression(AST::MemberAccessExpression&
 		try {
 			if(rt->ElementType->Members.IsMember(n.MemberName)) {
 				SG::RecordMemberSymbol& rec_member = dynamic_cast<SG::RecordMemberSymbol&>(rt->ElementType->Members.GetMember(n.MemberName));
-				IsConstantValue = true;
 				GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::MemberAccessExpression(v.GeneratedExpression, &rec_member));
 				GeneratedExpressionType = rec_member.InputType->Clone();
 				return;
@@ -245,8 +233,6 @@ void ExpressionVisitor::VisitUnaryExpression(AST::UnaryExpression& n) {
 	case UnaryOperator::Minus: {
 		SG::NumberType* nt = dynamic_cast<SG::NumberType*>(val_v.GeneratedExpressionType.get());
 		if(nt) {
-			// TODO: Add constant folding here.
-			IsConstantValue = false;
 			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::UnaryExpression(val_v.GeneratedExpression, n.Operator));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::NumberType());
 		}
@@ -260,8 +246,6 @@ void ExpressionVisitor::VisitUnaryExpression(AST::UnaryExpression& n) {
 	case UnaryOperator::Not: {
 		SG::BooleanType* bt = dynamic_cast<SG::BooleanType*>(val_v.GeneratedExpressionType.get());
 		if(bt) {
-			// TODO: Add constant folding here.
-			IsConstantValue = false;
 			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::UnaryExpression(val_v.GeneratedExpression, n.Operator));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
 		}
@@ -336,8 +320,6 @@ void ExpressionVisitor::VisitInfixExpression(AST::InfixExpression& n) {
 			GenerateErrorResult();
 		}
 		else {
-			// TODO: Add constant folding here.
-			IsConstantValue = false;
 			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::InfixExpression(left_v.GeneratedExpression, right_v.GeneratedExpression, n.Operator));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::NumberType());
 		}
@@ -362,8 +344,6 @@ void ExpressionVisitor::VisitInfixExpression(AST::InfixExpression& n) {
 			GenerateErrorResult();
 		}
 		else {
-			// TODO: Add constant folding here.
-			IsConstantValue = false;
 			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::InfixExpression(left_v.GeneratedExpression, right_v.GeneratedExpression, n.Operator));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
 		}
@@ -374,8 +354,6 @@ void ExpressionVisitor::VisitInfixExpression(AST::InfixExpression& n) {
 	case InfixOperator::NotEqual: {
 		if(left_v.GeneratedExpressionType->CanAcceptValueOfType(*right_v.GeneratedExpressionType)
 				&& right_v.GeneratedExpressionType->CanAcceptValueOfType(*left_v.GeneratedExpressionType)) {
-			// TODO: Add constant folding here.
-			IsConstantValue = false;
 			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::InfixExpression(left_v.GeneratedExpression, right_v.GeneratedExpression, n.Operator));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
 		}
@@ -403,8 +381,6 @@ void ExpressionVisitor::VisitInfixExpression(AST::InfixExpression& n) {
 			GenerateErrorResult();
 		}
 		else {
-			// TODO: Add constant folding here.
-			IsConstantValue = false;
 			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::InfixExpression(left_v.GeneratedExpression, right_v.GeneratedExpression, n.Operator));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
 		}
@@ -432,8 +408,6 @@ void ExpressionVisitor::VisitInfixExpression(AST::InfixExpression& n) {
 			GenerateErrorResult();
 		}
 		else {
-			// TODO: Add constant folding here.
-			IsConstantValue = false;
 			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::InfixExpression(left_v.GeneratedExpression, right_v.GeneratedExpression, n.Operator));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::SetType(lnt->ElementType));
 		}
@@ -456,12 +430,10 @@ void ExpressionVisitor::VisitFunctionIfElseExpression(AST::FunctionIfElseExpress
 	n.ElseCode->Accept(else_v);
 
 	if(if_v.GeneratedExpressionType->CanAcceptValueOfType(*else_v.GeneratedExpressionType)) {
-		IsConstantValue = false;
 		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(if_v.GeneratedExpression, else_v.GeneratedExpression));
 		GeneratedExpressionType = std::move(if_v.GeneratedExpressionType);
 	}
 	else if(else_v.GeneratedExpressionType->CanAcceptValueOfType(*if_v.GeneratedExpressionType)) {
-		IsConstantValue = false;
 		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(if_v.GeneratedExpression, else_v.GeneratedExpression));
 		GeneratedExpressionType = std::move(else_v.GeneratedExpressionType);
 	}
