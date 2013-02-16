@@ -45,7 +45,7 @@ program HonorsComputingScience(Program):
     for all TakenCourse course in {TakenCourse | subject = Subject.CMPUT}:
         assert course.grade >= 3.0
     for all EnrolledTerm term in {EnrolledTerm | type = Fall or type = Winter}:
-        assert exists({TakenCourse | subject = Subject.CMPUT and number = 495 and term = term.id})
+        assert exists {TakenCourse | subject = Subject.CMPUT and number = 495 and term = term.id}
     
     # Course requirements
     take 3 in SubjectLevelCourse(Subject.ENGL, 100)

@@ -26,6 +26,11 @@ Case(Contradiction) {
 	AssertResult(0, 0);
 }
 
+Case(Exists) {
+	ParseFile("exists.deg");
+	AssertResult(0, 0);
+}
+
 Case(FunctionCall) {
 	ParseFile("function_call.deg");
 	AssertResult(0, 0);

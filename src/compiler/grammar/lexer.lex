@@ -97,6 +97,7 @@ E			[Ee][+-]?{D}+
 	"else"			{ return ELSE; }
 	"embed"			{ return EMBED; }
 	"enum"			{ return ENUM; }
+	"exists"		{ return EXISTS; }
 	"for"			{ return FOR; }
 	"from"			{ return FROM; }
 	"function"		{ return FUNCTION; }

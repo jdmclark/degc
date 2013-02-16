@@ -129,6 +129,12 @@ public:
 	Expression* Value;
 };
 
+class ExistsExpression : public Expression {
+	ASTVISITOR_ACCEPT
+public:
+	Expression* Value;
+};
+
 enum class InfixOperator {
 	Addition,
 	Subtraction,

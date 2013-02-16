@@ -31,6 +31,7 @@ public:
 	void VisitFunctionCallExpression(AST::FunctionCallExpression& n);
 	void VisitMemberAccessExpression(AST::MemberAccessExpression& n);
 	void VisitUnaryExpression(AST::UnaryExpression& n);
+	void VisitExistsExpression(AST::ExistsExpression& n);
 	void VisitInfixExpression(AST::InfixExpression& n);
 	void VisitFunctionIfElseExpression(AST::FunctionIfElseExpression& n);
 };

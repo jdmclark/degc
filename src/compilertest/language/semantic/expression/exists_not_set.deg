@@ -1,0 +1,4 @@
+module ca.ualberta
+
+function Foo() -> bool:
+    exists true

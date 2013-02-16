@@ -78,6 +78,12 @@ UnaryExpression* Factory::MakeUnaryExpression(UnaryOperator Operator, Expression
 	return val;
 }
 
+ExistsExpression* Factory::MakeExistsExpression(Expression* Value, const Diagnostics::ErrorLocation& yyl) {
+	MAKE(ExistsExpression);
+	val->Value = Value;
+	return val;
+}
+
 InfixExpression* Factory::MakeInfixExpression(InfixOperator Operator, Expression* LeftValue, Expression* RightValue, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(InfixExpression);
 	val->Operator = Operator;

@@ -63,6 +63,7 @@ public:
 	FunctionCallExpression* MakeFunctionCallExpression(Expression* Target, std::vector<Expression*>* Arguments, const Diagnostics::ErrorLocation& yyl);
 	MemberAccessExpression* MakeMemberAccessExpression(Expression* Target, const std::string& MemberName, const Diagnostics::ErrorLocation& yyl);
 	UnaryExpression* MakeUnaryExpression(UnaryOperator Operator, Expression* Value, const Diagnostics::ErrorLocation& yyl);
+	ExistsExpression* MakeExistsExpression(Expression* Value, const Diagnostics::ErrorLocation& yyl);
 	InfixExpression* MakeInfixExpression(InfixOperator Operator, Expression* LeftValue, Expression* RightValue, const Diagnostics::ErrorLocation& yyl);
 	FunctionIfElseExpression* MakeFunctionIfElseExpression(Expression* Predicate, Expression* Code, Expression* ElseCode, const Diagnostics::ErrorLocation& yyl);
 

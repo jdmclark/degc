@@ -70,9 +70,9 @@
 }
 
 /* Keywords */
-%token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM FOR FROM FUNCTION
-%token IF IMPORT INTERSECT IN LIMIT MODULE NOT OR PANIC PROGRAM RECORD SETMINUS
-%token SET TAKE UNION
+%token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM EXISTS FOR FROM
+%token FUNCTION IF IMPORT INTERSECT IN LIMIT MODULE NOT OR PANIC PROGRAM
+%token RECORD SETMINUS SET TAKE UNION
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN MAPS_TO NE_OP GE_OP LE_OP
@@ -211,6 +211,8 @@ unary_expression
 	: postfix_expression
 	| unary_operator postfix_expression
 		{ $$ = ast->MakeUnaryExpression($1, $2, @$); }
+	| EXISTS unary_expression
+		{ $$ = ast->MakeExistsExpression($2, @$); }
 	;
 	
 multiplicative_operator

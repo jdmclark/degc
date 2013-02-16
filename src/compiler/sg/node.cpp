@@ -230,6 +230,11 @@ UnaryExpression::UnaryExpression(std::unique_ptr<Expression>& Value, AST::UnaryO
 	return;
 }
 
+ExistsExpression::ExistsExpression(std::unique_ptr<Expression>& Value)
+	: Value(std::move(Value)) {
+	return;
+}
+
 InfixExpression::InfixExpression(std::unique_ptr<Expression>& LeftValue, std::unique_ptr<Expression>& RightValue, AST::InfixOperator Operator)
 	: LeftValue(std::move(LeftValue)), RightValue(std::move(RightValue)), Operator(Operator) {
 	return;
@@ -302,6 +307,7 @@ SGVISITOR_ACCEPT_IMPL(IdentifierExpression);
 SGVISITOR_ACCEPT_IMPL(FunctionCallExpression);
 SGVISITOR_ACCEPT_IMPL(MemberAccessExpression);
 SGVISITOR_ACCEPT_IMPL(UnaryExpression);
+SGVISITOR_ACCEPT_IMPL(ExistsExpression);
 SGVISITOR_ACCEPT_IMPL(InfixExpression);
 SGVISITOR_ACCEPT_IMPL(FunctionIfElseExpression);
 

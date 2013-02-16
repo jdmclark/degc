@@ -31,6 +31,16 @@ Case(EnumMemberDoesNotExist) {
 	AssertResult(1, 0);
 }
 
+Case(ExistsNotSet) {
+	ParseFile("exists_not_set.deg");
+	AssertResult(1, 0);
+}
+
+Case(Exists) {
+	ParseFile("exists.deg");
+	AssertResult(0, 0);
+}
+
 Case(FunctionDoesNotExist) {
 	ParseFile("function_does_not_exist.deg");
 	AssertResult(1, 0);

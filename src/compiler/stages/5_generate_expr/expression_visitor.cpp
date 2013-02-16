@@ -280,6 +280,28 @@ void ExpressionVisitor::VisitUnaryExpression(AST::UnaryExpression& n) {
 	}
 }
 
+void ExpressionVisitor::VisitExistsExpression(AST::ExistsExpression& n) {
+	ExpressionVisitor value_v(scope, Report);
+	n.Value->Accept(value_v);
+
+	SG::ErrorType* vt = dynamic_cast<SG::ErrorType*>(value_v.GeneratedExpressionType.get());
+	if(vt != nullptr) {
+		// Generated value is already an error. Consume silently.
+		GenerateErrorResult();
+		return;
+	}
+
+	SG::SetType* st = dynamic_cast<SG::SetType*>(value_v.GeneratedExpressionType.get());
+	if(st != nullptr) {
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ExistsExpression(value_v.GeneratedExpression));
+		GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
+		return;
+	}
+
+	GenerateErrorResult();
+	SG::ErrorHelper::SetExpected(Report, VisitorName, n.Value->Location);
+}
+
 void ExpressionVisitor::VisitInfixExpression(AST::InfixExpression& n) {
 	ExpressionVisitor left_v(scope, Report);
 	n.LeftValue->Accept(left_v);

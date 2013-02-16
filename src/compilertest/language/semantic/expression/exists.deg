@@ -1,0 +1,12 @@
+module ca.ualberta
+
+enum Subject:
+    CMPUT
+    MATH
+    ECON
+
+record TakenCourse:
+    Subject subject
+
+function Foo(Subject s) -> bool:
+    exists {TakenCourse | subject = s}

@@ -22,6 +22,7 @@
 	x(FunctionCallExpression) \
 	x(MemberAccessExpression) \
 	x(UnaryExpression) \
+	x(ExistsExpression) \
 	x(InfixExpression) \
 	x(FunctionIfElseExpression)
 

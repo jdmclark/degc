@@ -28,6 +28,7 @@ ASTVISITOR_ACCEPT_IMPL(IdentifierExpression);
 ASTVISITOR_ACCEPT_IMPL(FunctionCallExpression);
 ASTVISITOR_ACCEPT_IMPL(MemberAccessExpression);
 ASTVISITOR_ACCEPT_IMPL(UnaryExpression);
+ASTVISITOR_ACCEPT_IMPL(ExistsExpression);
 ASTVISITOR_ACCEPT_IMPL(InfixExpression);
 
 ASTVISITOR_ACCEPT_IMPL(NamedStatement);

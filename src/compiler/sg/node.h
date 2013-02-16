@@ -301,6 +301,14 @@ public:
 	UnaryExpression(std::unique_ptr<Expression>& Value, AST::UnaryOperator Operator);
 };
 
+class ExistsExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Expression> Value;
+
+	ExistsExpression(std::unique_ptr<Expression>& Value);
+};
+
 class InfixExpression : public Expression {
 	SGVISITOR_ACCEPT
 public:
