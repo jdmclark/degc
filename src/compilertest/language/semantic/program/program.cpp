@@ -71,8 +71,18 @@ Case(IfPredicateNotBool) {
 	AssertResult(1, 0);
 }
 
+Case(LimitConst) {
+	ParseFile("limit_const.deg");
+	AssertResult(0, 0);
+}
+
 Case(LimitHasNoQuantity) {
 	ParseFile("limit_has_no_quantity.deg");
+	AssertResult(1, 0);
+}
+
+Case(LimitNotConst) {
+	ParseFile("limit_not_const.deg");
 	AssertResult(1, 0);
 }
 
@@ -81,9 +91,19 @@ Case(LimitNotNumber) {
 	AssertResult(1, 0);
 }
 
+Case(LimitSetNotConst) {
+	ParseFile("limit_set_not_const.deg");
+	AssertResult(1, 0);
+}
+
 Case(NameRedefinition) {
 	ParseFile("name_redefinition.deg");
 	AssertResult(1, 0);
+}
+
+Case(TakeConst) {
+	ParseFile("take_const.deg");
+	AssertResult(0, 0);
 }
 
 Case(TakeHasNoQuantity) {
@@ -91,8 +111,18 @@ Case(TakeHasNoQuantity) {
 	AssertResult(1, 0);
 }
 
+Case(TakeNotConst) {
+	ParseFile("take_not_const.deg");
+	AssertResult(1, 0);
+}
+
 Case(TakeNotNumber) {
 	ParseFile("take_not_number.deg");
+	AssertResult(1, 0);
+}
+
+Case(TakeSetNotConst) {
+	ParseFile("take_set_not_const.deg");
 	AssertResult(1, 0);
 }
 

@@ -1,0 +1,18 @@
+module ca.ualberta
+
+enum Subject:
+    CMPUT
+    MATH
+
+record TakenCourse:
+    Subject subject
+    quantity credits
+    
+function Foo() -> set(TakenCourse):
+    if exists {TakenCourse | subject = Subject.MATH}:
+        {TakenCourse | subject = Subject.CMPUT}
+    else:
+        {TakenCourse}
+
+program Bar:
+    take 3 in Foo()

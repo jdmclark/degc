@@ -1,0 +1,7 @@
+module ca.ualberta
+
+function Foo() -> bool:
+    if 5:
+        true
+    else:
+        false

@@ -26,6 +26,11 @@ Case(CodomainMismatch) {
 	AssertResult(1, 0);
 }
 
+Case(IfElseNotBoolean) {
+	ParseFile("if_else_not_boolean.deg");
+	AssertResult(1, 0);
+}
+
 Case(MeaninglessQuantity) {
 	ParseFile("meaningless_quantity.deg");
 	AssertResult(0, 1);

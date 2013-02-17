@@ -18,5 +18,5 @@ void FunctionArgumentVisitor::VisitFunctionArgument(FunctionArgument& n) {
 
 	TypenameVisitor v(module, Report);
 	n.Type->Accept(v);
-	symbol.Arguments.MakeMember<SG::FunctionArgumentSymbol>(n.Name, v.TypenameType);
+	symbol.Arguments.MakeMember<SG::FunctionArgumentSymbol>(n.Name, v.TypenameType, symbol.Arguments.children_size());
 }

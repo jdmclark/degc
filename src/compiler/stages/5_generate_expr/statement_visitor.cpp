@@ -294,7 +294,7 @@ void StatementVisitor::VisitTakeStatement(AST::TakeStatement& n) {
 		GeneratedStatement = std::unique_ptr<SG::Statement>(new SG::ErrorStatement());
 	}
 	else {
-		GeneratedStatement = std::unique_ptr<SG::Statement>(new SG::TakeStatement(amt_v.GeneratedExpression, set_v.GeneratedExpression));
+		GeneratedStatement = std::unique_ptr<SG::Statement>(new SG::TakeStatement(&n, amt_v.GeneratedExpression, set_v.GeneratedExpression));
 	}
 }
 
@@ -332,6 +332,6 @@ void StatementVisitor::VisitLimitStatement(AST::LimitStatement& n) {
 		GeneratedStatement = std::unique_ptr<SG::Statement>(new SG::ErrorStatement());
 	}
 	else {
-		GeneratedStatement = std::unique_ptr<SG::Statement>(new SG::LimitStatement(amt_v.GeneratedExpression, set_v.GeneratedExpression));
+		GeneratedStatement = std::unique_ptr<SG::Statement>(new SG::LimitStatement(&n, amt_v.GeneratedExpression, set_v.GeneratedExpression));
 	}
 }

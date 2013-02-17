@@ -352,10 +352,22 @@ void ExpressionVisitor::VisitInfixExpression(AST::InfixExpression& n) {
 
 	case InfixOperator::Equal:
 	case InfixOperator::NotEqual: {
+		// Can only compare numbers, enums, and boolean.
+		SG::NumberType* lnt = dynamic_cast<SG::NumberType*>(left_v.GeneratedExpressionType.get());
+		SG::BooleanType* lbt = dynamic_cast<SG::BooleanType*>(left_v.GeneratedExpressionType.get());
+		SG::EnumerationType* let = dynamic_cast<SG::EnumerationType*>(left_v.GeneratedExpressionType.get());
+
 		if(left_v.GeneratedExpressionType->CanAcceptValueOfType(*right_v.GeneratedExpressionType)
 				&& right_v.GeneratedExpressionType->CanAcceptValueOfType(*left_v.GeneratedExpressionType)) {
-			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::InfixExpression(left_v.GeneratedExpression, right_v.GeneratedExpression, n.Operator));
-			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
+			if(!lnt && !lbt && !let) {
+				Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::TypesNotComparable, Diagnostics::ErrorLevel::Error,
+						VisitorName, "operand type not comparable", n.Location));
+				GenerateErrorResult();
+			}
+			else {
+				GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::InfixExpression(left_v.GeneratedExpression, right_v.GeneratedExpression, n.Operator));
+				GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
+			}
 		}
 		else {
 			Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::ComparisonTypeMismatch, Diagnostics::ErrorLevel::Error,
@@ -423,6 +435,19 @@ void ExpressionVisitor::VisitInfixExpression(AST::InfixExpression& n) {
 }
 
 void ExpressionVisitor::VisitFunctionIfElseExpression(AST::FunctionIfElseExpression& n) {
+	ExpressionVisitor pred_v(scope, Report);
+	n.Predicate->Accept(pred_v);
+
+	std::unique_ptr<SG::Expression> pred;
+	SG::BooleanType t;
+	if(t.CanAcceptValueOfType(*pred_v.GeneratedExpressionType)) {
+		pred = std::move(pred_v.GeneratedExpression);
+	}
+	else {
+		SG::ErrorHelper::BooleanExpected(Report, VisitorName, n.Location);
+		pred = std::unique_ptr<SG::Expression>(new SG::ErrorExpression());
+	}
+
 	ExpressionVisitor if_v(scope, Report);
 	n.Code->Accept(if_v);
 
@@ -430,11 +455,11 @@ void ExpressionVisitor::VisitFunctionIfElseExpression(AST::FunctionIfElseExpress
 	n.ElseCode->Accept(else_v);
 
 	if(if_v.GeneratedExpressionType->CanAcceptValueOfType(*else_v.GeneratedExpressionType)) {
-		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(if_v.GeneratedExpression, else_v.GeneratedExpression));
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(pred, if_v.GeneratedExpression, else_v.GeneratedExpression));
 		GeneratedExpressionType = std::move(if_v.GeneratedExpressionType);
 	}
 	else if(else_v.GeneratedExpressionType->CanAcceptValueOfType(*if_v.GeneratedExpressionType)) {
-		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(if_v.GeneratedExpression, else_v.GeneratedExpression));
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(pred, if_v.GeneratedExpression, else_v.GeneratedExpression));
 		GeneratedExpressionType = std::move(else_v.GeneratedExpressionType);
 	}
 	else {

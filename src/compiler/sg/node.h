@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include "runtime/math/fixed.h"
 #include "compiler/ast/node.h"
 #include "scope.h"
 
@@ -175,9 +176,10 @@ class FunctionArgumentSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
 	std::unique_ptr<Type> InputType;
+	unsigned int Index;
 	unsigned int Offset;
 
-	FunctionArgumentSymbol(std::unique_ptr<Type>& InputType);
+	FunctionArgumentSymbol(std::unique_ptr<Type>& InputType, unsigned int Index);
 };
 
 class FunctionSymbol : public Symbol {
@@ -226,9 +228,9 @@ class ErrorExpression : public Expression {
 class NumericExpression : public Expression {
 	SGVISITOR_ACCEPT
 public:
-	Runtime::Math::DefaultFixed Value;
+	Deg::Runtime::Math::DefaultFixed Value;
 
-	NumericExpression(Runtime::Math::DefaultFixed Value);
+	NumericExpression(Deg::Runtime::Math::DefaultFixed Value);
 };
 
 class BooleanExpression : public Expression {
@@ -321,9 +323,10 @@ public:
 class FunctionIfElseExpression : public Expression {
 	SGVISITOR_ACCEPT
 public:
+	std::unique_ptr<Expression> Predicate;
 	std::unique_ptr<Expression> IfCode, ElseCode;
 
-	FunctionIfElseExpression(std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode);
+	FunctionIfElseExpression(std::unique_ptr<Expression>& Predicate, std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode);
 };
 
 // Statements
@@ -419,19 +422,21 @@ public:
 class TakeStatement : public Statement {
 	SGVISITOR_ACCEPT
 public:
+	AST::TakeStatement* ast_node;
 	std::unique_ptr<Expression> Amount;
 	std::unique_ptr<Expression> Set;
 
-	TakeStatement(std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set);
+	TakeStatement(AST::TakeStatement* ast_node, std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set);
 };
 
 class LimitStatement : public Statement {
 	SGVISITOR_ACCEPT
 public:
+	AST::LimitStatement* ast_node;
 	std::unique_ptr<Expression> Amount;
 	std::unique_ptr<Expression> Set;
 
-	LimitStatement(std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set);
+	LimitStatement(AST::LimitStatement* ast_node, std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set);
 };
 
 class ErrorStatement : public Statement {

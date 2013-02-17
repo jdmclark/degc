@@ -180,8 +180,8 @@ RecordSymbol::RecordSymbol()
 	return;
 }
 
-FunctionArgumentSymbol::FunctionArgumentSymbol(std::unique_ptr<Type>& InputType)
-	: InputType(std::move(InputType)), Offset(0) {
+FunctionArgumentSymbol::FunctionArgumentSymbol(std::unique_ptr<Type>& InputType, unsigned int Index)
+	: InputType(std::move(InputType)), Index(Index), Offset(0) {
 	return;
 }
 
@@ -240,8 +240,8 @@ InfixExpression::InfixExpression(std::unique_ptr<Expression>& LeftValue, std::un
 	return;
 }
 
-FunctionIfElseExpression::FunctionIfElseExpression(std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode)
-	: IfCode(std::move(IfCode)), ElseCode(std::move(ElseCode)) {
+FunctionIfElseExpression::FunctionIfElseExpression(std::unique_ptr<Expression>& Predicate, std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode)
+	: Predicate(std::move(Predicate)), IfCode(std::move(IfCode)), ElseCode(std::move(ElseCode)) {
 	return;
 }
 
@@ -265,13 +265,13 @@ IfElseStatement::IfElseStatement(std::unique_ptr<Expression>& Predicate, std::un
 	return;
 }
 
-TakeStatement::TakeStatement(std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set)
-	: Amount(std::move(Amount)), Set(std::move(Set)) {
+TakeStatement::TakeStatement(AST::TakeStatement* ast_node, std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set)
+	: ast_node(ast_node), Amount(std::move(Amount)), Set(std::move(Set)) {
 	return;
 }
 
-LimitStatement::LimitStatement(std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set)
-	: Amount(std::move(Amount)), Set(std::move(Set)) {
+LimitStatement::LimitStatement(AST::LimitStatement* ast_node, std::unique_ptr<Expression>& Amount, std::unique_ptr<Expression>& Set)
+	: ast_node(ast_node), Amount(std::move(Amount)), Set(std::move(Set)) {
 	return;
 }
 

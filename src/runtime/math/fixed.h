@@ -101,6 +101,10 @@ public:
 		return Fixed(static_cast<T>((static_cast<double>(data) / static_cast<double>(d.data)) * static_cast<double>(scale_factor)));
 	}
 
+	Fixed operator-() const {
+		return Fixed(-data);
+	}
+
 	const Fixed& operator=(const Fixed& d) {
 		data = d.data;
 		return d;

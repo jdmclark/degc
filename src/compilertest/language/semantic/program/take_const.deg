@@ -1,0 +1,21 @@
+module ca.ualberta
+
+enum Subject:
+    CMPUT
+    MATH
+
+record TakenCourse:
+    Subject subject
+    quantity credits
+    
+function FooQuantity(bool choice) -> number:
+    if choice:
+        3 * 5 + 4 - 1
+    else:
+        7
+
+function FooSet(Subject sub) -> set(TakenCourse):
+    {TakenCourse | subject = sub} union {TakenCourse | subject = Subject.CMPUT}
+
+program Foo:
+    take FooQuantity(true) in FooSet(Subject.CMPUT)

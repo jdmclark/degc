@@ -38,6 +38,10 @@ namespace GenerateExpressions {
 void GenerateExpressions(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
 }
 
+namespace ConstantFolding {
+void ConstantFolding(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
+}
+
 }
 }
 }

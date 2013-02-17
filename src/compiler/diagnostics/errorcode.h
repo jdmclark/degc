@@ -47,7 +47,12 @@ enum class ErrorCode {
 	PredicateSignatureMismatch	= 4025,
 	EmbedInsideLoop				= 4026,
 	TakeInsideLoop				= 4027,
-	LimitInsideLoop				= 4028
+	LimitInsideLoop				= 4028,
+	TakeSetNotConstant			= 4029,
+	TakeAmountNotConstant		= 4030,
+	LimitSetNotConstant			= 4031,
+	LimitAmountNotConstant		= 4032,
+	TypesNotComparable			= 4033
 };
 
 std::ostream& operator<<(std::ostream&, ErrorCode);
