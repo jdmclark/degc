@@ -91,6 +91,11 @@ Case(LimitNotNumber) {
 	AssertResult(1, 0);
 }
 
+Case(LimitOnLoopValue) {
+	ParseFile("limit_on_loop_value.deg");
+	AssertResult(1, 0);
+}
+
 Case(LimitSetNotConst) {
 	ParseFile("limit_set_not_const.deg");
 	AssertResult(1, 0);
@@ -118,6 +123,11 @@ Case(TakeNotConst) {
 
 Case(TakeNotNumber) {
 	ParseFile("take_not_number.deg");
+	AssertResult(1, 0);
+}
+
+Case(TakeOnLoopValue) {
+	ParseFile("take_on_loop_value.deg");
 	AssertResult(1, 0);
 }
 
