@@ -1,0 +1,16 @@
+module ca.ualberta
+
+enum Subject:
+    CMPUT
+    MATH
+    
+record TakenCourse:
+    Subject subject
+    quantity credits
+    
+function FooSet(Subject sub):
+    {TakenCourse | subject = sub}
+    
+program Foo:
+    for any TakenCourse tc:
+        limit 5 in FooSet(tc.subject)
