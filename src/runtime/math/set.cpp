@@ -191,28 +191,28 @@ Deg::Runtime::Math::Set::Set() {
 Deg::Runtime::Math::Set::Set(unsigned int field, Relation relation, int value) {
 	switch(relation) {
 	case Relation::Less:
-		Disjunction.push_back(Conjunction(field, std::numeric_limits<int>::lowest(), value));
+		Disjunction.emplace_back(field, std::numeric_limits<int>::lowest(), value);
 		break;
 
 	case Relation::LessEqual:
-		Disjunction.push_back(Conjunction(field, std::numeric_limits<int>::lowest(), value + 1));
+		Disjunction.emplace_back(field, std::numeric_limits<int>::lowest(), value + 1);
 		break;
 
 	case Relation::Greater:
-		Disjunction.push_back(Conjunction(field, value + 1, std::numeric_limits<int>::max()));
+		Disjunction.emplace_back(field, value + 1, std::numeric_limits<int>::max());
 		break;
 
 	case Relation::GreaterEqual:
-		Disjunction.push_back(Conjunction(field, value, std::numeric_limits<int>::max()));
+		Disjunction.emplace_back(field, value, std::numeric_limits<int>::max());
 		break;
 
 	case Relation::Equal:
-		Disjunction.push_back(Conjunction(field, value, value + 1));
+		Disjunction.emplace_back(field, value, value + 1);
 		break;
 
 	case Relation::NotEqual:
-		Disjunction.push_back(Conjunction(field, std::numeric_limits<int>::lowest(), value));
-		Disjunction.push_back(Conjunction(field, value + 1, std::numeric_limits<int>::max()));
+		Disjunction.emplace_back(field, std::numeric_limits<int>::lowest(), value);
+		Disjunction.emplace_back(field, value + 1, std::numeric_limits<int>::max());
 		break;
 	}
 }
