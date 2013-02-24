@@ -137,5 +137,28 @@ Case(IntersectReduces) {
 	Test_Expect_Eq((q & r), s);
 }
 
+Case(SetMinusReduces) {
+	Set a(0, Relation::Less, 5);
+	Set b(0, Relation::Less, 6);
+	Test_Expect((a - b).IsEmpty());
+	Test_Expect_Eq((b - a), Set(0, Relation::Equal, 5));
+
+	Set c(0, Relation::Greater, 10);
+	Test_Expect_Eq((a - c), a);
+	Test_Expect_Eq((c - a), c);
+
+	Set q(Set(0, Relation::GreaterEqual, 0) & Set(0, Relation::LessEqual, 10)
+			& Set(1, Relation::GreaterEqual, 0) & Set(1, Relation::LessEqual, 5));
+	Set r(Set(0, Relation::GreaterEqual, 0) & Set(0, Relation::LessEqual, 5)
+			& Set(1, Relation::GreaterEqual, 0) & Set(1, Relation::LessEqual, 10));
+
+	Set t = (q | r) - ((q - r) | (r - q));
+
+	Set s(Set(0, Relation::GreaterEqual, 0) & Set(0, Relation::LessEqual, 5)
+				& Set(1, Relation::GreaterEqual, 0) & Set(1, Relation::LessEqual, 5));
+
+	Test_Expect_Eq(t, s);
+}
+
 EndSuite(SetTest);
 

@@ -49,9 +49,13 @@ void Deg::Runtime::Math::Set::DisjoinOne(const Conjunction& base, const Conjunct
 			middle = Interval<int>(rng.second);
 			right = Interval<int>(rng.second.top, std::numeric_limits<int>::max());
 		}
+		else if(Interval<int>::Disjoint(it->second, rng.second)) {
+			output.push_back(middle_conj);
+			return;
+		}
 		else {
 			left = Interval<int>(it->second.bottom, rng.second.bottom);
-			middle = Interval<int>(rng.second);
+			middle = Interval<int>(std::max(it->second.bottom, rng.second.bottom), std::min(it->second.top, rng.second.top));
 			right = Interval<int>(rng.second.top, it->second.top);
 		}
 
@@ -295,6 +299,8 @@ Deg::Runtime::Math::Set Deg::Runtime::Math::Set::operator-(const Set& s) const {
 	std::vector<Conjunction> current = Disjunction;
 
 	for(const auto& dis : s.Disjunction) {
+		output.clear();
+
 		for(const auto& one : current) {
 			DisjoinOne(one, dis, output);
 		}
