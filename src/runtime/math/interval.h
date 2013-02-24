@@ -8,10 +8,9 @@ namespace Runtime {
 namespace Math {
 
 template <typename T> class Interval {
-private:
+public:
 	T bottom, top;
 
-public:
 	Interval() : bottom(0), top(0) {
 		return;
 	}
@@ -25,7 +24,7 @@ public:
 	}
 
 	bool IsEmpty() const {
-		return bottom == top;
+		return bottom >= top;
 	}
 
 	bool Contains(const T& value) const {
