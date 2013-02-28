@@ -56,4 +56,19 @@ Case(FunctionTooManyArgs) {
 	AssertResult(1, 0);
 }
 
+Case(SetClauseIrrelevant) {
+	ParseFile("set_clause_irrelevant.deg");
+	AssertResult(1, 0);
+}
+
+Case(SetNotIsolated) {
+	ParseFile("set_not_isolated.deg");
+	AssertResult(2, 0);
+}
+
+Case(SetNotOrthogonal) {
+	ParseFile("set_not_orthogonal.deg");
+	AssertResult(3, 0);
+}
+
 EndSuite(ExpressionSemanticTest);

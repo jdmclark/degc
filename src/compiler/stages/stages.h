@@ -42,6 +42,10 @@ namespace ConstantFolding {
 void ConstantFolding(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
 }
 
+namespace GenerateSetExpressions {
+void GenerateSetExpressions(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
+}
+
 }
 }
 }

@@ -45,4 +45,9 @@ void SemanticTestFixture::ParseFiles(const std::vector<boost::filesystem::path>&
 	if(Report.GetErrorCount() > 0) {
 		return;
 	}
+
+	Deg::Compiler::Stages::GenerateSetExpressions::GenerateSetExpressions(symbolTable, Report);
+	if(Report.GetErrorCount() > 0) {
+		return;
+	}
 }

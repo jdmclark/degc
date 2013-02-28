@@ -40,6 +40,18 @@ std::unique_ptr<Deg::Compiler::SG::Expression> ExpressionVisitor::GetConstantSet
 	return std::move(v.GeneratedExpression);
 }
 
+Deg::Compiler::Diagnostics::ErrorLocation ExpressionVisitor::GetConstantSetLocation() {
+	SG::TypedSetExpression* tse = dynamic_cast<SG::TypedSetExpression*>(GeneratedExpression.get());
+	if(tse != nullptr) {
+		return tse->Location;
+	}
+
+	SG::ConstrainedSetExpression& cse = dynamic_cast<SG::ConstrainedSetExpression&>(*GeneratedExpression);
+	ExpressionVisitor v(FunctionArguments, Report);
+	cse.Filter->Accept(v);
+	return cse.Location;
+}
+
 bool ExpressionVisitor::GetConstantEquals(SG::Expression& a, SG::Expression& b) {
 	SG::NumericExpression* na = dynamic_cast<SG::NumericExpression*>(&a);
 	SG::NumericExpression* nb = dynamic_cast<SG::NumericExpression*>(&b);
@@ -110,14 +122,14 @@ void ExpressionVisitor::VisitBooleanExpression(SG::BooleanExpression& n) {
 }
 
 void ExpressionVisitor::VisitTypedSetExpression(SG::TypedSetExpression& n) {
-	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::TypedSetExpression(n.ElementType));
+	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::TypedSetExpression(n.ElementType, n.Location));
 	ResultFoldable = true;
 }
 
 void ExpressionVisitor::VisitConstrainedSetExpression(SG::ConstrainedSetExpression& n) {
 	ExpressionVisitor filter_v(FunctionArguments, Report);
 	n.Filter->Accept(filter_v);
-	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(n.ElementType, filter_v.GeneratedExpression));
+	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(n.ElementType, filter_v.GeneratedExpression, n.Location));
 	ResultFoldable = true;
 }
 
@@ -263,7 +275,12 @@ void ExpressionVisitor::VisitInfixExpression(SG::InfixExpression& n) {
 		std::unique_ptr<SG::Expression> filter_exp(new SG::InfixExpression(p, q, AST::InfixOperator::Or));
 		ExpressionVisitor filter_exp_v(FunctionArguments, Report);
 		filter_exp->Accept(filter_exp_v);
-		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(left_v.GetConstantSetSymbol(), filter_exp_v.GeneratedExpression));
+
+		Diagnostics::ErrorLocation left_loc = left_v.GetConstantSetLocation();
+		Diagnostics::ErrorLocation right_loc = right_v.GetConstantSetLocation();
+
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(left_v.GetConstantSetSymbol(), filter_exp_v.GeneratedExpression,
+				Diagnostics::ErrorLocation(left_loc.filename, left_loc.first_line, left_loc.first_column, right_loc.last_line, right_loc.last_column)));
 		ResultFoldable = true;
 	}
 	break;
@@ -274,7 +291,12 @@ void ExpressionVisitor::VisitInfixExpression(SG::InfixExpression& n) {
 		std::unique_ptr<SG::Expression> filter_exp(new SG::InfixExpression(p, q, AST::InfixOperator::And));
 		ExpressionVisitor filter_exp_v(FunctionArguments, Report);
 		filter_exp->Accept(filter_exp_v);
-		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(left_v.GetConstantSetSymbol(), filter_exp_v.GeneratedExpression));
+
+		Diagnostics::ErrorLocation left_loc = left_v.GetConstantSetLocation();
+		Diagnostics::ErrorLocation right_loc = right_v.GetConstantSetLocation();
+
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(left_v.GetConstantSetSymbol(), filter_exp_v.GeneratedExpression,
+				Diagnostics::ErrorLocation(left_loc.filename, left_loc.first_line, left_loc.first_column, right_loc.last_line, right_loc.last_column)));
 		ResultFoldable = true;
 	}
 	break;
@@ -286,7 +308,12 @@ void ExpressionVisitor::VisitInfixExpression(SG::InfixExpression& n) {
 		std::unique_ptr<SG::Expression> filter_exp(new SG::InfixExpression(p, q, AST::InfixOperator::And));
 		ExpressionVisitor filter_exp_v(FunctionArguments, Report);
 		filter_exp->Accept(filter_exp_v);
-		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(left_v.GetConstantSetSymbol(), filter_exp_v.GeneratedExpression));
+
+		Diagnostics::ErrorLocation left_loc = left_v.GetConstantSetLocation();
+		Diagnostics::ErrorLocation right_loc = right_v.GetConstantSetLocation();
+
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(left_v.GetConstantSetSymbol(), filter_exp_v.GeneratedExpression,
+				Diagnostics::ErrorLocation(left_loc.filename, left_loc.first_line, left_loc.first_column, right_loc.last_line, right_loc.last_column)));
 		ResultFoldable = true;
 	}
 	break;

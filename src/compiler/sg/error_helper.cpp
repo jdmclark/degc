@@ -65,3 +65,18 @@ void Deg::Compiler::SG::ErrorHelper::PredicateSignatureMismatch(Diagnostics::Rep
 	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::PredicateSignatureMismatch, Diagnostics::ErrorLevel::Error,
 			stage, boost::str(boost::format("expected function of type \'%s\'") % signature), location));
 }
+
+void Deg::Compiler::SG::ErrorHelper::SetFilterNotOrthogonal(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SetFilterNotOrthogonal, Diagnostics::ErrorLevel::Error,
+			stage, "set cannot be expressed as a union of orthogonal ranges", location));
+}
+
+void Deg::Compiler::SG::ErrorHelper::SetFilterNotIsolated(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SetFilterNotIsolated, Diagnostics::ErrorLevel::Error,
+			stage, "set columns must be isolated", location));
+}
+
+void Deg::Compiler::SG::ErrorHelper::SetFilterIrrelevant(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location) {
+	report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::SetFilterIrrelevant, Diagnostics::ErrorLevel::Error,
+			stage, "set builder clauses must be a relation of a set column", location));
+}

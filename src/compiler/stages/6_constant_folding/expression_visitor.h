@@ -16,6 +16,7 @@ class ExpressionVisitor : public SG::Visitor {
 	Runtime::Math::DefaultFixed GetConstantNumber();
 	SG::RecordSymbol* GetConstantSetSymbol();
 	std::unique_ptr<SG::Expression> GetConstantSetFilter();
+	Diagnostics::ErrorLocation GetConstantSetLocation();
 	bool GetConstantEquals(SG::Expression& a, SG::Expression& b);
 
 public:

@@ -241,20 +241,13 @@ public:
 	BooleanExpression(bool Value);
 };
 
-class EmptySetExpression : public Expression {
-	SGVISITOR_ACCEPT
-};
-
-class UniversalSetExpression : public Expression {
-	SGVISITOR_ACCEPT
-};
-
 class TypedSetExpression : public Expression {
 	SGVISITOR_ACCEPT
 public:
 	RecordSymbol* ElementType;
+	Diagnostics::ErrorLocation Location;
 
-	TypedSetExpression(RecordSymbol* ElementType);
+	TypedSetExpression(RecordSymbol* ElementType, const Diagnostics::ErrorLocation& Location);
 };
 
 class ConstrainedSetExpression : public Expression {
@@ -262,8 +255,9 @@ class ConstrainedSetExpression : public Expression {
 public:
 	RecordSymbol* ElementType;
 	std::unique_ptr<Expression> Filter;
+	Diagnostics::ErrorLocation Location;
 
-	ConstrainedSetExpression(RecordSymbol* ElementType, std::unique_ptr<Expression>& Filter);
+	ConstrainedSetExpression(RecordSymbol* ElementType, std::unique_ptr<Expression>& Filter, const Diagnostics::ErrorLocation& Location);
 };
 
 class PanicExpression : public Expression {
@@ -327,6 +321,16 @@ public:
 	std::unique_ptr<Expression> IfCode, ElseCode;
 
 	FunctionIfElseExpression(std::unique_ptr<Expression>& Predicate, std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode);
+};
+
+class SetClauseExpression : public Expression {
+	SGVISITOR_ACCEPT
+public:
+	RecordMemberSymbol* Member;
+	AST::InfixOperator Operator;
+	std::unique_ptr<Expression> Value;
+
+	SetClauseExpression(RecordMemberSymbol* Member, AST::InfixOperator Operator, std::unique_ptr<Expression>& Value);
 };
 
 // Statements

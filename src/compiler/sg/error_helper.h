@@ -21,6 +21,9 @@ void SymbolNotExpression(Diagnostics::Report& report, const std::string& stage, 
 void TypeDoesNotHaveMembers(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
 void SetDoesNotHaveQuantity(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
 void PredicateSignatureMismatch(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location, const std::string& signature);
+void SetFilterNotOrthogonal(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void SetFilterNotIsolated(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
+void SetFilterIrrelevant(Diagnostics::Report& report, const std::string& stage, const Diagnostics::ErrorLocation& location);
 
 }
 }

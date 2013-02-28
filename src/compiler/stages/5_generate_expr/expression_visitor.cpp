@@ -31,7 +31,7 @@ void ExpressionVisitor::VisitTypedSetExpression(AST::TypedSetExpression& n) {
 		SG::Node& element_node = scope.GetSymbol(n.Typename);
 		SG::RecordSymbol* rec_node = dynamic_cast<SG::RecordSymbol*>(&element_node);
 		if(rec_node) {
-			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::TypedSetExpression(rec_node));
+			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::TypedSetExpression(rec_node, n.Location));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::SetType(rec_node));
 		}
 		else {
@@ -67,7 +67,7 @@ void ExpressionVisitor::VisitConstrainedSetExpression(AST::ConstrainedSetExpress
 				filter = std::unique_ptr<SG::Expression>(new SG::ErrorExpression());
 			}
 
-			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(rec_node, filter));
+			GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(rec_node, filter, n.Location));
 			GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::SetType(rec_node));
 		}
 		else {

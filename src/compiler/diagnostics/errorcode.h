@@ -52,7 +52,10 @@ enum class ErrorCode {
 	TakeAmountNotConstant		= 4030,
 	LimitSetNotConstant			= 4031,
 	LimitAmountNotConstant		= 4032,
-	TypesNotComparable			= 4033
+	TypesNotComparable			= 4033,
+	SetFilterNotOrthogonal		= 4034,
+	SetFilterNotIsolated		= 4035,
+	SetFilterIrrelevant			= 4036
 };
 
 std::ostream& operator<<(std::ostream&, ErrorCode);

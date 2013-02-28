@@ -205,13 +205,13 @@ BooleanExpression::BooleanExpression(bool Value)
 	return;
 }
 
-TypedSetExpression::TypedSetExpression(Deg::Compiler::SG::RecordSymbol* ElementType)
-	: ElementType(ElementType) {
+TypedSetExpression::TypedSetExpression(Deg::Compiler::SG::RecordSymbol* ElementType, const Diagnostics::ErrorLocation& Location)
+	: ElementType(ElementType), Location(Location) {
 	return;
 }
 
-ConstrainedSetExpression::ConstrainedSetExpression(RecordSymbol* ElementType, std::unique_ptr<Expression>& Filter)
-	: ElementType(ElementType), Filter(std::move(Filter)) {
+ConstrainedSetExpression::ConstrainedSetExpression(RecordSymbol* ElementType, std::unique_ptr<Expression>& Filter, const Diagnostics::ErrorLocation& Location)
+	: ElementType(ElementType), Filter(std::move(Filter)), Location(Location) {
 	return;
 }
 
@@ -242,6 +242,11 @@ InfixExpression::InfixExpression(std::unique_ptr<Expression>& LeftValue, std::un
 
 FunctionIfElseExpression::FunctionIfElseExpression(std::unique_ptr<Expression>& Predicate, std::unique_ptr<Expression>& IfCode, std::unique_ptr<Expression>& ElseCode)
 	: Predicate(std::move(Predicate)), IfCode(std::move(IfCode)), ElseCode(std::move(ElseCode)) {
+	return;
+}
+
+SetClauseExpression::SetClauseExpression(RecordMemberSymbol* Member, AST::InfixOperator Operator, std::unique_ptr<Expression>& Value)
+	: Member(Member), Operator(Operator), Value(std::move(Value)) {
 	return;
 }
 
@@ -310,6 +315,7 @@ SGVISITOR_ACCEPT_IMPL(UnaryExpression);
 SGVISITOR_ACCEPT_IMPL(ExistsExpression);
 SGVISITOR_ACCEPT_IMPL(InfixExpression);
 SGVISITOR_ACCEPT_IMPL(FunctionIfElseExpression);
+SGVISITOR_ACCEPT_IMPL(SetClauseExpression);
 
 SGVISITOR_ACCEPT_IMPL(CompoundStatement);
 SGVISITOR_ACCEPT_IMPL(AssertStatement);

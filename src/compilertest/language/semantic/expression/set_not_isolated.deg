@@ -1,0 +1,8 @@
+module ca.ualberta
+
+record TakenCourse:
+    number a
+    number b
+    
+function Foo(number x, number y) -> set(TakenCourse):
+    {TakenCourse | (2 * a) > x or (b - y) > 5 }

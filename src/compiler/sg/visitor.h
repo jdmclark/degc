@@ -44,7 +44,8 @@
 	x(UnaryExpression) \
 	x(ExistsExpression) \
 	x(InfixExpression) \
-	x(FunctionIfElseExpression)
+	x(FunctionIfElseExpression) \
+	x(SetClauseExpression)
 
 #define SGCLASS_STATEMENT(x) \
 	x(CompoundStatement) \
