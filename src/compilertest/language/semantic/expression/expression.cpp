@@ -71,4 +71,9 @@ Case(SetNotOrthogonal) {
 	AssertResult(3, 0);
 }
 
+Case(SetValid) {
+	ParseFile("set_valid.deg");
+	AssertResult(0, 0);
+}
+
 EndSuite(ExpressionSemanticTest);

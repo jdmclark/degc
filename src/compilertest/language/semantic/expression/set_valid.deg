@@ -1,0 +1,26 @@
+module ca.ualberta
+
+enum Subject:
+    CMPUT
+    SCI
+    MATH
+    PHIL
+
+record TakenCourse:
+    quantity credits
+    Subject subject
+    number level
+    bool passed
+    bool online
+
+program Foo:
+    take 3 in {TakenCourse}
+    take 3 in {TakenCourse | passed}
+    take 3 in {TakenCourse | not passed}
+    take 3 in {TakenCourse | online or passed and not online and passed}
+    take 3 in {TakenCourse | subject = Subject.CMPUT}
+    take 3 in {TakenCourse | subject = Subject.CMPUT or subject != Subject.SCI}
+    take 3 in {TakenCourse | subject = Subject.CMPUT or not (subject = Subject.SCI)}
+    take 3 in {TakenCourse | not (subject != Subject.CMPUT or level < 100)}
+    take 3 in {TakenCourse | not (not (level >= 100 and level < 200))}
+    take 3 in {TakenCourse | passed = true}
