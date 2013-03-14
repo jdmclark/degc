@@ -93,4 +93,26 @@ Case(BackflowingNetwork) {
 	Test_Assert(ns.Solve(n, { 6, 3 }));
 }
 
+Case(StackedLimit) {
+	Network n = make_network().AddRequirement(3)
+							  .AddRequirement(6)
+							  .AddLimit(3)
+							  .AddLimit(6)
+							  .AddSources(3)
+							  .AddEdgeFromSourceToRequirement(0, 0)
+							  .AddEdgeFromSourceToRequirement(1, 0)
+							  .AddEdgeFromSourceToRequirement(1, 1)
+							  .AddEdgeFromSourceToRequirement(2, 1)
+							  .AddEdgeFromSourceToLimit(2, 0)
+							  .AddEdgeFromSourceToLimit(1, 1)
+							  .AddEdgeFromLimitToLimit(0, 1);
+	Test_Assert_Eq(n.GetNodeCount(), 9);
+	Test_Assert_Eq(n.GetEdgeCount(), 13);
+
+	NetworkSolver ns;
+	Test_Assert(ns.Solve(n, { 3, 3, 3 }, { 3, 6 }));
+	Test_Assert(!ns.Solve(n, { 3, 0, 6 }, { 6, 6 } ));
+	Test_Assert(ns.Solve(n, { 3, 6, 0 }, { 0, 6 } ));
+}
+
 EndSuite(NetworkTest);
