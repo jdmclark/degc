@@ -66,16 +66,6 @@ make_network& make_network::AddEdgeFromSourceToRequirement(size_t src, size_t re
 	return *this;
 }
 
-make_network& make_network::AddEdgeFromRequirementToLimit(size_t req, size_t lim) {
-	Node& req_node = nodes[requirement_nodes[req]];
-	Node& lim_node = nodes[limit_nodes[lim]];
-
-	req_node.OutEdges.clear();
-	req_node.OutEdges.push_back(lim_node.NodeNumber);
-
-	return *this;
-}
-
 make_network& make_network::AddEdgeFromLimitToLimit(size_t lim_a, size_t lim_b) {
 	Node& lim_source = nodes[limit_nodes[lim_a]];
 	Node& lim_target = nodes[limit_nodes[lim_b]];

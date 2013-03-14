@@ -15,8 +15,7 @@ Case(NetworkBuild) {
 							  .AddEdgeFromSourceToRequirement(0, 1)
 							  .AddEdgeFromSourceToRequirement(1, 1)
 							  .AddEdgeFromSourceToLimit(1, 0)
-							  .AddEdgeFromLimitToLimit(0, 1)
-							  .AddEdgeFromRequirementToLimit(0, 1);
+							  .AddEdgeFromLimitToLimit(0, 1);
 
 	Test_Assert_Eq(n.GetNodeCount(), 8);
 	Test_Assert_Eq(n.GetEdgeCount(), 10);

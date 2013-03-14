@@ -38,7 +38,6 @@ public:
 	make_network& AddSources(size_t count);
 	make_network& AddEdgeFromSourceToRequirement(size_t src, size_t req);
 	make_network& AddEdgeFromSourceToLimit(size_t src, size_t lim);
-	make_network& AddEdgeFromRequirementToLimit(size_t req, size_t lim);
 	make_network& AddEdgeFromLimitToLimit(size_t lim_a, size_t lim_b);
 };
 
