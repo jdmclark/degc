@@ -233,7 +233,7 @@ bool NetworkSolver::internal_bfs(int counter, int amount, const Network& network
 			NodeData& next_n_data = node_data[next_n_idx];
 			if(next_n_data.Counter != counter && next_e_flow.Flow > 0) {
 				next_n_data.Counter = counter;
-				next_n_data.PushedFlow = -std::min(flow_amount, next_e_flow.Flow);
+				next_n_data.PushedFlow = std::min(flow_amount, next_e_flow.Flow);
 				next_n_data.PredecessorEdge = next_e_idx;
 				next_n_data.PredecessorBack = true;
 

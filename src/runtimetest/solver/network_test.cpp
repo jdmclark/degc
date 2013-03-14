@@ -115,4 +115,54 @@ Case(StackedLimit) {
 	Test_Assert(ns.Solve(n, { 3, 6, 0 }, { 0, 6 } ));
 }
 
+Case(MiniProgram) {
+	// Example program
+	// Max 6* in 100-level
+	// 3* in 100-level
+	// CMPUT 101
+	// 6* in CMPUT
+	// 6* in anything
+
+	// Student takes:
+	// CMPUT 101, 102
+	// ENGL 100, 101
+	// CMPUT 201, 204
+	// MATH 200, 201
+	// PHIL 100
+
+	// First: compute disjoint ranges:
+	// 200+ \ CMPUT
+	// 100 \ CMPUT, ENGL
+	// CMPUT 100 \ 101
+	// CMPUT 101
+	// ENGL 100-level
+	// CMPUT 200+
+	Network n = make_network().AddRequirement(3)
+							  .AddRequirement(3)
+							  .AddRequirement(6)
+							  .AddRequirement(6)
+							  .AddLimit(6)
+							  .AddSources(6)
+							  .AddEdgeFromSourceToRequirement(0, 3)
+							  .AddEdgeFromSourceToRequirement(1, 3)
+							  .AddEdgeFromSourceToRequirement(2, 2)
+							  .AddEdgeFromSourceToRequirement(2, 3)
+							  .AddEdgeFromSourceToRequirement(3, 1)
+							  .AddEdgeFromSourceToRequirement(3, 2)
+							  .AddEdgeFromSourceToRequirement(3, 3)
+							  .AddEdgeFromSourceToRequirement(4, 0)
+							  .AddEdgeFromSourceToRequirement(4, 3)
+							  .AddEdgeFromSourceToRequirement(5, 2)
+							  .AddEdgeFromSourceToRequirement(5, 3)
+							  .AddEdgeFromSourceToLimit(1, 0)
+							  .AddEdgeFromSourceToLimit(2, 0)
+							  .AddEdgeFromSourceToLimit(3, 0)
+							  .AddEdgeFromSourceToLimit(4, 0);
+	Test_Assert_Eq(n.GetNodeCount(), 13);
+	Test_Assert_Eq(n.GetEdgeCount(), 26);
+
+	NetworkSolver ns;
+	Test_Assert(ns.Solve(n, { 6, 3, 3, 3, 6, 6 }, { 15 }));
+}
+
 EndSuite(NetworkTest);
