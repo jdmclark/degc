@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <limits>
+#include <iomanip>
 
 namespace Deg {
 namespace Runtime {
@@ -152,6 +153,12 @@ public:
 
 	bool operator <=(const Fixed& d) const {
 		return data <= d.data;
+	}
+
+	operator std::string() const {
+		std::stringstream ss;
+		ss << (data / scale_factor) << "." << std::setw(4) << std::setfill('0') << (data % scale_factor);
+		return ss.str();
 	}
 };
 

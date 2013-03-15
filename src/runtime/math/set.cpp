@@ -8,8 +8,8 @@ Deg::Runtime::Math::Set::Conjunction::Conjunction() {
 	return;
 }
 
-Deg::Runtime::Math::Set::Conjunction::Conjunction(unsigned int Field, int BottomEq, int TopNeq) {
-	Clauses[Field] = Interval<int>(BottomEq, TopNeq);
+Deg::Runtime::Math::Set::Conjunction::Conjunction(unsigned int Field, DefaultFixed BottomEq, DefaultFixed TopNeq) {
+	Clauses[Field] = Interval<DefaultFixed>(BottomEq, TopNeq);
 	return;
 }
 
@@ -40,23 +40,23 @@ void Deg::Runtime::Math::Set::DisjoinOne(const Conjunction& base, const Conjunct
 	Conjunction middle_conj = base;
 
 	for(const auto& rng : minus.Clauses) {
-		Interval<int> left, middle, right;
+		Interval<DefaultFixed> left, middle, right;
 
 		auto it = middle_conj.Clauses.find(rng.first);
 		if(it == middle_conj.Clauses.end()) {
 			// Full coverage.
-			left = Interval<int>(std::numeric_limits<int>::lowest(), rng.second.bottom);
-			middle = Interval<int>(rng.second);
-			right = Interval<int>(rng.second.top, std::numeric_limits<int>::max());
+			left = Interval<DefaultFixed>(std::numeric_limits<DefaultFixed>::lowest(), rng.second.bottom);
+			middle = Interval<DefaultFixed>(rng.second);
+			right = Interval<DefaultFixed>(rng.second.top, std::numeric_limits<DefaultFixed>::max());
 		}
-		else if(Interval<int>::Disjoint(it->second, rng.second)) {
+		else if(Interval<DefaultFixed>::Disjoint(it->second, rng.second)) {
 			output.push_back(middle_conj);
 			return;
 		}
 		else {
-			left = Interval<int>(it->second.bottom, rng.second.bottom);
-			middle = Interval<int>(std::max(it->second.bottom, rng.second.bottom), std::min(it->second.top, rng.second.top));
-			right = Interval<int>(rng.second.top, it->second.top);
+			left = Interval<DefaultFixed>(it->second.bottom, rng.second.bottom);
+			middle = Interval<DefaultFixed>(std::max(it->second.bottom, rng.second.bottom), std::min(it->second.top, rng.second.top));
+			right = Interval<DefaultFixed>(rng.second.top, it->second.top);
 		}
 
 		if(!left.IsEmpty()) {
@@ -109,7 +109,7 @@ bool Deg::Runtime::Math::Set::CanMerge(const Conjunction& a, const Conjunction& 
 			else if(union_once) {
 				return false;
 			}
-			else if(Interval<int>::CanUnion(rng.second, it->second)) {
+			else if(Interval<DefaultFixed>::CanUnion(rng.second, it->second)) {
 				union_once = true;
 			}
 			else {
@@ -125,10 +125,10 @@ void Deg::Runtime::Math::Set::MergeOne(Conjunction& target, const Conjunction& c
 	for(auto& rng : target.Clauses) {
 		auto it = c.Clauses.find(rng.first);
 		if(it != c.Clauses.end()) {
-			rng.second = Interval<int>::Union(rng.second, it->second);
+			rng.second = Interval<DefaultFixed>::Union(rng.second, it->second);
 		}
 		else {
-			rng.second = Interval<int>(std::numeric_limits<int>::lowest(), std::numeric_limits<int>::max());
+			rng.second = Interval<DefaultFixed>(std::numeric_limits<DefaultFixed>::lowest(), std::numeric_limits<DefaultFixed>::max());
 		}
 	}
 }
@@ -160,7 +160,7 @@ void Deg::Runtime::Math::Set::Merge() {
 
 void Deg::Runtime::Math::Set::ReduceOne(Conjunction& target) {
 	for(auto it = target.Clauses.begin(); it != target.Clauses.end();) {
-		if(it->second.bottom == std::numeric_limits<int>::lowest() && it->second.top == std::numeric_limits<int>::max()) {
+		if(it->second.bottom == std::numeric_limits<DefaultFixed>::lowest() && it->second.top == std::numeric_limits<DefaultFixed>::max()) {
 			it = target.Clauses.erase(it);
 		}
 		else {
@@ -188,31 +188,31 @@ Deg::Runtime::Math::Set::Set() {
 	return;
 }
 
-Deg::Runtime::Math::Set::Set(unsigned int field, Relation relation, int value) {
+Deg::Runtime::Math::Set::Set(unsigned int field, Relation relation, DefaultFixed value) {
 	switch(relation) {
 	case Relation::Less:
-		Disjunction.emplace_back(field, std::numeric_limits<int>::lowest(), value);
+		Disjunction.emplace_back(field, std::numeric_limits<DefaultFixed>::lowest(), value);
 		break;
 
 	case Relation::LessEqual:
-		Disjunction.emplace_back(field, std::numeric_limits<int>::lowest(), value + 1);
+		Disjunction.emplace_back(field, std::numeric_limits<DefaultFixed>::lowest(), value + DefaultFixed(1));
 		break;
 
 	case Relation::Greater:
-		Disjunction.emplace_back(field, value + 1, std::numeric_limits<int>::max());
+		Disjunction.emplace_back(field, value + DefaultFixed(1), std::numeric_limits<DefaultFixed>::max());
 		break;
 
 	case Relation::GreaterEqual:
-		Disjunction.emplace_back(field, value, std::numeric_limits<int>::max());
+		Disjunction.emplace_back(field, value, std::numeric_limits<DefaultFixed>::max());
 		break;
 
 	case Relation::Equal:
-		Disjunction.emplace_back(field, value, value + 1);
+		Disjunction.emplace_back(field, value, value + DefaultFixed(1));
 		break;
 
 	case Relation::NotEqual:
-		Disjunction.emplace_back(field, std::numeric_limits<int>::lowest(), value);
-		Disjunction.emplace_back(field, value + 1, std::numeric_limits<int>::max());
+		Disjunction.emplace_back(field, std::numeric_limits<DefaultFixed>::lowest(), value);
+		Disjunction.emplace_back(field, value + DefaultFixed(1), std::numeric_limits<DefaultFixed>::max());
 		break;
 	}
 }
@@ -268,7 +268,7 @@ Deg::Runtime::Math::Set Deg::Runtime::Math::Set::operator&(const Set& s) const {
 					c.Clauses[sclause.first] = sclause.second;
 				}
 				else {
-					it->second = Interval<int>::Intersect(it->second, sclause.second);
+					it->second = Interval<DefaultFixed>::Intersect(it->second, sclause.second);
 				}
 			}
 
@@ -337,7 +337,7 @@ std::ostream& Deg::Runtime::Math::operator<<(std::ostream& os, const Set& s) {
 				p_con_and = true;
 			}
 
-			ss << con.first << ":[" << con.second.bottom << "," << con.second.top << "]";
+			ss << con.first << ":[" << static_cast<std::string>(con.second.bottom) << "," << static_cast<std::string>(con.second.top) << "]";
 		}
 
 		ss << ")";

@@ -2,6 +2,7 @@
 
 #include "relation.h"
 #include "interval.h"
+#include "fixed.h"
 #include <map>
 #include <vector>
 #include <iostream>
@@ -13,10 +14,10 @@ namespace Math {
 class Set {
 private:
 	struct Conjunction {
-		std::map<unsigned int, Interval<int>> Clauses;
+		std::map<unsigned int, Interval<DefaultFixed>> Clauses;
 
 		Conjunction();
-		Conjunction(unsigned int Field, int BottomEq, int TopNeq);
+		Conjunction(unsigned int Field, DefaultFixed BottomEq, DefaultFixed TopNeq);
 		bool IsEmpty() const;
 		bool IsSubsetOf(const Conjunction&) const;
 	};
@@ -34,7 +35,7 @@ private:
 
 public:
 	Set();
-	Set(unsigned int field, Relation relation, int value);
+	Set(unsigned int field, Relation relation, DefaultFixed value);
 
 	bool IsEmpty() const;
 	bool IsSubsetOf(const Set&) const;
