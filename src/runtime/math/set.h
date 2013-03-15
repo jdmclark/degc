@@ -12,7 +12,7 @@ namespace Runtime {
 namespace Math {
 
 class Set {
-private:
+public:
 	struct Conjunction {
 		std::map<unsigned int, Interval<DefaultFixed>> Clauses;
 
@@ -20,8 +20,17 @@ private:
 		Conjunction(unsigned int Field, DefaultFixed BottomEq, DefaultFixed TopNeq);
 		bool IsEmpty() const;
 		bool IsSubsetOf(const Conjunction&) const;
+
+		inline std::map<unsigned int, Interval<DefaultFixed>>::const_iterator begin() const {
+			return Clauses.begin();
+		}
+
+		inline std::map<unsigned int, Interval<DefaultFixed>>::const_iterator end() const {
+			return Clauses.end();
+		}
 	};
 
+private:
 	std::vector<Conjunction> Disjunction;
 
 	static void DisjoinOne(const Conjunction& base, const Conjunction& minus, std::vector<Conjunction>& output);
@@ -48,6 +57,14 @@ public:
 	Set operator-(const Set&) const;
 
 	friend std::ostream& operator<<(std::ostream& os, const Set& s);
+
+	inline std::vector<Conjunction>::const_iterator begin() const {
+		return Disjunction.begin();
+	}
+
+	inline std::vector<Conjunction>::const_iterator end() const {
+		return Disjunction.end();
+	}
 };
 
 std::ostream& operator<<(std::ostream& os, const Set& s);

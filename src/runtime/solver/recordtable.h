@@ -18,8 +18,8 @@ public:
 	virtual ~RecordTable();
 
 	virtual void AddRecord(const std::vector<Math::DefaultFixed>& fields) = 0;
-	virtual bool IsEmpty(const Math::Set& set) = 0;
-	virtual Math::DefaultFixed QuantityOf(const Math::Set& set) = 0;
+	virtual bool IsEmpty(const Math::Set& set) const = 0;
+	virtual Math::DefaultFixed QuantityOf(const Math::Set& set) const = 0;
 };
 
 }
