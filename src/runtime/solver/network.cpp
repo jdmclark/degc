@@ -3,11 +3,17 @@
 #include <algorithm>
 
 using namespace Deg::Runtime::Solver;
+using Deg::Runtime::Math::DefaultFixed;
 
 static const size_t source_index = 0;
 static const size_t sink_index = 1;
 
-make_network::Node::Node(size_t NodeNumber, int NodeValue)
+make_network::Node::Node(size_t NodeNumber)
+	: NodeNumber(NodeNumber), NodeValue(std::numeric_limits<Math::DefaultFixed>::max()) {
+	return;
+}
+
+make_network::Node::Node(size_t NodeNumber, DefaultFixed NodeValue)
 	: NodeNumber(NodeNumber), NodeValue(NodeValue) {
 	return;
 }
@@ -19,7 +25,7 @@ make_network::make_network()
 	nodes.emplace_back(sink_index);
 }
 
-make_network& make_network::AddRequirement(int value) {
+make_network& make_network::AddRequirement(DefaultFixed value) {
 	nodes.emplace_back(num_nodes, value);
 	nodes[num_nodes].OutEdges.push_back(sink_index);
 	requirement_nodes.push_back(num_nodes);
@@ -28,7 +34,7 @@ make_network& make_network::AddRequirement(int value) {
 	return *this;
 }
 
-make_network& make_network::AddLimit(int value) {
+make_network& make_network::AddLimit(DefaultFixed value) {
 	nodes.emplace_back(num_nodes, value);
 	nodes[num_nodes].OutEdges.push_back(sink_index);
 	limit_nodes.push_back(num_nodes);
@@ -154,7 +160,7 @@ Network::Network(const make_network& args) {
 	}
 }
 
-void NetworkSolver::internal_build_flow_table(const Network& network, const std::vector<int>& source_values, const std::vector<int>& limit_values) {
+void NetworkSolver::internal_build_flow_table(const Network& network, const std::vector<DefaultFixed>& source_values, const std::vector<DefaultFixed>& limit_values) {
 	// Build flow table
 	node_data.resize(network.nodes.size());
 	for(NodeData& n : node_data) {
@@ -163,8 +169,8 @@ void NetworkSolver::internal_build_flow_table(const Network& network, const std:
 
 	flow.resize(network.edges.size());
 	for (EdgeFlow& f : flow) {
-		f.Flow = 0;
-		f.Capacity = std::numeric_limits<int>::max();
+		f.Flow = DefaultFixed(0);
+		f.Capacity = std::numeric_limits<DefaultFixed>::max();
 	}
 
 	// Populate sources
@@ -185,7 +191,7 @@ void NetworkSolver::internal_build_flow_table(const Network& network, const std:
 	}
 }
 
-bool NetworkSolver::internal_bfs(int counter, int amount, const Network& network) {
+bool NetworkSolver::internal_bfs(int counter, DefaultFixed amount, const Network& network) {
 	bfs_queue.clear();
 
 	NodeData& source_data = node_data[source_index];
@@ -197,7 +203,7 @@ bool NetworkSolver::internal_bfs(int counter, int amount, const Network& network
 		size_t next = bfs_queue.front();
 		bfs_queue.pop_front();
 
-		int flow_amount = node_data[next].PushedFlow;
+		DefaultFixed flow_amount = node_data[next].PushedFlow;
 		const Network::Node& n = network.nodes[next];
 
 		// Enqueue forward edges
@@ -231,7 +237,7 @@ bool NetworkSolver::internal_bfs(int counter, int amount, const Network& network
 			size_t next_n_idx = network.edges[next_e_idx].from;
 			EdgeFlow& next_e_flow = flow[next_e_idx];
 			NodeData& next_n_data = node_data[next_n_idx];
-			if(next_n_data.Counter != counter && next_e_flow.Flow > 0) {
+			if(next_n_data.Counter != counter && next_e_flow.Flow > DefaultFixed(0)) {
 				next_n_data.Counter = counter;
 				next_n_data.PushedFlow = std::min(flow_amount, next_e_flow.Flow);
 				next_n_data.PredecessorEdge = next_e_idx;
@@ -245,10 +251,10 @@ bool NetworkSolver::internal_bfs(int counter, int amount, const Network& network
 	return false;
 }
 
-bool NetworkSolver::internal_push_flow(const Network& network, int amount, int counter) {
+bool NetworkSolver::internal_push_flow(const Network& network, DefaultFixed amount, int counter) {
 	if(internal_bfs(counter, amount, network)) {
 		size_t node = sink_index;
-		int actual_pushed_flow = node_data[sink_index].PushedFlow;
+		DefaultFixed actual_pushed_flow = node_data[sink_index].PushedFlow;
 
 		while(node != source_index) {
 			// Apply flows
@@ -270,18 +276,18 @@ bool NetworkSolver::internal_push_flow(const Network& network, int amount, int c
 	return false;
 }
 
-void NetworkSolver::internal_solve(const Network& network, const std::vector<int>& source_values, const std::vector<int>& limit_values) {
+void NetworkSolver::internal_solve(const Network& network, const std::vector<DefaultFixed>& source_values, const std::vector<DefaultFixed>& limit_values) {
 	internal_build_flow_table(network, source_values, limit_values);
 
 	// Solve with modified Ford-Fulkerson.
 
 	int Counter = 1;
-	while(internal_push_flow(network, std::numeric_limits<int>::max(), Counter)) {
+	while(internal_push_flow(network, std::numeric_limits<DefaultFixed>::max(), Counter)) {
 		++Counter;
 	}
 }
 
-bool NetworkSolver::Solve(const Network& network, const std::vector<int>& source_values, const std::vector<int>& limit_values) {
+bool NetworkSolver::Solve(const Network& network, const std::vector<DefaultFixed>& source_values, const std::vector<DefaultFixed>& limit_values) {
 	internal_solve(network, source_values, limit_values);
 
 	// Validate answer

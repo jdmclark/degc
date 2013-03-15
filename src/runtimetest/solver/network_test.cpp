@@ -2,14 +2,15 @@
 #include "runtime/solver/network.h"
 
 using namespace Deg::Runtime::Solver;
+using Deg::Runtime::Math::DefaultFixed;
 
 BeginSuite(NetworkTest);
 
 Case(NetworkBuild) {
-	Network n = make_network().AddRequirement(3)
-							  .AddRequirement(6)
-							  .AddLimit(6)
-							  .AddLimit(3)
+	Network n = make_network().AddRequirement(DefaultFixed("3"))
+							  .AddRequirement(DefaultFixed("6"))
+							  .AddLimit(DefaultFixed("6"))
+							  .AddLimit(DefaultFixed("3"))
 							  .AddSources(2)
 							  .AddEdgeFromSourceToRequirement(0, 0)
 							  .AddEdgeFromSourceToRequirement(0, 1)
@@ -32,7 +33,7 @@ Case(MakeNetworkAddsSourceEdges) {
 }
 
 Case(SinglePathNetwork) {
-	Network n = make_network().AddRequirement(3)
+	Network n = make_network().AddRequirement(DefaultFixed("3"))
 							  .AddSources(1)
 							  .AddEdgeFromSourceToRequirement(0, 0);
 	Test_Assert_Eq(n.GetNodeCount(), 4);
@@ -40,14 +41,14 @@ Case(SinglePathNetwork) {
 
 	NetworkSolver ns;
 
-	Test_Assert(ns.Solve(n, { 9999 }));
-	Test_Assert(ns.Solve(n, { 3 }));
-	Test_Assert(!ns.Solve(n, { 1 }));
+	Test_Assert(ns.Solve(n, { DefaultFixed("9999") }));
+	Test_Assert(ns.Solve(n, { DefaultFixed("3") }));
+	Test_Assert(!ns.Solve(n, { DefaultFixed("1") }));
 }
 
 Case(TwoRequirementNetwork) {
-	Network n = make_network().AddRequirement(3)
-							  .AddRequirement(6)
+	Network n = make_network().AddRequirement(DefaultFixed("3"))
+							  .AddRequirement(DefaultFixed("6"))
 							  .AddSources(2)
 							  .AddEdgeFromSourceToRequirement(0, 0)
 							  .AddEdgeFromSourceToRequirement(1, 1);
@@ -55,15 +56,15 @@ Case(TwoRequirementNetwork) {
 	Test_Assert_Eq(n.GetEdgeCount(), 6);
 
 	NetworkSolver ns;
-	Test_Assert(ns.Solve(n, { 999, 555 } ));
-	Test_Assert(ns.Solve(n, { 6, 6 } ));
-	Test_Assert(!ns.Solve(n, { 6, 3 } ));
+	Test_Assert(ns.Solve(n, { DefaultFixed("999"), DefaultFixed("555") } ));
+	Test_Assert(ns.Solve(n, { DefaultFixed("6"), DefaultFixed("6") } ));
+	Test_Assert(!ns.Solve(n, { DefaultFixed("6"), DefaultFixed("3") } ));
 }
 
 Case(SimpleLimitNetwork) {
-	Network n = make_network().AddRequirement(3)
-							  .AddRequirement(6)
-							  .AddLimit(3)
+	Network n = make_network().AddRequirement(DefaultFixed("3"))
+							  .AddRequirement(DefaultFixed("6"))
+							  .AddLimit(DefaultFixed("3"))
 							  .AddSources(3)
 							  .AddEdgeFromSourceToRequirement(0, 0)
 							  .AddEdgeFromSourceToRequirement(1, 1)
@@ -73,13 +74,13 @@ Case(SimpleLimitNetwork) {
 	Test_Assert_Eq(n.GetEdgeCount(), 10);
 
 	NetworkSolver ns;
-	Test_Assert(ns.Solve(n, { 3, 3, 3 }, { 3 }));
-	Test_Assert(!ns.Solve(n, { 3, 0, 6 }, { 6 }));
+	Test_Assert(ns.Solve(n, { DefaultFixed("3"), DefaultFixed("3"), DefaultFixed("3") }, { DefaultFixed("3") }));
+	Test_Assert(!ns.Solve(n, { DefaultFixed("3"), DefaultFixed("0"), DefaultFixed("6") }, { DefaultFixed("6") }));
 }
 
 Case(BackflowingNetwork) {
-	Network n = make_network().AddRequirement(3)
-							  .AddRequirement(6)
+	Network n = make_network().AddRequirement(DefaultFixed("3"))
+							  .AddRequirement(DefaultFixed("6"))
 							  .AddSources(2)
 							  .AddEdgeFromSourceToRequirement(0, 0)
 							  .AddEdgeFromSourceToRequirement(0, 1)
@@ -88,16 +89,16 @@ Case(BackflowingNetwork) {
 	Test_Assert_Eq(n.GetEdgeCount(), 7);
 
 	NetworkSolver ns;;
-	Test_Assert(!ns.Solve(n, { 3, 3 }));
-	Test_Assert(ns.Solve(n, { 9, 0 }));
-	Test_Assert(ns.Solve(n, { 6, 3 }));
+	Test_Assert(!ns.Solve(n, { DefaultFixed("3"), DefaultFixed("3") }));
+	Test_Assert(ns.Solve(n, { DefaultFixed("9"), DefaultFixed("0") }));
+	Test_Assert(ns.Solve(n, { DefaultFixed("6"), DefaultFixed("3") }));
 }
 
 Case(StackedLimit) {
-	Network n = make_network().AddRequirement(3)
-							  .AddRequirement(6)
-							  .AddLimit(3)
-							  .AddLimit(6)
+	Network n = make_network().AddRequirement(DefaultFixed("3"))
+							  .AddRequirement(DefaultFixed("6"))
+							  .AddLimit(DefaultFixed("3"))
+							  .AddLimit(DefaultFixed("6"))
 							  .AddSources(3)
 							  .AddEdgeFromSourceToRequirement(0, 0)
 							  .AddEdgeFromSourceToRequirement(1, 0)
@@ -110,9 +111,9 @@ Case(StackedLimit) {
 	Test_Assert_Eq(n.GetEdgeCount(), 13);
 
 	NetworkSolver ns;
-	Test_Assert(ns.Solve(n, { 3, 3, 3 }, { 3, 6 }));
-	Test_Assert(!ns.Solve(n, { 3, 0, 6 }, { 6, 6 } ));
-	Test_Assert(ns.Solve(n, { 3, 6, 0 }, { 0, 6 } ));
+	Test_Assert(ns.Solve(n, { DefaultFixed("3"), DefaultFixed("3"), DefaultFixed("3") }, { DefaultFixed("3"), DefaultFixed("6") }));
+	Test_Assert(!ns.Solve(n, { DefaultFixed("3"), DefaultFixed("0"), DefaultFixed("6") }, { DefaultFixed("6"), DefaultFixed("6") } ));
+	Test_Assert(ns.Solve(n, { DefaultFixed("3"), DefaultFixed("6"), DefaultFixed("0") }, { DefaultFixed("0"), DefaultFixed("6") } ));
 }
 
 Case(MiniProgram) {
@@ -137,11 +138,11 @@ Case(MiniProgram) {
 	// CMPUT 101
 	// ENGL 100-level
 	// CMPUT 200+
-	Network n = make_network().AddRequirement(3)
-							  .AddRequirement(3)
-							  .AddRequirement(6)
-							  .AddRequirement(6)
-							  .AddLimit(6)
+	Network n = make_network().AddRequirement(DefaultFixed("3"))
+							  .AddRequirement(DefaultFixed("3"))
+							  .AddRequirement(DefaultFixed("6"))
+							  .AddRequirement(DefaultFixed("6"))
+							  .AddLimit(DefaultFixed("6"))
 							  .AddSources(6)
 							  .AddEdgeFromSourceToRequirement(0, 3)
 							  .AddEdgeFromSourceToRequirement(1, 3)
@@ -162,7 +163,7 @@ Case(MiniProgram) {
 	Test_Assert_Eq(n.GetEdgeCount(), 26);
 
 	NetworkSolver ns;
-	Test_Assert(ns.Solve(n, { 6, 3, 3, 3, 6, 6 }, { 15 }));
+	Test_Assert(ns.Solve(n, { DefaultFixed("6"), DefaultFixed("3"), DefaultFixed("3"), DefaultFixed("3"), DefaultFixed("6"), DefaultFixed("6") }, { DefaultFixed("15") }));
 }
 
 EndSuite(NetworkTest);

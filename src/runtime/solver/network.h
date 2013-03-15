@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <limits>
 #include <deque>
+#include "runtime/math/fixed.h"
 
 namespace Deg {
 namespace Runtime {
@@ -19,10 +20,11 @@ private:
 	class Node {
 	public:
 		size_t NodeNumber;
-		int NodeValue;
+		Math::DefaultFixed NodeValue;
 		std::vector<size_t> OutEdges;
 
-		explicit Node(size_t NodeNumber, int NodeValue = std::numeric_limits<int>::max());
+		Node(size_t NodeNumber);
+		Node(size_t NodeNumber, Math::DefaultFixed NodeValue);
 	};
 
 	size_t num_nodes;
@@ -33,8 +35,8 @@ private:
 
 public:
 	make_network();
-	make_network& AddRequirement(int value);
-	make_network& AddLimit(int value);
+	make_network& AddRequirement(Math::DefaultFixed value);
+	make_network& AddLimit(Math::DefaultFixed value);
 	make_network& AddSources(size_t count);
 	make_network& AddEdgeFromSourceToRequirement(size_t src, size_t req);
 	make_network& AddEdgeFromSourceToLimit(size_t src, size_t lim);
@@ -72,8 +74,8 @@ private:
 	std::vector<size_t> requirement_edges;
 	std::vector<size_t> limit_edges;
 
-	std::vector<int> requirement_capacities;
-	std::vector<int> limit_capacities;
+	std::vector<Math::DefaultFixed> requirement_capacities;
+	std::vector<Math::DefaultFixed> limit_capacities;
 
 public:
 	Network(const make_network& args);
@@ -93,7 +95,7 @@ private:
 	public:
 		int Counter;
 
-		int PushedFlow;
+		Math::DefaultFixed PushedFlow;
 
 		bool PredecessorBack;
 		size_t PredecessorEdge;
@@ -101,21 +103,21 @@ private:
 
 	class EdgeFlow {
 	public:
-		int Capacity;
-		int Flow;
+		Math::DefaultFixed Capacity;
+		Math::DefaultFixed Flow;
 	};
 
 	std::deque<size_t> bfs_queue;
 	std::vector<NodeData> node_data;
 	std::vector<EdgeFlow> flow;
 
-	void internal_solve(const Network& network, const std::vector<int>& source_values, const std::vector<int>& limit_values = {});
-	void internal_build_flow_table(const Network& network, const std::vector<int>& source_values, const std::vector<int>& limit_values);
-	bool internal_push_flow(const Network& network, int amount, int counter);
-	bool internal_bfs(int counter, int amount, const Network& network);
+	void internal_solve(const Network& network, const std::vector<Math::DefaultFixed>& source_values, const std::vector<Math::DefaultFixed>& limit_values = {});
+	void internal_build_flow_table(const Network& network, const std::vector<Math::DefaultFixed>& source_values, const std::vector<Math::DefaultFixed>& limit_values);
+	bool internal_push_flow(const Network& network, Math::DefaultFixed amount, int counter);
+	bool internal_bfs(int counter, Math::DefaultFixed amount, const Network& network);
 
 public:
-	bool Solve(const Network& network, const std::vector<int>& source_values, const std::vector<int>& limit_values = {});
+	bool Solve(const Network& network, const std::vector<Math::DefaultFixed>& source_values, const std::vector<Math::DefaultFixed>& limit_values = {});
 };
 
 }

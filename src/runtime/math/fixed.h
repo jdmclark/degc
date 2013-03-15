@@ -155,7 +155,7 @@ public:
 	}
 };
 
-using DefaultFixed = Fixed<int, 4>;
+typedef Fixed<int, 4> DefaultFixed;
 
 }
 }
@@ -163,25 +163,26 @@ using DefaultFixed = Fixed<int, 4>;
 
 namespace std {
 
-template <typename T, size_t Q> class numeric_limits<Deg::Runtime::Math::Fixed<T, Q>> {
-	typedef Deg::Runtime::Math::Fixed<T, Q> fixed;
+template <> class numeric_limits<Deg::Runtime::Math::DefaultFixed> {
 
 	static const bool is_specialized = true;
 
-	static constexpr T min() {
-		return fixed(1);
+public:
+
+	static Deg::Runtime::Math::DefaultFixed min() {
+		return Deg::Runtime::Math::DefaultFixed(1);
 	}
 
-	static constexpr T max() {
-		return fixed(numeric_limits<T>::max());
+	static Deg::Runtime::Math::DefaultFixed max() {
+		return Deg::Runtime::Math::DefaultFixed(numeric_limits<int>::max());
 	}
 
-	static constexpr T lowest() {
-		return fixed(numeric_limits<T>::lowest());
+	static Deg::Runtime::Math::DefaultFixed lowest() {
+		return Deg::Runtime::Math::DefaultFixed(numeric_limits<int>::lowest());
 	}
 
-	static constexpr T epsilon() {
-		return fixed(1);
+	static Deg::Runtime::Math::DefaultFixed epsilon() {
+		return Deg::Runtime::Math::DefaultFixed(1);
 	}
 };
 
