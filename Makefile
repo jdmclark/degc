@@ -16,10 +16,10 @@ compiler_LIBRARIES = boost_filesystem boost_system
 compiler_SOURCE_FILES += $(SRC_PATH)/compiler/grammar/lexer.cpp $(SRC_PATH)/compiler/grammar/parser.cpp
 compiler_HEADER_FILES += $(SRC_PATH)/compiler/grammar/parser.hpp
 
-compilertest_DEPENDENCIES = compiler
+compilertest_DEPENDENCIES = runtime compiler
 runtimetest_DEPENDENCIES = runtime
 
-degc_DEPENDENCIES = compiler
+degc_DEPENDENCIES = runtime compiler
 degrun_DEPENDENCIES = runtime
 
 # =================== #
@@ -53,7 +53,7 @@ $(1)_ACTUAL_LIBRARIES += nullunit
 endef
 
 define BIN_MODULE_template
-$$(BIN_PATH)/$(1): $$($(1)_OBJECT_FILES) $$(foreach depend,$$($(1)_DEPENDENCIES),$$($$(depend)_OBJECT_FILES))
+$$(BIN_PATH)/$(1): $$(foreach depend,$$($(1)_DEPENDENCIES),$$($$(depend)_OBJECT_FILES)) $$($(1)_OBJECT_FILES)
 	mkdir -p $$(dir $$@)
 	$$(CXX) $$(CPPFLAGS) $$(CXXFLAGS) $$^ -o $$@ $$(foreach lib,$$($(1)_ACTUAL_LIBRARIES),-l$$(lib))
 endef
