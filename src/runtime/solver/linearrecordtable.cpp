@@ -19,8 +19,8 @@ bool Deg::Runtime::Solver::LinearRecordTable::internal_set_contains(std::vector<
 	for(auto it = set.begin(); it != set.end(); ++it) {
 		bool included = true;
 
-		for(auto jt = it->begin(); jt != it->end(); ++jt) {
-			included &= jt->second.Contains(*(values + jt->first));
+		for(size_t j = 0; j < RecordWidth; ++j) {
+			included &= it->Clauses[j].Contains(*(values + j));
 			if(!included) {
 				break;
 			}

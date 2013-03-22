@@ -4,18 +4,20 @@
 #include <sstream>
 #include <iostream>
 
-Deg::Runtime::Math::Set::Conjunction::Conjunction() {
+Deg::Runtime::Math::Set::Conjunction::Conjunction(size_t RecordWidth)
+	: Clauses(RecordWidth, Interval<DefaultFixed>(std::numeric_limits<DefaultFixed>::lowest(), std::numeric_limits<DefaultFixed>::max())) {
 	return;
 }
 
-Deg::Runtime::Math::Set::Conjunction::Conjunction(unsigned int Field, DefaultFixed BottomEq, DefaultFixed TopNeq) {
+Deg::Runtime::Math::Set::Conjunction::Conjunction(size_t RecordWidth, unsigned int Field, DefaultFixed BottomEq, DefaultFixed TopNeq)
+	: Clauses(RecordWidth, Interval<DefaultFixed>(std::numeric_limits<DefaultFixed>::lowest(), std::numeric_limits<DefaultFixed>::max())) {
 	Clauses[Field] = Interval<DefaultFixed>(BottomEq, TopNeq);
 	return;
 }
 
 bool Deg::Runtime::Math::Set::Conjunction::IsEmpty() const {
 	for(const auto& em : Clauses) {
-		if(em.second.IsEmpty()) {
+		if(em.IsEmpty()) {
 			return true;
 		}
 	}
@@ -24,54 +26,43 @@ bool Deg::Runtime::Math::Set::Conjunction::IsEmpty() const {
 }
 
 bool Deg::Runtime::Math::Set::Conjunction::IsSubsetOf(const Conjunction& c) const {
-	for(const auto& em : Clauses) {
-		auto it = c.Clauses.find(em.first);
-		if(it != c.Clauses.end()) {
-			if(!it->second.Contains(em.second)) {
-				return false;
-			}
+	for(size_t i = 0; i < Clauses.size(); ++i) {
+		if(!c.Clauses[i].Contains(Clauses[i])) {
+			return false;
 		}
 	}
 
 	return true;
 }
 
-void Deg::Runtime::Math::Set::DisjoinOne(const Conjunction& base, const Conjunction& minus, std::vector<Conjunction>& output) {
+void Deg::Runtime::Math::Set::DisjoinOne(const Conjunction& base, const Conjunction& minus, std::vector<Conjunction>& output) const {
 	Conjunction middle_conj = base;
 
-	for(const auto& rng : minus.Clauses) {
+	for(size_t i = 0; i < RecordWidth; ++i) {
 		Interval<DefaultFixed> left, middle, right;
 
-		auto it = middle_conj.Clauses.find(rng.first);
-		if(it == middle_conj.Clauses.end()) {
-			// Full coverage.
-			left = Interval<DefaultFixed>(std::numeric_limits<DefaultFixed>::lowest(), rng.second.bottom);
-			middle = Interval<DefaultFixed>(rng.second);
-			right = Interval<DefaultFixed>(rng.second.top, std::numeric_limits<DefaultFixed>::max());
-		}
-		else if(Interval<DefaultFixed>::Disjoint(it->second, rng.second)) {
+		if(Interval<DefaultFixed>::Disjoint(base.Clauses[i], minus.Clauses[i])) {
 			output.push_back(middle_conj);
 			return;
 		}
-		else {
-			left = Interval<DefaultFixed>(it->second.bottom, rng.second.bottom);
-			middle = Interval<DefaultFixed>(std::max(it->second.bottom, rng.second.bottom), std::min(it->second.top, rng.second.top));
-			right = Interval<DefaultFixed>(rng.second.top, it->second.top);
-		}
+
+		left = Interval<DefaultFixed>(base.Clauses[i].bottom, minus.Clauses[i].bottom);
+		middle = Interval<DefaultFixed>(std::max(base.Clauses[i].bottom, minus.Clauses[i].bottom), std::min(base.Clauses[i].top, minus.Clauses[i].top));
+		right = Interval<DefaultFixed>(minus.Clauses[i].top, base.Clauses[i].top);
 
 		if(!left.IsEmpty()) {
 			Conjunction left_conj(middle_conj);
-			left_conj.Clauses[rng.first] = left;
+			left_conj.Clauses[i] = left;
 			output.push_back(left_conj);
 		}
 
 		if(!right.IsEmpty()) {
 			Conjunction right_conj(middle_conj);
-			right_conj.Clauses[rng.first] = right;
+			right_conj.Clauses[i] = right;
 			output.push_back(right_conj);
 		}
 
-		middle_conj.Clauses[rng.first] = middle;
+		middle_conj.Clauses[i] = middle;
 	}
 }
 
@@ -98,38 +89,30 @@ void Deg::Runtime::Math::Set::Disjoin() {
 	std::swap(current, Disjunction);
 }
 
-bool Deg::Runtime::Math::Set::CanMerge(const Conjunction& a, const Conjunction& b) {
+bool Deg::Runtime::Math::Set::CanMerge(const Conjunction& a, const Conjunction& b) const {
 	bool union_once = false;
-	for(const auto& rng : a.Clauses) {
-		auto it = b.Clauses.find(rng.first);
-		if(it != b.Clauses.end()) {
-			if(rng.second == it->second) {
-				continue;
-			}
-			else if(union_once) {
-				return false;
-			}
-			else if(Interval<DefaultFixed>::CanUnion(rng.second, it->second)) {
-				union_once = true;
-			}
-			else {
-				return false;
-			}
+
+	for(size_t i = 0; i < RecordWidth; ++i) {
+		if(a.Clauses[i] == b.Clauses[i]) {
+			continue;
+		}
+		else if(union_once) {
+			return false;
+		}
+		else if(Interval<DefaultFixed>::CanUnion(a.Clauses[i], b.Clauses[i])) {
+			union_once = true;
+		}
+		else {
+			return false;
 		}
 	}
 
 	return true;
 }
 
-void Deg::Runtime::Math::Set::MergeOne(Conjunction& target, const Conjunction& c) {
-	for(auto& rng : target.Clauses) {
-		auto it = c.Clauses.find(rng.first);
-		if(it != c.Clauses.end()) {
-			rng.second = Interval<DefaultFixed>::Union(rng.second, it->second);
-		}
-		else {
-			rng.second = Interval<DefaultFixed>(std::numeric_limits<DefaultFixed>::lowest(), std::numeric_limits<DefaultFixed>::max());
-		}
+void Deg::Runtime::Math::Set::MergeOne(Conjunction& target, const Conjunction& c) const {
+	for(size_t i = 0; i < RecordWidth; ++i) {
+		target.Clauses[i] = Interval<DefaultFixed>::Union(target.Clauses[i], c.Clauses[i]);
 	}
 }
 
@@ -158,61 +141,47 @@ void Deg::Runtime::Math::Set::Merge() {
 	while(TryMerge());
 }
 
-void Deg::Runtime::Math::Set::ReduceOne(Conjunction& target) {
-	for(auto it = target.Clauses.begin(); it != target.Clauses.end();) {
-		if(it->second.bottom == std::numeric_limits<DefaultFixed>::lowest() && it->second.top == std::numeric_limits<DefaultFixed>::max()) {
-			it = target.Clauses.erase(it);
-		}
-		else {
-			++it;
-		}
-	}
-}
-
 void Deg::Runtime::Math::Set::Reduce() {
 	Disjoin();
 	Merge();
 
-	for(auto& conj : Disjunction) {
-		ReduceOne(conj);
-	}
-
-	auto it = std::remove_if(Disjunction.begin(), Disjunction.end(),
-			[](const Conjunction& val) { return val.IsEmpty(); });
+	auto it = std::remove_if(Disjunction.begin(), Disjunction.end(), [](const Conjunction& val) { return val.IsEmpty(); });
 	Disjunction.erase(it, Disjunction.end());
 
 	return;
 }
 
-Deg::Runtime::Math::Set::Set() {
+Deg::Runtime::Math::Set::Set(size_t width)
+	: RecordWidth(width) {
 	return;
 }
 
-Deg::Runtime::Math::Set::Set(unsigned int field, Relation relation, DefaultFixed value) {
+Deg::Runtime::Math::Set::Set(size_t width, unsigned int field, Relation relation, DefaultFixed value)
+	: RecordWidth(width) {
 	switch(relation) {
 	case Relation::Less:
-		Disjunction.emplace_back(field, std::numeric_limits<DefaultFixed>::lowest(), value);
+		Disjunction.emplace_back(RecordWidth, field, std::numeric_limits<DefaultFixed>::lowest(), value);
 		break;
 
 	case Relation::LessEqual:
-		Disjunction.emplace_back(field, std::numeric_limits<DefaultFixed>::lowest(), value + DefaultFixed(1));
+		Disjunction.emplace_back(RecordWidth, field, std::numeric_limits<DefaultFixed>::lowest(), value + DefaultFixed(1));
 		break;
 
 	case Relation::Greater:
-		Disjunction.emplace_back(field, value + DefaultFixed(1), std::numeric_limits<DefaultFixed>::max());
+		Disjunction.emplace_back(RecordWidth, field, value + DefaultFixed(1), std::numeric_limits<DefaultFixed>::max());
 		break;
 
 	case Relation::GreaterEqual:
-		Disjunction.emplace_back(field, value, std::numeric_limits<DefaultFixed>::max());
+		Disjunction.emplace_back(RecordWidth, field, value, std::numeric_limits<DefaultFixed>::max());
 		break;
 
 	case Relation::Equal:
-		Disjunction.emplace_back(field, value, value + DefaultFixed(1));
+		Disjunction.emplace_back(RecordWidth, field, value, value + DefaultFixed(1));
 		break;
 
 	case Relation::NotEqual:
-		Disjunction.emplace_back(field, std::numeric_limits<DefaultFixed>::lowest(), value);
-		Disjunction.emplace_back(field, value + DefaultFixed(1), std::numeric_limits<DefaultFixed>::max());
+		Disjunction.emplace_back(RecordWidth, field, std::numeric_limits<DefaultFixed>::lowest(), value);
+		Disjunction.emplace_back(RecordWidth, field, value + DefaultFixed(1), std::numeric_limits<DefaultFixed>::max());
 		break;
 	}
 }
@@ -257,22 +226,22 @@ bool Deg::Runtime::Math::Set::operator!=(const Set& s) const {
 
 Deg::Runtime::Math::Set Deg::Runtime::Math::Set::operator&(const Set& s) const {
 	// Intersection
-	Set rv;
+	Set rv(std::max(RecordWidth, s.RecordWidth));
 	for(const auto& cj : Disjunction) {
 		for(const auto& scj : s.Disjunction) {
 			Conjunction c = cj;
-			for(const auto& sclause : scj.Clauses) {
-				auto it = c.Clauses.find(sclause.first);
-				if(it == c.Clauses.end()) {
-					// No such clause
-					c.Clauses[sclause.first] = sclause.second;
-				}
-				else {
-					it->second = Interval<DefaultFixed>::Intersect(it->second, sclause.second);
+			bool IsEmpty = false;
+			for(size_t i = 0; i < RecordWidth; ++i) {
+				c.Clauses[i] = Interval<DefaultFixed>::Intersect(c.Clauses[i], scj.Clauses[i]);
+				if(c.Clauses[i].IsEmpty()) {
+					IsEmpty = true;
+					break;
 				}
 			}
 
-			rv.Disjunction.push_back(c);
+			if(!IsEmpty) {
+				rv.Disjunction.push_back(c);
+			}
 		}
 	}
 
@@ -281,7 +250,7 @@ Deg::Runtime::Math::Set Deg::Runtime::Math::Set::operator&(const Set& s) const {
 }
 
 Deg::Runtime::Math::Set Deg::Runtime::Math::Set::operator|(const Set& s) const {
-	Set rv;
+	Set rv(std::max(RecordWidth, s.RecordWidth));
 	rv.Disjunction.insert(rv.Disjunction.end(), Disjunction.begin(), Disjunction.end());
 	rv.Disjunction.insert(rv.Disjunction.end(), s.Disjunction.begin(), s.Disjunction.end());
 	rv.Reduce();
@@ -293,7 +262,7 @@ Deg::Runtime::Math::Set Deg::Runtime::Math::Set::operator-(const Set& s) const {
 		return *this;
 	}
 
-	Set rv;
+	Set rv(std::max(RecordWidth, s.RecordWidth));
 
 	std::vector<Conjunction> output;
 	std::vector<Conjunction> current = Disjunction;
@@ -329,7 +298,7 @@ std::ostream& Deg::Runtime::Math::operator<<(std::ostream& os, const Set& s) {
 		ss << "(";
 
 		bool p_con_and = false;
-		for(const auto& con : dis.Clauses) {
+		for(size_t i = 0; i < s.RecordWidth; ++i) {
 			if(p_con_and) {
 				ss << "^";
 			}
@@ -337,7 +306,7 @@ std::ostream& Deg::Runtime::Math::operator<<(std::ostream& os, const Set& s) {
 				p_con_and = true;
 			}
 
-			ss << con.first << ":[" << static_cast<std::string>(con.second.bottom) << "," << static_cast<std::string>(con.second.top) << "]";
+			ss << i << ":[" << static_cast<std::string>(dis.Clauses[i].bottom) << "," << static_cast<std::string>(dis.Clauses[i].top) << "]";
 		}
 
 		ss << ")";
