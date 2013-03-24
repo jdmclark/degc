@@ -15,11 +15,23 @@ public:
 
 	virtual void Comment(const std::string& msg) = 0;
 	virtual void Label(const std::string& name) = 0;
+	virtual void Function(const std::string& universal_name) = 0;
+	virtual std::string GenerateUniqueLabel() = 0;
 
 	virtual void Nop() = 0;
+	virtual void Panic() = 0;
+
+	virtual void Ret() = 0;
 
 	virtual void ConstB(bool value) = 0;
 	virtual void ConstN(Runtime::Math::DefaultFixed value) = 0;
+
+	virtual void LoadS(int offset) = 0;
+	virtual void StoreS(int offset) = 0;
+
+	virtual void LNot() = 0;
+	virtual void LAnd() = 0;
+	virtual void LOr() = 0;
 
 	virtual void Neg() = 0;
 	virtual void Add() = 0;
@@ -34,9 +46,8 @@ public:
 	virtual void CEq() = 0;
 	virtual void CNeq() = 0;
 
-	virtual void LNot() = 0;
-	virtual void LAnd() = 0;
-	virtual void LOr() = 0;
+	virtual void Jmp(const std::string& label) = 0;
+	virtual void Btf(const std::string& t_label, const std::string& f_label) = 0;
 };
 
 }

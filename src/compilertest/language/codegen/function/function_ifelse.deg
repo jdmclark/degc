@@ -1,0 +1,9 @@
+module ca.nullptr
+
+function Branch(number n) -> number:
+    if n = 1:
+        5
+    else if n = 2:
+        6
+    else:
+        7

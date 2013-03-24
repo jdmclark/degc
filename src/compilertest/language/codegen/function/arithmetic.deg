@@ -1,0 +1,13 @@
+module ca.nullptr
+
+function Add(number a, number b) -> number:
+    a + b
+
+function Sub(number a, number b) -> number:
+    a - b
+
+function Mul(number a, number b) -> number:
+    a * b
+    
+function Div(number a, number b) -> number:
+    a / b

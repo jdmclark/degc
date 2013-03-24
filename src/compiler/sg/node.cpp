@@ -170,8 +170,8 @@ bool ProgramSymbol::InheritsFrom(const ProgramSymbol& p) const {
 	}
 }
 
-RecordMemberSymbol::RecordMemberSymbol(std::unique_ptr<Type>& InputType)
-	: InputType(std::move(InputType)), Offset(0) {
+RecordMemberSymbol::RecordMemberSymbol(std::unique_ptr<Type>& InputType, unsigned int Index)
+	: InputType(std::move(InputType)), Index(Index) {
 	return;
 }
 
@@ -181,7 +181,7 @@ RecordSymbol::RecordSymbol()
 }
 
 FunctionArgumentSymbol::FunctionArgumentSymbol(std::unique_ptr<Type>& InputType, unsigned int Index)
-	: InputType(std::move(InputType)), Index(Index), Offset(0) {
+	: InputType(std::move(InputType)), Index(Index) {
 	return;
 }
 

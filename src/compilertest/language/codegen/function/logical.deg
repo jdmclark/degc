@@ -1,0 +1,10 @@
+module ca.nullptr
+
+function Not(bool b) -> bool:
+    not b
+
+function And(bool a, bool b) -> bool:
+    a and b
+    
+function Or(bool a, bool b) -> bool:
+    a or b

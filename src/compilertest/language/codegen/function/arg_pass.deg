@@ -1,0 +1,4 @@
+module ca.nullptr
+
+function ArgPass(number n) -> number:
+    n

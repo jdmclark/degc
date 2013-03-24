@@ -14,6 +14,8 @@ namespace IR {
 
 class CodePrinter : public Printer {
 private:
+	size_t unique_label_id;
+	
 	Runtime::Code::CodeBuffer& codeBuffer;
 	Runtime::Code::CodeBufferWriteStream stream;
 	Runtime::Code::FunctionTable& functionTable;
@@ -28,11 +30,23 @@ public:
 
 	void Comment(const std::string& msg);
 	void Label(const std::string& name);
+	void Function(const std::string& universal_name);
+	std::string GenerateUniqueLabel();
 
 	void Nop();
+	void Panic();
+
+	void Ret();
 
 	void ConstB(bool value);
 	void ConstN(Runtime::Math::DefaultFixed value);
+
+	void LoadS(int offset);
+	void StoreS(int offset);
+
+	void LNot();
+	void LAnd();
+	void LOr();
 
 	void Neg();
 	void Add();
@@ -47,9 +61,8 @@ public:
 	void CEq();
 	void CNeq();
 
-	void LNot();
-	void LAnd();
-	void LOr();
+	void Jmp(const std::string& label);
+	void Btf(const std::string& t_label, const std::string& f_label);
 };
 
 }

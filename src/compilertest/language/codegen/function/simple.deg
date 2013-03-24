@@ -1,0 +1,4 @@
+module ca.nullptr
+
+function Simple() -> number:
+    5

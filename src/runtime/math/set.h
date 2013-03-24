@@ -22,7 +22,7 @@ public:
 	};
 
 private:
-	const size_t RecordWidth;
+	size_t RecordWidth;
 	std::vector<Conjunction> Disjunction;
 
 	void DisjoinOne(const Conjunction& base, const Conjunction& minus, std::vector<Conjunction>& output) const;
@@ -34,7 +34,7 @@ private:
 	void Reduce();
 
 public:
-	Set(size_t width);
+	explicit Set(size_t width);
 	Set(size_t width, unsigned int field, Relation relation, DefaultFixed value);
 
 	bool IsEmpty() const;

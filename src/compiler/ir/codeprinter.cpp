@@ -1,11 +1,12 @@
 #include "codeprinter.h"
 #include "runtime/vm/opcode.h"
+#include <boost/format.hpp>
 
 using Deg::Compiler::IR::CodePrinter;
 using Deg::Runtime::VM::Opcode;
 
 CodePrinter::CodePrinter(Deg::Runtime::Code::CodeBuffer& codeBuffer, Deg::Runtime::Code::FunctionTable& functionTable)
-	: codeBuffer(codeBuffer), stream(codeBuffer), functionTable(functionTable) {
+	: codeBuffer(codeBuffer), stream(codeBuffer), functionTable(functionTable), unique_label_id(0) {
 	return;
 }
 
@@ -31,8 +32,25 @@ void CodePrinter::Label(const std::string& name) {
 	labelmap.insert(std::make_pair(name, stream.Tell()));
 }
 
+void CodePrinter::Function(const std::string& universal_name) {
+	Label(boost::str(boost::format("@FUNCTION:%s") % universal_name));
+	functionTable.AddFunction(universal_name, stream.Tell());
+}
+
+std::string CodePrinter::GenerateUniqueLabel() {
+	return boost::str(boost::format("@L:%d") % unique_label_id++);
+}
+
 void CodePrinter::Nop() {
 	stream.Write(Opcode::NOP);
+}
+
+void CodePrinter::Panic() {
+	stream.Write(Opcode::PANIC);
+}
+
+void CodePrinter::Ret() {
+	stream.Write(Opcode::RET);
 }
 
 void CodePrinter::ConstB(bool value) {
@@ -43,6 +61,28 @@ void CodePrinter::ConstB(bool value) {
 void CodePrinter::ConstN(Runtime::Math::DefaultFixed value) {
 	stream.Write(Opcode::CONSTN);
 	stream.Write(value);
+}
+
+void CodePrinter::LoadS(int offset) {
+	stream.Write(Opcode::LOADS);
+	stream.Write(offset);
+}
+
+void CodePrinter::StoreS(int offset) {
+	stream.Write(Opcode::STORES);
+	stream.Write(offset);
+}
+
+void CodePrinter::LNot() {
+	stream.Write(Opcode::LNOT);
+}
+
+void CodePrinter::LAnd() {
+	stream.Write(Opcode::LAND);
+}
+
+void CodePrinter::LOr() {
+	stream.Write(Opcode::LOR);
 }
 
 void CodePrinter::Neg() {
@@ -89,14 +129,16 @@ void CodePrinter::CNeq() {
 	stream.Write(Opcode::CNEQ);
 }
 
-void CodePrinter::LNot() {
-	stream.Write(Opcode::LNOT);
+void CodePrinter::Jmp(const std::string& label) {
+	stream.Write(Opcode::JMP);
+	backpatchmap.insert(std::make_pair(label, stream.Tell()));
+	stream.Write<size_t>(0);
 }
 
-void CodePrinter::LAnd() {
-	stream.Write(Opcode::LAND);
-}
-
-void CodePrinter::LOr() {
-	stream.Write(Opcode::LOR);
+void CodePrinter::Btf(const std::string& t_label, const std::string& f_label) {
+	stream.Write(Opcode::BTF);
+	backpatchmap.insert(std::make_pair(t_label, stream.Tell()));
+	stream.Write<size_t>(0);
+	backpatchmap.insert(std::make_pair(f_label, stream.Tell()));
+	stream.Write<size_t>(0);
 }

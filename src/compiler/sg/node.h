@@ -157,9 +157,9 @@ class RecordMemberSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
 	std::unique_ptr<Type> InputType;
-	unsigned int Offset;
+	unsigned int Index;
 
-	RecordMemberSymbol(std::unique_ptr<Type>& InputType);
+	RecordMemberSymbol(std::unique_ptr<Type>& InputType, unsigned int Index);
 };
 
 class RecordSymbol : public Symbol {
@@ -177,7 +177,6 @@ class FunctionArgumentSymbol : public Symbol {
 public:
 	std::unique_ptr<Type> InputType;
 	unsigned int Index;
-	unsigned int Offset;
 
 	FunctionArgumentSymbol(std::unique_ptr<Type>& InputType, unsigned int Index);
 };
@@ -185,6 +184,7 @@ public:
 class FunctionSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
+	std::string UniversalUniqueName;
 	AST::Function* ast_function;
 	std::unique_ptr<Type> CodomainType;
 	Scope Arguments;

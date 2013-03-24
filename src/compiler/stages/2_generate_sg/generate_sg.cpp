@@ -14,7 +14,7 @@ void Deg::Compiler::Stages::GenerateSG::GenerateSG(const std::vector<AST::Transl
 	for(auto unit : units) {
 		SG::Module& mod = symbolTable.CreateModule(unit->Name->Name);
 
-		DeclarationVisitor v(mod, report);
+		DeclarationVisitor v(unit->Name->Name, mod, report);
 		for(auto node : *unit->Declarations) {
 			node->Accept(v);
 		}

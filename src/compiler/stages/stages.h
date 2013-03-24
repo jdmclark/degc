@@ -1,6 +1,14 @@
 #include <boost/filesystem/path.hpp>
 
 namespace Deg {
+
+namespace Runtime {
+namespace Code {
+class CodeBuffer;
+class FunctionTable;
+}
+}
+
 namespace Compiler {
 
 namespace Diagnostics {
@@ -44,6 +52,10 @@ void ConstantFolding(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
 
 namespace GenerateSetExpressions {
 void GenerateSetExpressions(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
+}
+
+namespace GenerateCode {
+void GenerateCode(SG::SymbolTable& symbolTable, Runtime::Code::CodeBuffer& codeBuffer, Runtime::Code::FunctionTable& functionTable, Diagnostics::Report& report);
 }
 
 }

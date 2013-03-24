@@ -1,0 +1,7 @@
+module ca.nullptr
+
+function Factorial(number n) -> number:
+    if n <= 0:
+        1
+    else:
+        n * Factorial(n - 1)

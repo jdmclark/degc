@@ -18,7 +18,7 @@ void RecordMemberVisitor::VisitRecordMember(RecordMember& member) {
 
 	TypenameVisitor v(module, Report, true);
 	member.Type->Accept(v);
-	symbol.Members.MakeMember<SG::RecordMemberSymbol>(member.Name, v.TypenameType);
+	symbol.Members.MakeMember<SG::RecordMemberSymbol>(member.Name, v.TypenameType, symbol.Members.children_size());
 	if(v.IsQuantityType) {
 		if(symbol.QuantityMember != nullptr) {
 			Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::RecordMultipleQuantity, Diagnostics::ErrorLevel::Error,

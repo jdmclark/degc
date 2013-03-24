@@ -6,9 +6,20 @@ namespace VM {
 
 enum class Opcode : unsigned char {
 	NOP,
+	PANIC,
+
+	RET,					// Returns value to calling stack frame
 
 	CONSTB,					// Load constant boolean
 	CONSTN,					// Load constant numeric
+
+	LOADS,					// Load from stack offset
+	STORES,					// Store to stack offset
+
+	// Boolean operations
+	LNOT,					// Negate top
+	LAND,					// Top && second-top
+	LOR,					// Top || second-top
 
 	// Numeric operations
 	NEG,					// Negate top numeric from stack
@@ -25,10 +36,9 @@ enum class Opcode : unsigned char {
 	CEQ,					// Second-top == top
 	CNEQ,					// Second-top != top
 
-	// Boolean operations
-	LNOT,					// Negate top
-	LAND,					// Top && second-top
-	LOR						// Top || second-top
+	// Branch operations
+	JMP,					// Jump to target PC
+	BTF						// Branch to first if true, second if false
 };
 
 }
