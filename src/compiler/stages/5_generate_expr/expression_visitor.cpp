@@ -89,7 +89,7 @@ void ExpressionVisitor::VisitPanicExpression(AST::PanicExpression& n) {
 void ExpressionVisitor::VisitIdentifierExpression(AST::IdentifierExpression& n) {
 	try {
 		SG::Node& node = scope.GetSymbol(n.Identifier);
-		IdentifierVisitor v(scope, n.Identifier, n.Location, Report);
+		IdentifierVisitor v(n.Identifier, n.Location, Report);
 		node.Accept(v);
 		GeneratedExpression = std::move(v.GeneratedExpression);
 		GeneratedExpressionType = std::move(v.GeneratedExpressionType);

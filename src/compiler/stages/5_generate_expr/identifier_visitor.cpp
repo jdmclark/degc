@@ -4,8 +4,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateExpressions::IdentifierVisitor;
 
-IdentifierVisitor::IdentifierVisitor(ScopeStack& scope, const std::string& symbolname, const Diagnostics::ErrorLocation& location, Diagnostics::Report& report)
-	: SG::Visitor("GenerateExpressions::IdentifierVisitor", report), scope(scope), symbolname(symbolname), location(location) {
+IdentifierVisitor::IdentifierVisitor(const std::string& symbolname, const Diagnostics::ErrorLocation& location, Diagnostics::Report& report)
+	: SG::Visitor("GenerateExpressions::IdentifierVisitor", report), symbolname(symbolname), location(location) {
 	return;
 }
 

@@ -1,7 +1,7 @@
 #include "linearrecordtable.h"
 
 Deg::Runtime::Solver::LinearRecordTable::LinearRecordTable(size_t RecordWidth, size_t QuantityIndex)
-	: RecordTable(RecordWidth, QuantityIndex), record_count(0) {
+	: RecordTable(RecordWidth, QuantityIndex) {
 	return;
 }
 

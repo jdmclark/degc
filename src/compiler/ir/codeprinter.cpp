@@ -6,7 +6,7 @@ using Deg::Compiler::IR::CodePrinter;
 using Deg::Runtime::VM::Opcode;
 
 CodePrinter::CodePrinter(Deg::Runtime::Code::CodeBuffer& codeBuffer, Deg::Runtime::Code::FunctionTable& functionTable)
-	: codeBuffer(codeBuffer), stream(codeBuffer), functionTable(functionTable), unique_label_id(0) {
+	: unique_label_id(0), codeBuffer(codeBuffer), stream(codeBuffer), functionTable(functionTable) {
 	return;
 }
 

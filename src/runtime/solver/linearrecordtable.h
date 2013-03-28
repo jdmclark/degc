@@ -9,7 +9,6 @@ namespace Solver {
 
 class LinearRecordTable : public RecordTable {
 private:
-	size_t record_count;
 	std::vector<Math::DefaultFixed> records;
 
 	bool internal_set_contains(std::vector<Math::DefaultFixed>::const_iterator it, const Math::Set& set) const;

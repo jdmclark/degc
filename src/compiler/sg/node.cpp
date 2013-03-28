@@ -191,7 +191,7 @@ EnumerationMemberSymbol::EnumerationMemberSymbol(unsigned int Value)
 }
 
 VariableSymbol::VariableSymbol(RecordSymbol* ElementType)
-	: ElementType(ElementType) {
+	: ElementType(ElementType), Offset(0) {
 	return;
 }
 
