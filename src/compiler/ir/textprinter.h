@@ -26,10 +26,12 @@ public:
 	void Panic();
 
 	void Call(const std::string& universal_name, size_t arg_ct);
+	void CallS(size_t offset, size_t arg_ct);
 	void Ret();
 
 	void ConstB(bool value);
 	void ConstN(Runtime::Math::DefaultFixed value);
+	void ConstF(const std::string& universal_name);
 
 	void LoadS(size_t offset);
 	void StoreS(size_t offset);

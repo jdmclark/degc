@@ -44,6 +44,10 @@ void TextPrinter::Call(const std::string& universal_name, size_t arg_ct) {
 	os << "\tCALL(" << arg_ct << ") " << boost::str(boost::format("@FUNCTION:%s") % universal_name) << std::endl;
 }
 
+void TextPrinter::CallS(size_t offset, size_t arg_ct) {
+	os << "\tCALL(" << arg_ct << ") " << offset << std::endl;
+}
+
 void TextPrinter::Ret() {
 	os << "\tRET" << std::endl;
 }
@@ -54,6 +58,10 @@ void TextPrinter::ConstB(bool value) {
 
 void TextPrinter::ConstN(Runtime::Math::DefaultFixed value) {
 	os << "\tCONSTN " << static_cast<std::string>(value) << std::endl;
+}
+
+void TextPrinter::ConstF(const std::string& universal_name) {
+	os << "\tCONSTF " << boost::str(boost::format("@FUNCTION:%s") % universal_name) << std::endl;
 }
 
 void TextPrinter::LoadS(size_t offset) {

@@ -9,10 +9,12 @@ enum class Opcode : unsigned char {
 	PANIC,
 
 	CALL,					// Calls a static function
+	CALLS,					// Calls the function stored at the stack offset
 	RET,					// Returns value to calling stack frame
 
 	CONSTB,					// Load constant boolean
 	CONSTN,					// Load constant numeric
+	CONSTF,					// Load constant function reference
 
 	LOADS,					// Load from stack offset
 	STORES,					// Store to stack offset

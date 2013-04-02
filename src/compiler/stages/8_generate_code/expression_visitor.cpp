@@ -34,7 +34,7 @@ void ExpressionVisitor::VisitFunctionCallExpression(FunctionCallExpression& e) {
 		arg->Accept(ev);
 	}
 
-	FunctionVisitor fv(code, Report);
+	FunctionVisitor fv(e.ArgumentExpressions.size(), code, Report);
 	e.FunctionTargetExpression->Accept(fv);
 }
 

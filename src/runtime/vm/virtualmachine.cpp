@@ -36,6 +36,19 @@ Deg::Runtime::VM::VirtualMachine::Type Deg::Runtime::VM::VirtualMachine::Execute
 			}
 			break;
 
+		case Opcode::CALLS: {
+				size_t fn_off = stream.Read<size_t>();
+				size_t tgt_pc = boost::get<size_t>(stack[si + fn_off]);
+				size_t arg_ct = stream.Read<size_t>();
+
+				pc_stack.push_back(stream.Tell());
+				si_stack.push_back(si);
+
+				si = stack.size() - arg_ct;
+				stream.Seek(tgt_pc);
+			}
+			break;
+
 		case Opcode::RET:
 			if(pc_stack.empty()) {
 				return stack.back();
@@ -59,6 +72,12 @@ Deg::Runtime::VM::VirtualMachine::Type Deg::Runtime::VM::VirtualMachine::Execute
 
 		case Opcode::CONSTN: {
 				DefaultFixed v = stream.Read<DefaultFixed>();
+				Push(v);
+			}
+			break;
+
+		case Opcode::CONSTF: {
+				size_t v = stream.Read<size_t>();
 				Push(v);
 			}
 			break;

@@ -1,0 +1,10 @@
+module ca.nullptr
+
+function square(number a) -> number:
+    a * a
+    
+function map_sum(function(number)->number fn, number a, number b, number c) -> number:
+    fn(a) + fn(b) + fn(c)
+
+function do(number a, number b, number c) -> number:
+    map_sum(square, a, b, c)

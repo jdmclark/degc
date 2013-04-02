@@ -14,7 +14,7 @@ namespace VM {
 
 class VirtualMachine {
 private:
-	typedef boost::variant<bool, Math::DefaultFixed, Math::Set, Solver::Record> Type;
+	typedef boost::variant<size_t, bool, Math::DefaultFixed, Math::Set, Solver::Record> Type;
 	const Code::CodeBuffer& code;
 	std::vector<Type> stack;
 	std::vector<size_t> si_stack;

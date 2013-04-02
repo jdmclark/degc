@@ -45,6 +45,10 @@ void SplitPrinter::Call(const std::string& universal_name, size_t arg_ct) {
 	for(auto p : printers) { p->Call(universal_name, arg_ct); }
 }
 
+void SplitPrinter::CallS(size_t offset, size_t arg_ct) {
+	for(auto p : printers) { p->CallS(offset, arg_ct); }
+}
+
 void SplitPrinter::Ret() {
 	for(auto p : printers) { p->Ret(); }
 }
@@ -55,6 +59,10 @@ void SplitPrinter::ConstB(bool value) {
 
 void SplitPrinter::ConstN(Runtime::Math::DefaultFixed value) {
 	for(auto p : printers) { p->ConstN(value); }
+}
+
+void SplitPrinter::ConstF(const std::string& universal_name) {
+	for(auto p : printers) { p->ConstF(universal_name); }
 }
 
 void SplitPrinter::LoadS(size_t offset) {

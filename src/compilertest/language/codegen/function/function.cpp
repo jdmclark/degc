@@ -54,6 +54,15 @@ Case(Factorial) {
 	Test_Assert_Eq(vm.Call<DefaultFixed>(fn, DefaultFixed("10")), DefaultFixed("3628800"));
 }
 
+Case(FunctionHigherOrder) {
+	ParseFile("function_higherorder.deg");
+	AssertResult(0, 0);
+
+	size_t fn = functionTable.GetFunction("ca.nullptr.do");
+
+	Test_Assert_Eq(vm.Call<DefaultFixed>(fn, DefaultFixed("1"), DefaultFixed("3"), DefaultFixed("2")), DefaultFixed("14"));
+}
+
 Case(FunctionIfElse) {
 	ParseFile("function_ifelse.deg");
 	AssertResult(0, 0);

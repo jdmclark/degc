@@ -10,11 +10,13 @@ namespace GenerateCode {
 
 class FunctionIdentifierVisitor : public SG::Visitor {
 private:
+	size_t arg_ct;
 	IR::Printer& code;
 public:
-	FunctionIdentifierVisitor(IR::Printer& code, Diagnostics::Report& report);
+	FunctionIdentifierVisitor(size_t arg_ct, IR::Printer& code, Diagnostics::Report& report);
 
 	void VisitFunctionSymbol(SG::FunctionSymbol& n);
+	void VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n);
 };
 
 }

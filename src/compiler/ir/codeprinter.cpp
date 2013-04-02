@@ -56,6 +56,12 @@ void CodePrinter::Call(const std::string& universal_name, size_t arg_ct) {
 	stream.Write(arg_ct);
 }
 
+void CodePrinter::CallS(size_t offset, size_t arg_ct) {
+	stream.Write(Opcode::CALLS);
+	stream.Write(offset);
+	stream.Write(arg_ct);
+}
+
 void CodePrinter::Ret() {
 	stream.Write(Opcode::RET);
 }
@@ -68,6 +74,12 @@ void CodePrinter::ConstB(bool value) {
 void CodePrinter::ConstN(Runtime::Math::DefaultFixed value) {
 	stream.Write(Opcode::CONSTN);
 	stream.Write(value);
+}
+
+void CodePrinter::ConstF(const std::string& universal_name) {
+	stream.Write(Opcode::CONSTF);
+	backpatchmap.insert(std::make_pair(boost::str(boost::format("@FUNCTION:%s") % universal_name), stream.Tell()));
+	stream.Write<size_t>(0);
 }
 
 void CodePrinter::LoadS(size_t offset) {

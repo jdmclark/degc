@@ -8,6 +8,10 @@ IdentifierVisitor::IdentifierVisitor(IR::Printer& code, Diagnostics::Report& rep
 	return;
 }
 
+void IdentifierVisitor::VisitFunctionSymbol(FunctionSymbol& n) {
+	code.ConstF(n.UniversalUniqueName);
+}
+
 void IdentifierVisitor::VisitFunctionArgumentSymbol(FunctionArgumentSymbol& n) {
 	code.LoadS(n.Index);
 }
