@@ -2,6 +2,8 @@
 .cproject
 .project
 .settings/
+degc.sublime-project
+degc.sublime-workspace
 bin/
 obj/
 src/compiler/grammar/parser.cpp

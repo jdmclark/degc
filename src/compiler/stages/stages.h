@@ -24,6 +24,10 @@ namespace SG {
 class SymbolTable;
 }
 
+namespace IR {
+class Printer;
+}
+
 namespace Stages {
 
 namespace GenerateAST {
@@ -55,7 +59,7 @@ void GenerateSetExpressions(SG::SymbolTable& symbolTable, Diagnostics::Report& r
 }
 
 namespace GenerateCode {
-void GenerateCode(SG::SymbolTable& symbolTable, Runtime::Code::CodeBuffer& codeBuffer, Runtime::Code::FunctionTable& functionTable, Diagnostics::Report& report);
+void GenerateCode(SG::SymbolTable& symbolTable, IR::Printer& code, Diagnostics::Report& report);
 }
 
 }

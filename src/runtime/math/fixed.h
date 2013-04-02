@@ -4,12 +4,17 @@
 #include <sstream>
 #include <limits>
 #include <iomanip>
+#include <iosfwd>
+#include <boost/integer.hpp>
 
 namespace Deg {
 namespace Runtime {
 namespace Math {
 
 template <typename T, size_t Q> class Fixed {
+	static_assert(boost::integer_traits<T>::is_integral, "T must be integral");
+	typedef typename boost::int_t<std::numeric_limits<T>::digits * 2>::fast Tbig;
+
 private:
 	static constexpr T internal_scale_factor(size_t k) {
 		return (k == 0) ? (1) : (10 * internal_scale_factor(k - 1));
@@ -95,7 +100,7 @@ public:
 	}
 
 	Fixed operator*(const Fixed& d) const {
-		return Fixed((data * d.data) / scale_factor);
+		return Fixed(static_cast<T>((static_cast<Tbig>(data) * static_cast<Tbig>(d.data)) / static_cast<Tbig>(scale_factor)));
 	}
 
 	Fixed operator/(const Fixed& d) const {
@@ -156,13 +161,32 @@ public:
 	}
 
 	operator std::string() const {
+		bool neg = false;
+		int d = data;
+		if(d < 0) {
+			d = -d;
+			neg = true;
+		}
+
 		std::stringstream ss;
-		ss << (data / scale_factor) << "." << std::setw(4) << std::setfill('0') << (data % scale_factor);
+		if(neg) {
+			ss << "-";
+		}
+
+		ss << (d / scale_factor) << "." << std::setw(4) << std::setfill('0') << (d % scale_factor);
 		return ss.str();
+	}
+
+	inline T GetRawValue() const {
+		return data;
 	}
 };
 
 typedef Fixed<int, 4> DefaultFixed;
+
+inline std::ostream& operator<<(std::ostream& os, DefaultFixed v) {
+	return os << static_cast<std::string>(v);
+}
 
 }
 }

@@ -49,6 +49,13 @@ void CodePrinter::Panic() {
 	stream.Write(Opcode::PANIC);
 }
 
+void CodePrinter::Call(const std::string& universal_name, size_t arg_ct) {
+	stream.Write(Opcode::CALL);
+	backpatchmap.insert(std::make_pair(boost::str(boost::format("@FUNCTION:%s") % universal_name), stream.Tell()));
+	stream.Write<size_t>(0);
+	stream.Write(arg_ct);
+}
+
 void CodePrinter::Ret() {
 	stream.Write(Opcode::RET);
 }
@@ -63,12 +70,12 @@ void CodePrinter::ConstN(Runtime::Math::DefaultFixed value) {
 	stream.Write(value);
 }
 
-void CodePrinter::LoadS(int offset) {
+void CodePrinter::LoadS(size_t offset) {
 	stream.Write(Opcode::LOADS);
 	stream.Write(offset);
 }
 
-void CodePrinter::StoreS(int offset) {
+void CodePrinter::StoreS(size_t offset) {
 	stream.Write(Opcode::STORES);
 	stream.Write(offset);
 }

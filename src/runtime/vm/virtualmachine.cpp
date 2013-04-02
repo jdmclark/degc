@@ -10,7 +10,7 @@ Deg::Runtime::VM::VirtualMachine::VirtualMachine(const Code::CodeBuffer& code)
 	return;
 }
 
-void Deg::Runtime::VM::VirtualMachine::Execute(size_t pc) {
+Deg::Runtime::VM::VirtualMachine::Type Deg::Runtime::VM::VirtualMachine::Execute(size_t pc) {
 	Code::CodeBufferReadStream stream(code);
 	stream.Seek(pc);
 
@@ -24,19 +24,30 @@ void Deg::Runtime::VM::VirtualMachine::Execute(size_t pc) {
 		case Opcode::PANIC:
 			throw std::exception();
 
-		case Opcode::RET: {
-				stack[si - 3] = stack.back();
-				stack.resize(si);
-				int n_pc = Pop<int>();
-				int n_si = Pop<int>();
+		case Opcode::CALL: {
+				size_t tgt_pc = stream.Read<size_t>();
+				size_t arg_ct = stream.Read<size_t>();
 
-				if(n_pc < 0) {
-					return;
-				}
-				else {
-					stream.Seek(n_pc);
-					si = n_si;
-				}
+				pc_stack.push_back(stream.Tell());
+				si_stack.push_back(si);
+
+				si = stack.size() - arg_ct;
+				stream.Seek(tgt_pc);
+			}
+			break;
+
+		case Opcode::RET:
+			if(pc_stack.empty()) {
+				return stack.back();
+			}
+			else {
+				Type value = stack.back();
+				size_t n_pc = pc_stack.back(); pc_stack.pop_back();
+				size_t n_si = si_stack.back(); si_stack.pop_back();
+				stack.resize(si);
+				stream.Seek(n_pc);
+				si = n_si;
+				stack.push_back(value);
 			}
 			break;
 
@@ -53,13 +64,13 @@ void Deg::Runtime::VM::VirtualMachine::Execute(size_t pc) {
 			break;
 
 		case Opcode::LOADS: {
-				int offset = stream.Read<int>();
+				size_t offset = stream.Read<size_t>();
 				stack.push_back(stack[si + offset]);
 			}
 			break;
 
 		case Opcode::STORES: {
-				int offset = stream.Read<int>();
+				size_t offset = stream.Read<size_t>();
 				stack[si + offset] = stack.back();
 				stack.pop_back();
 			}

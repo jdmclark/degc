@@ -2,12 +2,14 @@
 
 #include "runtime/math/fixed.h"
 #include <vector>
+#include <iosfwd>
 
 namespace Deg {
 namespace Runtime {
 namespace Solver {
 
 class Record {
+	friend std::ostream& operator<<(std::ostream& os, const Record& r);
 private:
 	std::vector<Math::DefaultFixed> values;
 public:
@@ -17,6 +19,8 @@ public:
 		return values[i];
 	}
 };
+
+std::ostream& operator<<(std::ostream& os, const Record& r);
 
 }
 }

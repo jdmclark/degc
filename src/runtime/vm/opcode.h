@@ -8,6 +8,7 @@ enum class Opcode : unsigned char {
 	NOP,
 	PANIC,
 
+	CALL,					// Calls a static function
 	RET,					// Returns value to calling stack frame
 
 	CONSTB,					// Load constant boolean

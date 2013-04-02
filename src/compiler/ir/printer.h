@@ -21,13 +21,14 @@ public:
 	virtual void Nop() = 0;
 	virtual void Panic() = 0;
 
+	virtual void Call(const std::string& universal_name, size_t arg_ct) = 0;
 	virtual void Ret() = 0;
 
 	virtual void ConstB(bool value) = 0;
 	virtual void ConstN(Runtime::Math::DefaultFixed value) = 0;
 
-	virtual void LoadS(int offset) = 0;
-	virtual void StoreS(int offset) = 0;
+	virtual void LoadS(size_t offset) = 0;
+	virtual void StoreS(size_t offset) = 0;
 
 	virtual void LNot() = 0;
 	virtual void LAnd() = 0;

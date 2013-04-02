@@ -1,6 +1,9 @@
 #include "codegen_test_fixture.h"
 #include "compiler/sg/table.h"
 #include "compiler/stages/stages.h"
+#include "compiler/ir/codeprinter.h"
+#include "compiler/ir/textprinter.h"
+#include "compiler/ir/splitprinter.h"
 #include <fstream>
 
 CodegenTestFixture::CodegenTestFixture(const boost::filesystem::path& BasePath)
@@ -51,7 +54,11 @@ void CodegenTestFixture::ParseFiles(const std::vector<boost::filesystem::path>& 
 		return;
 	}
 
-	Deg::Compiler::Stages::GenerateCode::GenerateCode(symbolTable, code, functionTable, Report);
+	Deg::Compiler::IR::TextPrinter text_printer(code_text);
+	Deg::Compiler::IR::CodePrinter code_printer(code, functionTable);
+	Deg::Compiler::IR::SplitPrinter split_printer({&text_printer, &code_printer});
+
+	Deg::Compiler::Stages::GenerateCode::GenerateCode(symbolTable, split_printer, Report);
 	if(Report.GetErrorCount() > 0) {
 		return;
 	}

@@ -25,6 +25,7 @@ public:
 	void VisitPanicExpression(SG::PanicExpression& e);
 
 	void VisitIdentifierExpression(SG::IdentifierExpression& e);
+	void VisitFunctionCallExpression(SG::FunctionCallExpression& e);
 
 	void VisitUnaryExpression(SG::UnaryExpression& e);
 	void VisitInfixExpression(SG::InfixExpression& e);

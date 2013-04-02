@@ -14,12 +14,14 @@ namespace VM {
 
 class VirtualMachine {
 private:
-	typedef boost::variant<int, bool, Math::DefaultFixed, Math::Set, Solver::Record> Type;
+	typedef boost::variant<bool, Math::DefaultFixed, Math::Set, Solver::Record> Type;
 	const Code::CodeBuffer& code;
 	std::vector<Type> stack;
-	int si;
+	std::vector<size_t> si_stack;
+	std::vector<size_t> pc_stack;
+	size_t si;
 
-	void Execute(size_t pc);
+	Type Execute(size_t pc);
 
 	template <typename head> void push_cons(head head_v) {
 		stack.push_back(head_v);
@@ -43,23 +45,19 @@ public:
 		return boost::get<T>(rv);
 	}
 
-	template <typename T> T Call(int pc) {
-		stack.push_back(0); // RV
-		stack.push_back(0); // SI
-		stack.push_back(-1); // PC, negative means C return
-		si = 3;
-		Execute(pc);
-		return Pop<T>();
+	template <typename T> T Call(size_t pc) {
+		stack.clear();
+		si_stack.clear();
+		pc_stack.clear();
+		return boost::get<T>(Execute(pc));
 	}
 
-	template <typename T, typename... args> T Call(int pc, args... arg) {
-		stack.push_back(0); // RV
-		stack.push_back(0); // SI
-		stack.push_back(-1); // PC, negative means C return
+	template <typename T, typename... args> T Call(size_t pc, args... arg) {
+		stack.clear();
+		si_stack.clear();
+		pc_stack.clear();
 		push_cons(arg...);
-		si = 3;
-		Execute(pc);
-		return Pop<T>();
+		return boost::get<T>(Execute(pc));
 	}
 };
 

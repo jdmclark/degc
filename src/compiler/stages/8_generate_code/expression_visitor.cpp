@@ -1,5 +1,6 @@
 #include "expression_visitor.h"
 #include "identifier_visitor.h"
+#include "function_visitor.h"
 
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ExpressionVisitor;
@@ -24,6 +25,17 @@ void ExpressionVisitor::VisitPanicExpression(PanicExpression& e) {
 void ExpressionVisitor::VisitIdentifierExpression(IdentifierExpression& e) {
 	IdentifierVisitor v(code, Report);
 	e.ReferencedNode->Accept(v);
+}
+
+void ExpressionVisitor::VisitFunctionCallExpression(FunctionCallExpression& e) {
+	// Generate code for arguments.
+	for(auto& arg : e.ArgumentExpressions) {
+		ExpressionVisitor ev(code, Report);
+		arg->Accept(ev);
+	}
+
+	FunctionVisitor fv(code, Report);
+	e.FunctionTargetExpression->Accept(fv);
 }
 
 void ExpressionVisitor::VisitUnaryExpression(UnaryExpression& e) {

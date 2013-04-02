@@ -1,30 +1,19 @@
 #pragma once
 
 #include "printer.h"
-#include "runtime/code/codebuffer.h"
-#include "runtime/code/codebufferwritestream.h"
-#include "runtime/code/functiontable.h"
-
-#include <iostream>
-#include <unordered_map>
+#include <vector>
 
 namespace Deg {
 namespace Compiler {
 namespace IR {
 
-class CodePrinter : public Printer {
+class SplitPrinter : public Printer {
 private:
+	std::vector<Printer*> printers;
 	size_t unique_label_id;
-	
-	Runtime::Code::CodeBuffer& codeBuffer;
-	Runtime::Code::CodeBufferWriteStream stream;
-	Runtime::Code::FunctionTable& functionTable;
-
-	std::unordered_map<std::string, size_t> labelmap;
-	std::unordered_multimap<std::string, size_t> backpatchmap;
 
 public:
-	CodePrinter(Runtime::Code::CodeBuffer& codeBuffer, Runtime::Code::FunctionTable& functionTable);
+	SplitPrinter(const std::vector<Printer*>& printers);
 
 	void Backpatch();
 
