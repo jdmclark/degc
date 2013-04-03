@@ -88,10 +88,22 @@ Deg::Runtime::VM::VirtualMachine::Type Deg::Runtime::VM::VirtualMachine::Execute
 			}
 			break;
 
-		case Opcode::STORES: {
-				size_t offset = stream.Read<size_t>();
-				stack[si + offset] = stack.back();
-				stack.pop_back();
+		case Opcode::MEMB: {
+				size_t index = stream.Read<size_t>();
+				Runtime::Solver::Record r = Pop<Runtime::Solver::Record>();
+				if(r[index] != DefaultFixed(0)) {
+					Push(true);
+				}
+				else {
+					Push(false);
+				}
+			}
+			break;
+
+		case Opcode::MEMN: {
+				size_t index = stream.Read<size_t>();
+				Runtime::Solver::Record r = Pop<Runtime::Solver::Record>();
+				Push(r[index]);
 			}
 			break;
 

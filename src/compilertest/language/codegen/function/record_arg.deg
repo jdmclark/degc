@@ -1,0 +1,21 @@
+module ca.nullptr
+
+record Glob:
+    number ValueA
+    number ValueB
+    number ValueC
+    
+function GlobValueAComparator(Glob a, Glob b)->bool:
+    a.ValueA > b.ValueA
+
+function MaxGlob(function(Glob, Glob)->bool map, Glob a, Glob b)->Glob:
+    if map(a, b):
+        a
+    else:
+        b
+        
+function GlobSumBC(Glob v)->number:
+    v.ValueB + v.ValueC
+
+function MaxGlobSumBC(Glob a, Glob b, Glob c)->number:
+    GlobSumBC(MaxGlob(GlobValueAComparator, a, MaxGlob(GlobValueAComparator, b, c)))

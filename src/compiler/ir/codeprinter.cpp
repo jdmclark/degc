@@ -87,9 +87,14 @@ void CodePrinter::LoadS(size_t offset) {
 	stream.Write(offset);
 }
 
-void CodePrinter::StoreS(size_t offset) {
-	stream.Write(Opcode::STORES);
-	stream.Write(offset);
+void CodePrinter::MemB(size_t index) {
+	stream.Write(Opcode::MEMB);
+	stream.Write(index);
+}
+
+void CodePrinter::MemN(size_t index) {
+	stream.Write(Opcode::MEMN);
+	stream.Write(index);
 }
 
 void CodePrinter::LNot() {

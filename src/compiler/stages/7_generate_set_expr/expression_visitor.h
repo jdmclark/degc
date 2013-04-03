@@ -24,6 +24,7 @@ public:
 
 	void VisitConstrainedSetExpression(SG::ConstrainedSetExpression& n);
 	void VisitFunctionCallExpression(SG::FunctionCallExpression& n);
+	void VisitMemberAccessExpression(SG::MemberAccessExpression& n);
 	void VisitUnaryExpression(SG::UnaryExpression& n);
 	void VisitExistsExpression(SG::ExistsExpression& n);
 	void VisitInfixExpression(SG::InfixExpression& n);

@@ -17,7 +17,9 @@ enum class Opcode : unsigned char {
 	CONSTF,					// Load constant function reference
 
 	LOADS,					// Load from stack offset
-	STORES,					// Store to stack offset
+
+	MEMB,					// Load record boolean member
+	MEMN,					// Load record numeric member
 
 	// Boolean operations
 	LNOT,					// Negate top

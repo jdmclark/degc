@@ -23,6 +23,10 @@ void ExpressionVisitor::VisitFunctionCallExpression(SG::FunctionCallExpression& 
 	}
 }
 
+void ExpressionVisitor::VisitMemberAccessExpression(SG::MemberAccessExpression& n) {
+	n.Base->Accept(*this);
+}
+
 void ExpressionVisitor::VisitUnaryExpression(SG::UnaryExpression& n) {
 	n.Value->Accept(*this);
 }

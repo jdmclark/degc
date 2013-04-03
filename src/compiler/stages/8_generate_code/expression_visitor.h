@@ -26,7 +26,7 @@ public:
 
 	void VisitIdentifierExpression(SG::IdentifierExpression& e);
 	void VisitFunctionCallExpression(SG::FunctionCallExpression& e);
-
+	void VisitMemberAccessExpression(SG::MemberAccessExpression& e);
 	void VisitUnaryExpression(SG::UnaryExpression& e);
 	void VisitInfixExpression(SG::InfixExpression& e);
 

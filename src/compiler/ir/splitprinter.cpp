@@ -69,8 +69,12 @@ void SplitPrinter::LoadS(size_t offset) {
 	for(auto p : printers) { p->LoadS(offset); }
 }
 
-void SplitPrinter::StoreS(size_t offset) {
-	for(auto p : printers) { p->StoreS(offset); }
+void SplitPrinter::MemB(size_t index) {
+	for(auto p : printers) { p->MemB(index); }
+}
+
+void SplitPrinter::MemN(size_t index) {
+	for(auto p : printers) { p->MemN(index); }
 }
 
 void SplitPrinter::LNot() {

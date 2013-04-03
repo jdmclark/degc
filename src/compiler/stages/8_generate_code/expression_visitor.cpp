@@ -38,6 +38,29 @@ void ExpressionVisitor::VisitFunctionCallExpression(FunctionCallExpression& e) {
 	e.FunctionTargetExpression->Accept(fv);
 }
 
+void ExpressionVisitor::VisitMemberAccessExpression(MemberAccessExpression& e) {
+	ExpressionVisitor v(code, Report);
+	e.Base->Accept(v);
+
+	SG::BooleanType* bt = dynamic_cast<SG::BooleanType*>(e.Member->InputType.get());
+	SG::NumberType* nt = dynamic_cast<SG::NumberType*>(e.Member->InputType.get());
+	SG::EnumerationType* et = dynamic_cast<SG::EnumerationType*>(e.Member->InputType.get());
+
+	if(bt) {
+		code.MemB(e.Member->Index);
+	}
+	else if(nt) {
+		code.MemN(e.Member->Index);
+	}
+	else if(et) {
+		code.MemN(e.Member->Index);
+	}
+	else {
+		Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::FeatureNotImplemented, Diagnostics::ErrorLevel::CriticalError,
+				"GenerateCode::ExpressionVisitor", "record member type"));
+	}
+}
+
 void ExpressionVisitor::VisitUnaryExpression(UnaryExpression& e) {
 	e.Value->Accept(*this);
 	switch(e.Operator) {

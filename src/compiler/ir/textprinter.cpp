@@ -68,8 +68,12 @@ void TextPrinter::LoadS(size_t offset) {
 	os << "\tLOADS " << offset << std::endl;
 }
 
-void TextPrinter::StoreS(size_t offset) {
-	os << "\tSTORES " << offset << std::endl;
+void TextPrinter::MemB(size_t index) {
+	os << "\tMEMB " << index << std::endl;
+}
+
+void TextPrinter::MemN(size_t index) {
+	os << "\tMEMN " << index << std::endl;
 }
 
 void TextPrinter::LNot() {

@@ -34,7 +34,9 @@ public:
 	void ConstF(const std::string& universal_name);
 
 	void LoadS(size_t offset);
-	void StoreS(size_t offset);
+
+	void MemB(size_t index);
+	void MemN(size_t index);
 
 	void LNot();
 	void LAnd();

@@ -2,6 +2,7 @@
 #include "compilertest/codegen_test_fixture.h"
 
 using Deg::Runtime::Math::DefaultFixed;
+using Deg::Runtime::Solver::Record;
 
 class FunctionCodegenTestFixture : public CodegenTestFixture {
 public:
@@ -58,9 +59,12 @@ Case(FunctionHigherOrder) {
 	ParseFile("function_higherorder.deg");
 	AssertResult(0, 0);
 
-	size_t fn = functionTable.GetFunction("ca.nullptr.do");
+	size_t fn = functionTable.GetFunction("ca.nullptr.map_sum");
+	size_t fn_sq = functionTable.GetFunction("ca.nullptr.square");
+	size_t fn_dbl = functionTable.GetFunction("ca.nullptr.double");
 
-	Test_Assert_Eq(vm.Call<DefaultFixed>(fn, DefaultFixed("1"), DefaultFixed("3"), DefaultFixed("2")), DefaultFixed("14"));
+	Test_Assert_Eq(vm.Call<DefaultFixed>(fn, fn_sq, DefaultFixed("1"), DefaultFixed("3"), DefaultFixed("2")), DefaultFixed("14"));
+	Test_Assert_Eq(vm.Call<DefaultFixed>(fn, fn_dbl, DefaultFixed("1"), DefaultFixed("3"), DefaultFixed("2")), DefaultFixed("12"));
 }
 
 Case(FunctionIfElse) {
@@ -95,6 +99,19 @@ Case(Logical) {
 	Test_Assert_Eq(vm.Call<bool>(fn_or, true, false), true);
 	Test_Assert_Eq(vm.Call<bool>(fn_or, false, true), true);
 	Test_Assert_Eq(vm.Call<bool>(fn_or, false, false), false);
+}
+
+Case(RecordArg) {
+	ParseFile("record_arg.deg");
+	AssertResult(0, 0);
+
+	size_t fn = functionTable.GetFunction("ca.nullptr.MaxGlobSumBC");
+
+	Test_Assert_Eq(vm.Call<DefaultFixed>(fn,
+			Record({ DefaultFixed("1"), DefaultFixed("2"), DefaultFixed("3") }),
+			Record({ DefaultFixed("9"), DefaultFixed("5"), DefaultFixed("10") }),
+			Record({ DefaultFixed("2"), DefaultFixed("8"), DefaultFixed("9") })),
+			DefaultFixed("15"));
 }
 
 Case(Simple) {

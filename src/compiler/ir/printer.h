@@ -30,7 +30,9 @@ public:
 	virtual void ConstF(const std::string& universal_name) = 0;
 
 	virtual void LoadS(size_t offset) = 0;
-	virtual void StoreS(size_t offset) = 0;
+
+	virtual void MemB(size_t index) = 0;
+	virtual void MemN(size_t index) = 0;
 
 	virtual void LNot() = 0;
 	virtual void LAnd() = 0;
