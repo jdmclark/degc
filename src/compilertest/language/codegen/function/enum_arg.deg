@@ -1,0 +1,15 @@
+module ca.nullptr
+
+enum SomeValue:
+    Value1
+    Value2
+    Value3
+
+function EnumEqual(SomeValue a, SomeValue b)->bool:
+    a = b
+
+function Test1()->bool:
+    EnumEqual(SomeValue.Value1, SomeValue.Value1)
+
+function Test2()->bool:
+    not EnumEqual(SomeValue.Value2, SomeValue.Value3)

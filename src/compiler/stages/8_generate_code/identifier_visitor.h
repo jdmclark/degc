@@ -14,6 +14,7 @@ private:
 public:
 	IdentifierVisitor(IR::Printer& code, Diagnostics::Report& report);
 
+	void VisitEnumerationMemberSymbol(SG::EnumerationMemberSymbol& n);
 	void VisitFunctionSymbol(SG::FunctionSymbol& n);
 	void VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n);
 };

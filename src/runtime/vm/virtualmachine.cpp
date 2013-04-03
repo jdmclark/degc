@@ -219,4 +219,6 @@ Deg::Runtime::VM::VirtualMachine::Type Deg::Runtime::VM::VirtualMachine::Execute
 			break;
 		}
 	}
+
+	return false;
 }

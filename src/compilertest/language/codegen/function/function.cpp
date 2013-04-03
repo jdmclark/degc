@@ -40,6 +40,14 @@ Case(Arithmetic) {
 		DefaultFixed("7"), DefaultFixed("2")), DefaultFixed("3.5"));
 }
 
+Case(EnumArg) {
+	ParseFile("enum_arg.deg");
+	AssertResult(0, 0);
+
+	Test_Assert(vm.Call<bool>(functionTable.GetFunction("ca.nullptr.Test1")));
+	Test_Assert(vm.Call<bool>(functionTable.GetFunction("ca.nullptr.Test2")));
+}
+
 Case(Factorial) {
 	ParseFile("factorial.deg");
 	AssertResult(0, 0);
