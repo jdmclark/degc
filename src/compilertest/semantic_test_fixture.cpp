@@ -1,6 +1,7 @@
 #include "semantic_test_fixture.h"
 #include "compiler/sg/table.h"
 #include "compiler/stages/stages.h"
+#include "runtime/code/recordtypetable.h"
 #include <fstream>
 
 SemanticTestFixture::SemanticTestFixture(const boost::filesystem::path& BasePath)
@@ -21,6 +22,8 @@ void SemanticTestFixture::ParseFiles(const std::vector<boost::filesystem::path>&
 		return;
 	}
 
+	Deg::Runtime::Code::RecordTypeTable recordTypeTable;
+
 	Deg::Compiler::Stages::GenerateSG::GenerateSG(translation_units, symbolTable, Report);
 	if(Report.GetErrorCount() > 0) {
 		return;
@@ -31,7 +34,7 @@ void SemanticTestFixture::ParseFiles(const std::vector<boost::filesystem::path>&
 		return;
 	}
 
-	Deg::Compiler::Stages::GenerateMembers::GenerateMembers(symbolTable, Report);
+	Deg::Compiler::Stages::GenerateMembers::GenerateMembers(symbolTable, recordTypeTable, Report);
 	if(Report.GetErrorCount() > 0) {
 		return;
 	}

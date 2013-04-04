@@ -140,3 +140,47 @@ void SplitPrinter::Jmp(const std::string& label) {
 void SplitPrinter::Btf(const std::string& t_label, const std::string& f_label) {
 	for(auto p : printers) { p->Btf(t_label, f_label); }
 }
+
+void SplitPrinter::Cons(size_t record_width) {
+	for(auto p : printers) { p->Cons(record_width); }
+}
+
+void SplitPrinter::ConsGt(size_t record_width, size_t element) {
+	for(auto p : printers) { p->ConsGt(record_width, element); }
+}
+
+void SplitPrinter::ConsGeq(size_t record_width, size_t element) {
+	for(auto p : printers) { p->ConsGeq(record_width, element); }
+}
+
+void SplitPrinter::ConsLt(size_t record_width, size_t element) {
+	for(auto p : printers) { p->ConsLt(record_width, element); }
+}
+
+void SplitPrinter::ConsLeq(size_t record_width, size_t element) {
+	for(auto p : printers) { p->ConsLeq(record_width, element); }
+}
+
+void SplitPrinter::ConsEq(size_t record_width, size_t element) {
+	for(auto p : printers) { p->ConsEq(record_width, element); }
+}
+
+void SplitPrinter::ConsNeq(size_t record_width, size_t element) {
+	for(auto p : printers) { p->ConsNeq(record_width, element); }
+}
+
+void SplitPrinter::Union() {
+	for(auto p : printers) { p->Union(); }
+}
+
+void SplitPrinter::Intersect() {
+	for(auto p : printers) { p->Intersect(); }
+}
+
+void SplitPrinter::SetMinus() {
+	for(auto p : printers) { p->SetMinus(); }
+}
+
+void SplitPrinter::Exists(size_t record_id) {
+	for(auto p : printers) { p->Exists(record_id); }
+}

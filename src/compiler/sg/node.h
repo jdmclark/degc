@@ -145,6 +145,7 @@ class BooleanSymbol : public Symbol {
 class ProgramSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
+	std::string UniversalUniqueName;
 	AST::Program* ast_program;
 	ProgramSymbol* Base;
 	std::unique_ptr<Statement> Statements;
@@ -165,6 +166,7 @@ public:
 class RecordSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
+	std::string UniversalUniqueName;
 	AST::Record* ast_record;
 	Node* QuantityMember;
 	Scope Members;
@@ -301,8 +303,9 @@ class ExistsExpression : public Expression {
 	SGVISITOR_ACCEPT
 public:
 	std::unique_ptr<Expression> Value;
+	RecordSymbol* ElementType;
 
-	ExistsExpression(std::unique_ptr<Expression>& Value);
+	ExistsExpression(std::unique_ptr<Expression>& Value, RecordSymbol* ElementType);
 };
 
 class InfixExpression : public Expression {

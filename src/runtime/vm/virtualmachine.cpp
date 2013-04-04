@@ -5,8 +5,8 @@
 
 using Deg::Runtime::Math::DefaultFixed;
 
-Deg::Runtime::VM::VirtualMachine::VirtualMachine(const Code::CodeBuffer& code)
-	: code(code), si(0) {
+Deg::Runtime::VM::VirtualMachine::VirtualMachine(const Code::CodeBuffer& code, const Solver::RecordIndex& record_index)
+	: code(code), record_index(record_index), si(0) {
 	return;
 }
 
@@ -214,6 +214,88 @@ Deg::Runtime::VM::VirtualMachine::Type Deg::Runtime::VM::VirtualMachine::Execute
 				}
 				else {
 					stream.Seek(pcf);
+				}
+			}
+			break;
+
+		case Opcode::CONS: {
+				size_t record_width = stream.Read<size_t>();
+				Push(Math::Set(record_width));
+			}
+			break;
+
+		case Opcode::CONSGT: {
+				size_t record_width = stream.Read<size_t>();
+				size_t element = stream.Read<size_t>();
+				Push(Math::Set(record_width, element, Math::Relation::Greater, Pop<DefaultFixed>()));
+			}
+			break;
+
+		case Opcode::CONSGEQ: {
+				size_t record_width = stream.Read<size_t>();
+				size_t element = stream.Read<size_t>();
+				Push(Math::Set(record_width, element, Math::Relation::GreaterEqual, Pop<DefaultFixed>()));
+			}
+			break;
+
+		case Opcode::CONSLT: {
+				size_t record_width = stream.Read<size_t>();
+				size_t element = stream.Read<size_t>();
+				Push(Math::Set(record_width, element, Math::Relation::Less, Pop<DefaultFixed>()));
+			}
+			break;
+
+		case Opcode::CONSLEQ: {
+				size_t record_width = stream.Read<size_t>();
+				size_t element = stream.Read<size_t>();
+				Push(Math::Set(record_width, element, Math::Relation::LessEqual, Pop<DefaultFixed>()));
+			}
+			break;
+
+		case Opcode::CONSEQ: {
+				size_t record_width = stream.Read<size_t>();
+				size_t element = stream.Read<size_t>();
+				Push(Math::Set(record_width, element, Math::Relation::Equal, Pop<DefaultFixed>()));
+			}
+			break;
+
+		case Opcode::CONSNEQ: {
+				size_t record_width = stream.Read<size_t>();
+				size_t element = stream.Read<size_t>();
+				Push(Math::Set(record_width, element, Math::Relation::NotEqual, Pop<DefaultFixed>()));
+			}
+			break;
+
+		case Opcode::UNION: {
+				Math::Set rhs = Pop<Math::Set>();
+				Math::Set lhs = Pop<Math::Set>();
+				Push(lhs | rhs);
+			}
+			break;
+
+		case Opcode::INTERSECT: {
+				Math::Set rhs = Pop<Math::Set>();
+				Math::Set lhs = Pop<Math::Set>();
+				Push(lhs & rhs);
+			}
+			break;
+
+		case Opcode::SETMINUS : {
+				Math::Set rhs = Pop<Math::Set>();
+				Math::Set lhs = Pop<Math::Set>();
+				Push(lhs - rhs);
+			}
+			break;
+
+		case Opcode::EXISTS: {
+				size_t record_type = stream.Read<size_t>();
+				Math::Set set = Pop<Math::Set>();
+				Runtime::Solver::RecordTable* rt = record_index.GetRecordTable(record_type);
+				if(rt) {
+					Push(!rt->IsEmpty(set));
+				}
+				else {
+					Push(false);
 				}
 			}
 			break;

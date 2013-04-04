@@ -1,5 +1,7 @@
 #include <nullunit/nullunit.h>
 #include "compilertest/codegen_test_fixture.h"
+#include "runtime/solver/linearrecordtable.h"
+#include "boost/format.hpp"
 
 using Deg::Runtime::Math::DefaultFixed;
 using Deg::Runtime::Solver::Record;
@@ -46,6 +48,27 @@ Case(EnumArg) {
 
 	Test_Assert(vm.Call<bool>(functionTable.GetFunction("ca.nullptr.Test1")));
 	Test_Assert(vm.Call<bool>(functionTable.GetFunction("ca.nullptr.Test2")));
+}
+
+Case(Exists) {
+	ParseFile("exists.deg");
+	AssertResult(0, 0);
+
+	Deg::Runtime::Code::RecordTypeInfo rti = recordTypeTable.GetRecordType("ca.nullptr.TestRecord");
+
+	std::unique_ptr<Deg::Runtime::Solver::RecordTable> rt(new Deg::Runtime::Solver::LinearRecordTable(rti.width, 0));
+	for(int i = 1; i < 20; ++i) {
+		rt->AddRecord({ DefaultFixed(boost::str(boost::format("%s") % i)), DefaultFixed("5"), DefaultFixed("10") });
+	}
+
+	recordIndex.AddRecordTable(rti.type_id, rt);
+
+	size_t fn = functionTable.GetFunction("ca.nullptr.ExistsRange");
+
+	Test_Assert(vm.Call<bool>(fn, DefaultFixed("0.5"), DefaultFixed("1.5")));
+	Test_Assert(!vm.Call<bool>(fn, DefaultFixed("0.0"), DefaultFixed("0.9")));
+	Test_Assert(vm.Call<bool>(fn, DefaultFixed("18.5"), DefaultFixed("19")));
+	Test_Assert(vm.Call<bool>(fn, DefaultFixed("1"), DefaultFixed("20")));
 }
 
 Case(Factorial) {
@@ -109,6 +132,20 @@ Case(Logical) {
 	Test_Assert_Eq(vm.Call<bool>(fn_or, false, false), false);
 }
 
+Case(Panic) {
+	ParseFile("panic.deg");
+	AssertResult(0, 0);
+
+	try {
+		vm.Call<bool>(functionTable.GetFunction("ca.nullptr.TestFunction"));
+	}
+	catch(...) {
+		return;
+	}
+
+	Test_Assert_Always("panic failed to throw exception");
+}
+
 Case(RecordArg) {
 	ParseFile("record_arg.deg");
 	AssertResult(0, 0);
@@ -120,6 +157,22 @@ Case(RecordArg) {
 			Record({ DefaultFixed("9"), DefaultFixed("5"), DefaultFixed("10") }),
 			Record({ DefaultFixed("2"), DefaultFixed("8"), DefaultFixed("9") })),
 			DefaultFixed("15"));
+}
+
+Case(SimpleExists) {
+	ParseFile("simple_exists.deg");
+	AssertResult(0, 0);
+
+	Deg::Runtime::Code::RecordTypeInfo rti = recordTypeTable.GetRecordType("ca.nullptr.TestRecord");
+
+	std::unique_ptr<Deg::Runtime::Solver::RecordTable> rt(new Deg::Runtime::Solver::LinearRecordTable(rti.width, 0));
+	for(int i = 1; i < 20; ++i) {
+		rt->AddRecord({ DefaultFixed(boost::str(boost::format("%s") % i)), DefaultFixed("5"), DefaultFixed("10") });
+	}
+
+	recordIndex.AddRecordTable(rti.type_id, rt);
+
+	Test_Assert(vm.Call<bool>(functionTable.GetFunction("ca.nullptr.ExistsSet")));
 }
 
 Case(Simple) {

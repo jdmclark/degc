@@ -68,6 +68,18 @@ public:
 
 	void Jmp(const std::string& label);
 	void Btf(const std::string& t_label, const std::string& f_label);
+
+	void Cons(size_t record_width);
+	void ConsGt(size_t record_width, size_t element);
+	void ConsGeq(size_t record_width, size_t element);
+	void ConsLt(size_t record_width, size_t element);
+	void ConsLeq(size_t record_width, size_t element);
+	void ConsEq(size_t record_width, size_t element);
+	void ConsNeq(size_t record_width, size_t element);
+	void Union();
+	void Intersect();
+	void SetMinus();
+	void Exists(size_t record_id);
 };
 
 }

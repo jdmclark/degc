@@ -7,7 +7,7 @@
 #include <fstream>
 
 CodegenTestFixture::CodegenTestFixture(const boost::filesystem::path& BasePath)
-	: LanguageTestFixture(BasePath), vm(code) {
+	: LanguageTestFixture(BasePath), vm(code, recordIndex) {
 	return;
 }
 
@@ -34,7 +34,7 @@ void CodegenTestFixture::ParseFiles(const std::vector<boost::filesystem::path>& 
 		return;
 	}
 
-	Deg::Compiler::Stages::GenerateMembers::GenerateMembers(symbolTable, Report);
+	Deg::Compiler::Stages::GenerateMembers::GenerateMembers(symbolTable, recordTypeTable, Report);
 	if(Report.GetErrorCount() > 0) {
 		return;
 	}
@@ -58,7 +58,7 @@ void CodegenTestFixture::ParseFiles(const std::vector<boost::filesystem::path>& 
 	Deg::Compiler::IR::CodePrinter code_printer(code, functionTable);
 	Deg::Compiler::IR::SplitPrinter split_printer({&text_printer, &code_printer});
 
-	Deg::Compiler::Stages::GenerateCode::GenerateCode(symbolTable, split_printer, Report);
+	Deg::Compiler::Stages::GenerateCode::GenerateCode(symbolTable, split_printer, recordTypeTable, Report);
 	if(Report.GetErrorCount() > 0) {
 		return;
 	}

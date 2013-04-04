@@ -1,12 +1,13 @@
 #include "expression_visitor.h"
 #include "identifier_visitor.h"
 #include "function_visitor.h"
+#include "set_expression_visitor.h"
 
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ExpressionVisitor;
 
-ExpressionVisitor::ExpressionVisitor(IR::Printer& code, Diagnostics::Report& report)
-	: SG::Visitor("GenerateCode::ExpressionVisitor", report), code(code) {
+ExpressionVisitor::ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report)
+	: SG::Visitor("GenerateCode::ExpressionVisitor", report), code(code), recordTypeTable(recordTypeTable) {
 	return;
 }
 
@@ -16,6 +17,15 @@ void ExpressionVisitor::VisitNumericExpression(NumericExpression& e) {
 
 void ExpressionVisitor::VisitBooleanExpression(BooleanExpression& e) {
 	code.ConstB(e.Value);
+}
+
+void ExpressionVisitor::VisitTypedSetExpression(TypedSetExpression& e) {
+	code.Cons(e.ElementType->Members.children_size());
+}
+
+void ExpressionVisitor::VisitConstrainedSetExpression(ConstrainedSetExpression& e) {
+	SetExpressionVisitor v(code, recordTypeTable, e.ElementType->Members.children_size(), Report);
+	e.Filter->Accept(v);
 }
 
 void ExpressionVisitor::VisitPanicExpression(PanicExpression& e) {
@@ -30,8 +40,7 @@ void ExpressionVisitor::VisitIdentifierExpression(IdentifierExpression& e) {
 void ExpressionVisitor::VisitFunctionCallExpression(FunctionCallExpression& e) {
 	// Generate code for arguments.
 	for(auto& arg : e.ArgumentExpressions) {
-		ExpressionVisitor ev(code, Report);
-		arg->Accept(ev);
+		arg->Accept(*this);
 	}
 
 	FunctionVisitor fv(e.ArgumentExpressions.size(), code, Report);
@@ -39,8 +48,7 @@ void ExpressionVisitor::VisitFunctionCallExpression(FunctionCallExpression& e) {
 }
 
 void ExpressionVisitor::VisitMemberAccessExpression(MemberAccessExpression& e) {
-	ExpressionVisitor v(code, Report);
-	e.Base->Accept(v);
+	e.Base->Accept(*this);
 
 	SG::BooleanType* bt = dynamic_cast<SG::BooleanType*>(e.Member->InputType.get());
 	SG::NumberType* nt = dynamic_cast<SG::NumberType*>(e.Member->InputType.get());
@@ -76,6 +84,11 @@ void ExpressionVisitor::VisitUnaryExpression(UnaryExpression& e) {
 		DefaultAction("VisitUnaryExpression::unary operator", e);
 		break;
 	}
+}
+
+void ExpressionVisitor::VisitExistsExpression(ExistsExpression& e) {
+	e.Value->Accept(*this);
+	code.Exists(recordTypeTable.GetRecordType(e.ElementType->UniversalUniqueName).type_id);
 }
 
 void ExpressionVisitor::VisitInfixExpression(InfixExpression& e) {

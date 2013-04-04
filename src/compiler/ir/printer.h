@@ -53,6 +53,18 @@ public:
 
 	virtual void Jmp(const std::string& label) = 0;
 	virtual void Btf(const std::string& t_label, const std::string& f_label) = 0;
+
+	virtual void Cons(size_t record_width) = 0;
+	virtual void ConsGt(size_t record_width, size_t element) = 0;
+	virtual void ConsGeq(size_t record_width, size_t element) = 0;
+	virtual void ConsLt(size_t record_width, size_t element) = 0;
+	virtual void ConsLeq(size_t record_width, size_t element) = 0;
+	virtual void ConsEq(size_t record_width, size_t element) = 0;
+	virtual void ConsNeq(size_t record_width, size_t element) = 0;
+	virtual void Union() = 0;
+	virtual void Intersect() = 0;
+	virtual void SetMinus() = 0;
+	virtual void Exists(size_t record_type) = 0;
 };
 
 }

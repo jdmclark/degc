@@ -43,7 +43,20 @@ enum class Opcode : unsigned char {
 
 	// Branch operations
 	JMP,					// Jump to target PC
-	BTF						// Branch to first if true, second if false
+	BTF,					// Branch to first if true, second if false
+
+	// Set operations
+	CONS,					// Construct unconstrained set
+	CONSGT,
+	CONSGEQ,
+	CONSLT,
+	CONSLEQ,
+	CONSEQ,
+	CONSNEQ,
+	UNION,
+	INTERSECT,
+	SETMINUS,
+	EXISTS					// Checks if elements of specified set exist
 };
 
 }

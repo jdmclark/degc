@@ -1,0 +1,9 @@
+module ca.nullptr
+
+record TestRecord:
+    number ElementA
+    number ElementB
+    number ElementC
+
+function ExistsSet() -> bool:
+    exists {TestRecord}

@@ -16,6 +16,10 @@ void Deg::Runtime::Solver::LinearRecordTable::AddRecord(const std::vector<Math::
 }
 
 bool Deg::Runtime::Solver::LinearRecordTable::internal_set_contains(std::vector<Math::DefaultFixed>::const_iterator values, const Math::Set& set) const {
+	if(set.begin() == set.end()) {
+		return true;
+	}
+
 	for(auto it = set.begin(); it != set.end(); ++it) {
 		bool included = true;
 

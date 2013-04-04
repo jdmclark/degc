@@ -4,6 +4,7 @@
 #include "runtime/math/fixed.h"
 #include "runtime/math/set.h"
 #include "runtime/solver/record.h"
+#include "runtime/solver/recordindex.h"
 #include <vector>
 #include <boost/variant.hpp>
 #include <boost/variant/get.hpp>
@@ -16,6 +17,7 @@ class VirtualMachine {
 private:
 	typedef boost::variant<size_t, bool, Math::DefaultFixed, Math::Set, Solver::Record> Type;
 	const Code::CodeBuffer& code;
+	const Solver::RecordIndex& record_index;
 	std::vector<Type> stack;
 	std::vector<size_t> si_stack;
 	std::vector<size_t> pc_stack;
@@ -33,7 +35,7 @@ private:
 	}
 
 public:
-	VirtualMachine(const Code::CodeBuffer& code);
+	VirtualMachine(const Code::CodeBuffer& code, const Solver::RecordIndex& record_index);
 
 	template <typename T> inline void Push(const T& value) {
 		stack.push_back(value);

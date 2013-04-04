@@ -139,3 +139,47 @@ void TextPrinter::Jmp(const std::string& label) {
 void TextPrinter::Btf(const std::string& t_label, const std::string& f_label) {
 	os << "\tBTF " << t_label << " " << f_label << std::endl;
 }
+
+void TextPrinter::Cons(size_t record_width) {
+	os << "\tCONS " << record_width << std::endl;
+}
+
+void TextPrinter::ConsGt(size_t record_width, size_t element) {
+	os << "\tCONSGT " << record_width << " " << element << std::endl;
+}
+
+void TextPrinter::ConsGeq(size_t record_width, size_t element) {
+	os << "\tCONSGEQ " << record_width << " " << element << std::endl;
+}
+
+void TextPrinter::ConsLt(size_t record_width, size_t element) {
+	os << "\tCONSLT " << record_width << " " << element << std::endl;
+}
+
+void TextPrinter::ConsLeq(size_t record_width, size_t element) {
+	os << "\tCONSLEQ " << record_width << " " << element << std::endl;
+}
+
+void TextPrinter::ConsEq(size_t record_width, size_t element) {
+	os << "\tCONSEQ " << record_width << " " << element << std::endl;
+}
+
+void TextPrinter::ConsNeq(size_t record_width, size_t element) {
+	os << "\tCONSNEQ " << record_width << " " << element << std::endl;
+}
+
+void TextPrinter::Union() {
+	os << "\tUNION" << std::endl;
+}
+
+void TextPrinter::Intersect() {
+	os << "\tINTERSECT" << std::endl;
+}
+
+void TextPrinter::SetMinus() {
+	os << "\tSETMINUS" << std::endl;
+}
+
+void TextPrinter::Exists(size_t record_id) {
+	os << "\tEXISTS " << record_id << std::endl;
+}

@@ -2,6 +2,7 @@
 
 #include "compiler/sg/visitor.h"
 #include "compiler/sg/module.h"
+#include "runtime/code/recordtypetable.h"
 
 namespace Deg {
 namespace Compiler {
@@ -11,9 +12,10 @@ namespace GenerateMembers {
 class DeclarationVisitor : public SG::Visitor {
 protected:
 	SG::Module& module;
+	Runtime::Code::RecordTypeTable& recordTypeTable;
 
 public:
-	DeclarationVisitor(SG::Module& module, Diagnostics::Report& report);
+	DeclarationVisitor(SG::Module& module, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report);
 
 	SGCONSUME(NumberSymbol);
 	SGCONSUME(QuantitySymbol);

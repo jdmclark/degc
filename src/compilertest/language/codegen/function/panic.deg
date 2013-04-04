@@ -1,0 +1,7 @@
+module ca.nullptr
+
+function Abort()->bool:
+    panic
+
+function TestFunction()->bool:
+    Abort()

@@ -6,6 +6,7 @@ namespace Runtime {
 namespace Code {
 class CodeBuffer;
 class FunctionTable;
+class RecordTypeTable;
 }
 }
 
@@ -43,7 +44,7 @@ void ResolveImports(const std::vector<AST::TranslationUnit*>& units, SG::SymbolT
 }
 
 namespace GenerateMembers {
-void GenerateMembers(SG::SymbolTable& symbolTable, Diagnostics::Report& report);
+void GenerateMembers(SG::SymbolTable& symbolTable, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report);
 }
 
 namespace GenerateExpressions {
@@ -59,7 +60,7 @@ void GenerateSetExpressions(SG::SymbolTable& symbolTable, Diagnostics::Report& r
 }
 
 namespace GenerateCode {
-void GenerateCode(SG::SymbolTable& symbolTable, IR::Printer& code, Diagnostics::Report& report);
+void GenerateCode(SG::SymbolTable& symbolTable, IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report);
 }
 
 }

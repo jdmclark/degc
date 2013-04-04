@@ -9,8 +9,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateMembers::DeclarationVisitor;
 
-DeclarationVisitor::DeclarationVisitor(Module& module, Deg::Compiler::Diagnostics::Report& report)
-	: SG::Visitor("GenerateMembers::DeclarationVisitor", report), module(module) {
+DeclarationVisitor::DeclarationVisitor(Module& module, Runtime::Code::RecordTypeTable& recordTypeTable, Deg::Compiler::Diagnostics::Report& report)
+	: SG::Visitor("GenerateMembers::DeclarationVisitor", report), module(module), recordTypeTable(recordTypeTable) {
 	return;
 }
 
@@ -57,5 +57,15 @@ void DeclarationVisitor::VisitRecordSymbol(RecordSymbol& n) {
 	for(auto member : *n.ast_record->Members) {
 		member->Accept(v);
 	}
+
+	if(n.QuantityMember) {
+		SG::RecordMemberSymbol* rms = dynamic_cast<SG::RecordMemberSymbol*>(n.QuantityMember);
+		if(rms) {
+			recordTypeTable.AddRecordType(n.UniversalUniqueName, n.Members.children_size(), rms->Index);
+			return;
+		}
+	}
+
+	recordTypeTable.AddRecordType(n.UniversalUniqueName, n.Members.children_size(), 0);
 	return;
 }

@@ -277,7 +277,7 @@ void ExpressionVisitor::VisitExistsExpression(AST::ExistsExpression& n) {
 
 	SG::SetType* st = dynamic_cast<SG::SetType*>(value_v.GeneratedExpressionType.get());
 	if(st != nullptr) {
-		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ExistsExpression(value_v.GeneratedExpression));
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ExistsExpression(value_v.GeneratedExpression, st->ElementType));
 		GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::BooleanType());
 		return;
 	}

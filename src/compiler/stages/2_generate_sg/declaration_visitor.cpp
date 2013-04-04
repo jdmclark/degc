@@ -23,6 +23,7 @@ void DeclarationVisitor::VisitRecord(Record& n) {
 	try {
 		auto& sym = module.MakeSymbol<SG::RecordSymbol>(n.Name);
 		sym.ast_record = &n;
+		sym.UniversalUniqueName = boost::str(boost::format("%s.%s") % module_name % n.Name);
 	}
 	catch(...) {
 		SG::ErrorHelper::SymbolRedefinition(Report, VisitorName, n.Location, n.Name);
@@ -44,6 +45,7 @@ void DeclarationVisitor::VisitProgram(Program& n) {
 	try {
 		auto& sym = module.MakeSymbol<SG::ProgramSymbol>(n.Name);
 		sym.ast_program = &n;
+		sym.UniversalUniqueName = boost::str(boost::format("%s.%s") % module_name % n.Name);
 	}
 	catch(...) {
 		SG::ErrorHelper::SymbolRedefinition(Report, VisitorName, n.Location, n.Name);

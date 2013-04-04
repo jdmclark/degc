@@ -166,3 +166,61 @@ void CodePrinter::Btf(const std::string& t_label, const std::string& f_label) {
 	backpatchmap.insert(std::make_pair(f_label, stream.Tell()));
 	stream.Write<size_t>(0);
 }
+
+void CodePrinter::Cons(size_t record_width) {
+	stream.Write(Opcode::CONS);
+	stream.Write<size_t>(record_width);
+}
+
+void CodePrinter::ConsGt(size_t record_width, size_t element) {
+	stream.Write(Opcode::CONSGT);
+	stream.Write<size_t>(record_width);
+	stream.Write<size_t>(element);
+}
+
+void CodePrinter::ConsGeq(size_t record_width, size_t element) {
+	stream.Write(Opcode::CONSGEQ);
+	stream.Write<size_t>(record_width);
+	stream.Write<size_t>(element);
+}
+
+void CodePrinter::ConsLt(size_t record_width, size_t element) {
+	stream.Write(Opcode::CONSLT);
+	stream.Write<size_t>(record_width);
+	stream.Write<size_t>(element);
+}
+
+void CodePrinter::ConsLeq(size_t record_width, size_t element) {
+	stream.Write(Opcode::CONSLEQ);
+	stream.Write<size_t>(record_width);
+	stream.Write<size_t>(element);
+}
+
+void CodePrinter::ConsEq(size_t record_width, size_t element) {
+	stream.Write(Opcode::CONSEQ);
+	stream.Write<size_t>(record_width);
+	stream.Write<size_t>(element);
+}
+
+void CodePrinter::ConsNeq(size_t record_width, size_t element) {
+	stream.Write(Opcode::CONSNEQ);
+	stream.Write<size_t>(record_width);
+	stream.Write<size_t>(element);
+}
+
+void CodePrinter::Union() {
+	stream.Write(Opcode::UNION);
+}
+
+void CodePrinter::Intersect() {
+	stream.Write(Opcode::INTERSECT);
+}
+
+void CodePrinter::SetMinus() {
+	stream.Write(Opcode::SETMINUS);
+}
+
+void CodePrinter::Exists(size_t record_id) {
+	stream.Write(Opcode::EXISTS);
+	stream.Write<size_t>(record_id);
+}

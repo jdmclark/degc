@@ -1,0 +1,12 @@
+module ca.nullptr
+
+record TestRecord:
+    number ElementA
+    number ElementB
+    number ElementC
+
+function RecordRange(number a, number b) -> set(TestRecord):
+    {TestRecord | ElementA >= a and ElementA <= b}
+
+function ExistsRange(number a, number b) -> bool:
+    exists RecordRange(a, b)

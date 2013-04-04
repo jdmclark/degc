@@ -230,8 +230,8 @@ UnaryExpression::UnaryExpression(std::unique_ptr<Expression>& Value, AST::UnaryO
 	return;
 }
 
-ExistsExpression::ExistsExpression(std::unique_ptr<Expression>& Value)
-	: Value(std::move(Value)) {
+ExistsExpression::ExistsExpression(std::unique_ptr<Expression>& Value, RecordSymbol* ElementType)
+	: Value(std::move(Value)), ElementType(ElementType) {
 	return;
 }
 

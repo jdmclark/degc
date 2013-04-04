@@ -1,6 +1,7 @@
 #include "compiler/stages/stages.h"
 #include "compiler/grammar/instance.h"
 #include "compiler/sg/table.h"
+#include "runtime/code/recordtypetable.h"
 #include "declaration_visitor.h"
 
 void Deg::Compiler::Stages::GenerateSG::GenerateSG(const std::vector<AST::TranslationUnit*>& units,
