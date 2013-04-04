@@ -4,6 +4,7 @@
 #include "compiler/sg/scope_stack.h"
 #include "compiler/ir/printer.h"
 #include "runtime/code/recordtypetable.h"
+#include "runtime/code/programtable.h"
 
 namespace Deg {
 namespace Compiler {
@@ -14,18 +15,19 @@ class DeclarationVisitor : public SG::Visitor {
 private:
 	IR::Printer& code;
 	Runtime::Code::RecordTypeTable& recordTypeTable;
+	Runtime::Code::ProgramTable& programTable;
 	
 public:
-	DeclarationVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report);
+	DeclarationVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report);
 
 	SGCONSUME(NumberSymbol);
 	SGCONSUME(QuantitySymbol);
 	SGCONSUME(BooleanSymbol);
 	SGCONSUME(EnumerationSymbol);
 	SGCONSUME(RecordSymbol);
-	SGCONSUME(ProgramSymbol);
 
 	void VisitFunctionSymbol(SG::FunctionSymbol& n);
+	void VisitProgramSymbol(SG::ProgramSymbol& n);
 };
 
 }

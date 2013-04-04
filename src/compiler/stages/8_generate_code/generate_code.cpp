@@ -11,8 +11,8 @@ namespace Compiler {
 namespace Stages {
 namespace GenerateCode {
 
-void GenerateCode(SG::SymbolTable& symbolTable, IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report) {
-	DeclarationVisitor v(code, recordTypeTable, report);
+void GenerateCode(SG::SymbolTable& symbolTable, IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report) {
+	DeclarationVisitor v(code, recordTypeTable, programTable, report);
 	for(auto& mod : symbolTable) {
 		for(auto& symbol : *mod) {
 			symbol.second->Accept(v);

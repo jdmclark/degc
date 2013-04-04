@@ -1,0 +1,23 @@
+module ca.nullptr
+
+enum Subject:
+    CMPUT
+    MATH
+    ENGL
+    PHIL
+    
+enum Faculty:
+    SCI
+    AR
+
+record TakenCourse:
+    quantity credits
+    number level
+    Subject subject
+    Faculty faculty
+    
+function LevelCourse(number lev) -> set(TakenCourse):
+    { TakenCourse | level >= lev and level < lev + 100 }
+    
+function SubjectLevelCourse(Subject sub, number lev) -> set(TakenCourse):
+    { TakenCourse | subject = sub and level >= lev and level < lev + 100 }

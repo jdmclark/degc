@@ -1,0 +1,8 @@
+module ca.nullptr
+
+program TestProgram:
+    limit 6 in LevelCourse(100)
+    take 3 in SubjectLevelCourse(Subject.ENGL, 100)
+    take 3 in { TakenCourse | subject = Subject.CMPUT and level = 101 } 
+    take 6 in { TakenCourse | subject = Subject.CMPUT }
+    take 6 in { TakenCourse }
