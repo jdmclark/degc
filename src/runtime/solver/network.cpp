@@ -82,6 +82,15 @@ make_network& make_network::AddEdgeFromLimitToLimit(size_t lim_a, size_t lim_b) 
 	return *this;
 }
 
+std::ostream& Deg::Runtime::Solver::operator<<(std::ostream& os, const Network& net) {
+	os << "Edges: ";
+	for(const auto& edge : net.edges) {
+		os << "[" << edge.from << "," << edge.to << "],";
+	}
+
+	return os;
+}
+
 Network::Node::Node(size_t edge_offset, size_t edge_count, size_t back_edge_offset, size_t back_edge_count)
 	: edge_offset(edge_offset), edge_count(edge_count), back_edge_offset(back_edge_offset), back_edge_count(back_edge_count) {
 	return;
@@ -160,7 +169,8 @@ Network::Network(const make_network& args) {
 	}
 }
 
-void NetworkSolver::internal_build_flow_table(const Network& network, const std::vector<DefaultFixed>& source_values, const std::vector<DefaultFixed>& limit_values) {
+void NetworkSolver::internal_build_flow_table(const Network& network, const std::vector<DefaultFixed>& source_values,
+		const std::vector<DefaultFixed>& limit_values, const std::vector<std::vector<size_t>>& limit_subsets) {
 	// Build flow table
 	node_data.resize(network.nodes.size());
 	for(NodeData& n : node_data) {
@@ -184,10 +194,20 @@ void NetworkSolver::internal_build_flow_table(const Network& network, const std:
 		EdgeFlow& f = flow[network.requirement_edges[i]];
 		f.Capacity = network.requirement_capacities[i];
 	}
+
 	// Populate limits
 	for (size_t i = 0; i < network.limit_edges.size() && i < limit_values.size(); ++i) {
 		EdgeFlow& f = flow[network.limit_edges[i]];
-		f.Capacity = limit_values[i] - network.limit_capacities[i];
+		f.Capacity = std::max(limit_values[i] - network.limit_capacities[i], DefaultFixed(0));
+	}
+
+	// Subtract subset flow from supersets
+	for(size_t i = 0; i < network.limit_edges.size() && i < limit_subsets.size(); ++i) {
+		EdgeFlow& f = flow[network.limit_edges[i]];
+		const std::vector<size_t>& sub = limit_subsets[i];
+		for(size_t j : sub) {
+			f.Capacity = std::max(f.Capacity - flow[network.limit_edges[j]].Capacity, DefaultFixed(0));
+		}
 	}
 }
 
@@ -276,8 +296,9 @@ bool NetworkSolver::internal_push_flow(const Network& network, DefaultFixed amou
 	return false;
 }
 
-void NetworkSolver::internal_solve(const Network& network, const std::vector<DefaultFixed>& source_values, const std::vector<DefaultFixed>& limit_values) {
-	internal_build_flow_table(network, source_values, limit_values);
+void NetworkSolver::internal_solve(const Network& network, const std::vector<DefaultFixed>& source_values,
+		const std::vector<DefaultFixed>& limit_values, const std::vector<std::vector<size_t>>& limit_subsets) {
+	internal_build_flow_table(network, source_values, limit_values, limit_subsets);
 
 	// Solve with modified Ford-Fulkerson.
 
@@ -287,8 +308,9 @@ void NetworkSolver::internal_solve(const Network& network, const std::vector<Def
 	}
 }
 
-bool NetworkSolver::Solve(const Network& network, const std::vector<DefaultFixed>& source_values, const std::vector<DefaultFixed>& limit_values) {
-	internal_solve(network, source_values, limit_values);
+bool NetworkSolver::Solve(const Network& network, const std::vector<DefaultFixed>& source_values, const std::vector<DefaultFixed>& limit_values,
+		const std::vector<std::vector<size_t>>& limit_subsets) {
+	internal_solve(network, source_values, limit_values, limit_subsets);
 
 	// Validate answer
 	for(size_t i : network.requirement_edges) {

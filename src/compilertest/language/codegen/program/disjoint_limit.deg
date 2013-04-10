@@ -1,0 +1,6 @@
+module ca.nullptr
+
+program TestProgram:
+    limit 3 in {TakenCourse | subject = Subject.CMPUT and faculty = Faculty.SC }
+    limit 6 in {TakenCourse | faculty = Faculty.AR }
+    take 12 in {TakenCourse}

@@ -52,7 +52,7 @@ void ProgramNetworkChunk::AddRequirement(const Set& set, DefaultFixed qty) {
 
 void ProgramNetworkChunk::AddLimit(const Set& set, DefaultFixed qty) {
 	size_t new_limit = limits.size();
-	limits.push_back(qty);
+	limits.push_back(std::make_pair(qty, set));
 
 	Set current = set;
 	std::vector<ProgramNetworkSetChunk> new_chunks;

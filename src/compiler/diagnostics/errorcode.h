@@ -55,7 +55,10 @@ enum class ErrorCode {
 	TypesNotComparable			= 4033,
 	SetFilterNotOrthogonal		= 4034,
 	SetFilterNotIsolated		= 4035,
-	SetFilterIrrelevant			= 4036
+	SetFilterIrrelevant			= 4036,
+
+	// Code generation errors
+	LimitNotDisjoint			= 5000,
 };
 
 std::ostream& operator<<(std::ostream&, ErrorCode);

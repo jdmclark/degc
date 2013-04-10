@@ -1,10 +1,11 @@
 #include "program.h"
+#include <iostream>
 
 using Deg::Runtime::Math::DefaultFixed;
 
 Deg::Runtime::Solver::ProgramNetwork::ProgramNetwork(size_t record_type, const std::vector<Math::Set>& source_sets,
-		const std::vector<std::vector<Math::Set>>& limit_sets, const Network& network)
-	: record_type(record_type), source_sets(source_sets), limit_sets(limit_sets), network(network) {
+		const std::vector<Math::Set>& limit_sets, const std::vector<std::vector<size_t>>& limit_subsets, const Network& network)
+	: record_type(record_type), source_sets(source_sets), limit_sets(limit_sets), limit_subsets(limit_subsets), network(network) {
 	return;
 }
 
@@ -19,13 +20,11 @@ bool Deg::Runtime::Solver::ProgramNetwork::Solve(RecordIndex& recordIndex, Netwo
 		}
 
 		for(size_t i = 0; i < limit_sets.size(); ++i) {
-			for(const auto& set : limit_sets[i]) {
-				limits[i] += rt->QuantityOf(set);
-			}
+			limits[i] = rt->QuantityOf(limit_sets[i]);
 		}
 	}
 
-	return ns.Solve(network, sources, limits);
+	return ns.Solve(network, sources, limits, limit_subsets);
 }
 
 Deg::Runtime::Solver::Program::Program(const std::vector<ProgramNetwork>& networks)

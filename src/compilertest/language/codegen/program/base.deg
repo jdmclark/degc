@@ -7,7 +7,7 @@ enum Subject:
     PHIL
     
 enum Faculty:
-    SCI
+    SC
     AR
 
 record TakenCourse:

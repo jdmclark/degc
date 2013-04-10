@@ -34,7 +34,8 @@ void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
 
 	for(const auto& chunk : pv.chunks) {
 		std::vector<Set> source_sets;
-		std::vector<std::vector<Set>> limit_sets(chunk.second->limits.size());
+		std::vector<Set> limit_sets;
+		std::vector<std::vector<size_t>> limit_subsets(chunk.second->limits.size());
 		Runtime::Solver::make_network net;
 
 		net.AddSources(chunk.second->set_chunks.size());
@@ -43,8 +44,44 @@ void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
 			net.AddRequirement(i);
 		}
 
-		for(DefaultFixed i : chunk.second->limits) {
-			net.AddLimit(i);
+		for(std::pair<DefaultFixed, Set>& p : chunk.second->limits) {
+			limit_sets.push_back(p.second);
+			net.AddLimit(p.first);
+		}
+
+		// Detect non-disjoint, non-subset limits
+		bool error_seen = false;
+		for(size_t i = 0; i < limit_sets.size(); ++i) {
+			for(size_t j = 0; j < limit_sets.size(); ++j) {
+				Set ij_diff = limit_sets[i] & limit_sets[j];
+				if(!ij_diff.IsEmpty() && !limit_sets[i].IsSubsetOf(ij_diff) && !limit_sets[j].IsSubsetOf(ij_diff) && !error_seen) {
+					Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::LimitNotDisjoint,
+							Diagnostics::ErrorLevel::Error, VisitorName, "program contains non-disjoint, non-subset limits",
+							n.ast_program->Location));
+					error_seen = true;
+				}
+			}
+		}
+
+		// Process limit subsets
+		for(size_t i = 0; i < limit_sets.size(); ++i) {
+
+			// Find smallest superset
+			size_t sup = i;
+			for(size_t j = 0; j < limit_sets.size(); ++j) {
+				if(i == j) {
+					continue;
+				}
+
+				if(limit_sets[i].IsSubsetOf(limit_sets[j])
+						&& (sup == i || limit_sets[j].IsSubsetOf(limit_sets[sup]))) {
+					sup = j;
+				}
+			}
+
+			if(sup != i) {
+				limit_subsets[sup].push_back(i);
+			}
 		}
 
 		// Process sources
@@ -57,16 +94,20 @@ void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
 				net.AddEdgeFromSourceToRequirement(curr_src, i);
 			}
 
-			for(size_t i : set_chunk.linked_limits) {
-				net.AddEdgeFromSourceToLimit(curr_src, i);
+			if(!set_chunk.linked_limits.empty()) {
+				// Only one outgoing limit edge is allowed. Find best.
+				size_t best_lim = set_chunk.linked_limits[0];
+				for(size_t i : set_chunk.linked_limits) {
+					if(limit_sets[i].IsSubsetOf(limit_sets[best_lim])) {
+						best_lim = i;
+					}
+				}
 
-				limit_sets[i].push_back(set_chunk.set);
+				net.AddEdgeFromSourceToLimit(curr_src, best_lim);
 			}
-
-			// TODO: Handle non-disjoint limits
 		}
 
-		networks.emplace_back(chunk.first, source_sets, limit_sets, net);
+		networks.emplace_back(chunk.first, source_sets, limit_sets, limit_subsets, net);
 	}
 
 	std::unique_ptr<Runtime::Solver::Program> new_prog(new Runtime::Solver::Program(networks));

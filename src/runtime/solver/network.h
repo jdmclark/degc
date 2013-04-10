@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <limits>
 #include <deque>
+#include <iosfwd>
 #include "runtime/math/fixed.h"
 
 namespace Deg {
@@ -45,10 +46,14 @@ public:
 
 class NetworkSolver;
 
-class Network {
-private:
-	friend class NetworkSolver;
+std::ostream& operator<<(std::ostream& os, const Network& net);
 
+class Network {
+public:
+	friend class NetworkSolver;
+	friend std::ostream& operator<<(std::ostream& os, const Network& net);
+
+private:
 	class Node {
 	public:
 		size_t edge_offset;
@@ -111,13 +116,16 @@ private:
 	std::vector<NodeData> node_data;
 	std::vector<EdgeFlow> flow;
 
-	void internal_solve(const Network& network, const std::vector<Math::DefaultFixed>& source_values, const std::vector<Math::DefaultFixed>& limit_values = {});
-	void internal_build_flow_table(const Network& network, const std::vector<Math::DefaultFixed>& source_values, const std::vector<Math::DefaultFixed>& limit_values);
+	void internal_solve(const Network& network, const std::vector<Math::DefaultFixed>& source_values, const std::vector<Math::DefaultFixed>& limit_values = {},
+			const std::vector<std::vector<size_t>>& limit_subsets = {});
+	void internal_build_flow_table(const Network& network, const std::vector<Math::DefaultFixed>& source_values,
+			const std::vector<Math::DefaultFixed>& limit_values, const std::vector<std::vector<size_t>>& limit_subsets);
 	bool internal_push_flow(const Network& network, Math::DefaultFixed amount, int counter);
 	bool internal_bfs(int counter, Math::DefaultFixed amount, const Network& network);
 
 public:
-	bool Solve(const Network& network, const std::vector<Math::DefaultFixed>& source_values, const std::vector<Math::DefaultFixed>& limit_values = {});
+	bool Solve(const Network& network, const std::vector<Math::DefaultFixed>& source_values, const std::vector<Math::DefaultFixed>& limit_values = {},
+			const std::vector<std::vector<size_t>>& limit_subsets = {});
 };
 
 }

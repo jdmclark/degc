@@ -13,11 +13,13 @@ class ProgramNetwork {
 private:
 	size_t record_type;
 	std::vector<Math::Set> source_sets;
-	std::vector<std::vector<Math::Set>> limit_sets;
+	std::vector<Math::Set> limit_sets;
+	std::vector<std::vector<size_t>> limit_subsets;
 	Network network;
 
 public:
-	ProgramNetwork(size_t record_type, const std::vector<Math::Set>& source_sets, const std::vector<std::vector<Math::Set>>& limit_sets, const Network& network);
+	ProgramNetwork(size_t record_type, const std::vector<Math::Set>& source_sets, const std::vector<Math::Set>& limit_sets,
+			const std::vector<std::vector<size_t>>& limit_subsets, const Network& network);
 
 	bool Solve(RecordIndex& recordIndex, NetworkSolver& ns) const;
 };

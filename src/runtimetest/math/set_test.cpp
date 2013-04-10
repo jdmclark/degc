@@ -160,5 +160,21 @@ Case(SetMinusReduces) {
 	Test_Expect_Eq(t, s);
 }
 
+Case(SetSubsetSelf) {
+	Set a = Set(4, 2, Relation::Equal, DefaultFixed("0")) & Set(4, 3, Relation::Equal, DefaultFixed("0"));
+	Set b = Set(4, 2, Relation::Equal, DefaultFixed("0")) & Set(4, 3, Relation::Equal, DefaultFixed("0"));
+
+	Test_Assert(a.IsSubsetOf(b));
+}
+
+Case(EmptySetSubset) {
+	Set a = Set(4, 2, Relation::Equal, DefaultFixed("0")) & Set(4, 3, Relation::Equal, DefaultFixed("0"));
+	Set b = Set(4);
+
+	Test_Assert(b.IsEmpty());
+
+	Test_Assert(b.IsSubsetOf(a));
+}
+
 EndSuite(SetTest);
 

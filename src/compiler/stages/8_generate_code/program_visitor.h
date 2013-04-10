@@ -26,7 +26,7 @@ class ProgramNetworkChunk {
 public:
 	std::vector<ProgramNetworkSetChunk> set_chunks;
 	std::vector<Runtime::Math::DefaultFixed> requirements;
-	std::vector<Runtime::Math::DefaultFixed> limits;
+	std::vector<std::pair<Runtime::Math::DefaultFixed, Runtime::Math::Set>> limits;
 
 	void AddRequirement(const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
 	void AddLimit(const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);

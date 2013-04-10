@@ -1,0 +1,10 @@
+module ca.nullptr
+
+program TestProgram:
+    limit 3 in { TakenCourse | faculty = Faculty.SC and subject = Subject.CMPUT }
+    limit 3 in { TakenCourse | faculty = Faculty.SC and subject = Subject.MATH }
+    limit 6 in { TakenCourse | faculty = Faculty.SC }
+    limit 3 in { TakenCourse | faculty = Faculty.AR and subject = Subject.ENGL }
+    limit 3 in { TakenCourse | faculty = Faculty.AR }
+    limit 12 in { TakenCourse }
+    take 12 in { TakenCourse }
