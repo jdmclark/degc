@@ -21,17 +21,19 @@ public:
 	ProgramNetwork(size_t record_type, const std::vector<Math::Set>& source_sets, const std::vector<Math::Set>& limit_sets,
 			const std::vector<std::vector<size_t>>& limit_subsets, const Network& network);
 
-	bool Solve(RecordIndex& recordIndex, NetworkSolver& ns) const;
+	bool Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const;
 };
 
 class Program {
 private:
-	std::vector<ProgramNetwork> networks;
+	std::vector<std::vector<ProgramNetwork>> branches;
+
+	bool SolveOne(const std::vector<ProgramNetwork>& chunks, const RecordIndex& recordIndex, NetworkSolver& ns) const;
 
 public:
-	Program(const std::vector<ProgramNetwork>& networks);
+	Program(const std::vector<std::vector<ProgramNetwork>>& branches);
 
-	bool Solve(RecordIndex& recordIndex, NetworkSolver& ns) const;
+	bool Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const;
 };
 
 }

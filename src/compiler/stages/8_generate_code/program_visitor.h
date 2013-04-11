@@ -24,12 +24,35 @@ public:
 
 class ProgramNetworkChunk {
 public:
+	size_t record_type;
 	std::vector<ProgramNetworkSetChunk> set_chunks;
 	std::vector<Runtime::Math::DefaultFixed> requirements;
 	std::vector<std::pair<Runtime::Math::DefaultFixed, Runtime::Math::Set>> limits;
 
+	ProgramNetworkChunk(size_t record_type);
+
 	void AddRequirement(const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
 	void AddLimit(const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
+};
+
+class ProgramNetworkBranch {
+private:
+	inline ProgramNetworkChunk& GetChunk(size_t record_type) {
+		for(size_t i = 0; i < chunks.size(); ++i) {
+			if(chunks[i].record_type == record_type) {
+				return chunks[i];
+			}
+		}
+
+		chunks.emplace_back(record_type);
+		return chunks.back();
+	}
+
+public:
+	std::vector<ProgramNetworkChunk> chunks;
+
+	void AddRequirement(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
+	void AddLimit(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
 };
 
 class ProgramVisitor : public SG::Visitor {
@@ -37,18 +60,7 @@ private:
 	Runtime::Code::RecordTypeTable& recordTypeTable;
 
 public:
-	std::unordered_map<size_t, std::unique_ptr<ProgramNetworkChunk>> chunks;
-
-	inline ProgramNetworkChunk* GetChunk(size_t record_type) {
-		auto it = chunks.find(record_type);
-		if(it == chunks.end()) {
-			ProgramNetworkChunk* new_chk = new ProgramNetworkChunk();
-			chunks.insert(std::make_pair(record_type, std::unique_ptr<ProgramNetworkChunk>(new_chk)));
-			return new_chk;
-		}
-
-		return it->second.get();
-	}
+	std::vector<ProgramNetworkBranch> branches;
 
 	void AddRequirement(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
 	void AddLimit(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
@@ -58,6 +70,7 @@ public:
 	void VisitCompoundStatement(SG::CompoundStatement& n);
 	void VisitTakeStatement(SG::TakeStatement& n);
 	void VisitLimitStatement(SG::LimitStatement& n);
+	void VisitDisjunctionStatement(SG::DisjunctionStatement& n);
 };
 
 }

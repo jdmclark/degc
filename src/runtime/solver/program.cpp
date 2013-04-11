@@ -9,7 +9,7 @@ Deg::Runtime::Solver::ProgramNetwork::ProgramNetwork(size_t record_type, const s
 	return;
 }
 
-bool Deg::Runtime::Solver::ProgramNetwork::Solve(RecordIndex& recordIndex, NetworkSolver& ns) const {
+bool Deg::Runtime::Solver::ProgramNetwork::Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const {
 	std::vector<DefaultFixed> sources(source_sets.size(), DefaultFixed(0));
 	std::vector<DefaultFixed> limits(limit_sets.size(), DefaultFixed(0));
 
@@ -27,17 +27,27 @@ bool Deg::Runtime::Solver::ProgramNetwork::Solve(RecordIndex& recordIndex, Netwo
 	return ns.Solve(network, sources, limits, limit_subsets);
 }
 
-Deg::Runtime::Solver::Program::Program(const std::vector<ProgramNetwork>& networks)
-	: networks(networks) {
+Deg::Runtime::Solver::Program::Program(const std::vector<std::vector<ProgramNetwork>>& branches)
+	: branches(branches) {
 	return;
 }
 
-bool Deg::Runtime::Solver::Program::Solve(RecordIndex& recordIndex, NetworkSolver& ns) const {
-	for(const auto& network : networks) {
-		if(!network.Solve(recordIndex, ns)) {
+bool Deg::Runtime::Solver::Program::SolveOne(const std::vector<ProgramNetwork>& chunks, const RecordIndex& recordIndex, NetworkSolver& ns) const {
+	for(const auto& chunk : chunks) {
+		if(!chunk.Solve(recordIndex, ns)) {
 			return false;
 		}
 	}
 
 	return true;
+}
+
+bool Deg::Runtime::Solver::Program::Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const {
+	for(const auto& branch : branches) {
+		if(SolveOne(branch, recordIndex, ns)) {
+			return true;
+		}
+	}
+
+	return false;
 }

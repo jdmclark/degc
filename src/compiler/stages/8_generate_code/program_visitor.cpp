@@ -4,12 +4,18 @@
 
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ProgramVisitor;
+using Deg::Compiler::Stages::GenerateCode::ProgramNetworkBranch;
 using Deg::Compiler::Stages::GenerateCode::ProgramNetworkChunk;
 using Deg::Compiler::Stages::GenerateCode::ProgramNetworkSetChunk;
 using namespace Deg::Runtime::Math;
 
 ProgramNetworkSetChunk::ProgramNetworkSetChunk(const Set& set)
 	: set(set) {
+	return;
+}
+
+ProgramNetworkChunk::ProgramNetworkChunk(size_t record_type)
+	: record_type(record_type) {
 	return;
 }
 
@@ -87,19 +93,30 @@ void ProgramNetworkChunk::AddLimit(const Set& set, DefaultFixed qty) {
 	set_chunks = new_chunks;
 }
 
+void ProgramNetworkBranch::AddRequirement(size_t record_type, const Set& set, DefaultFixed qty) {
+	GetChunk(record_type).AddRequirement(set, qty);
+}
+
+void ProgramNetworkBranch::AddLimit(size_t record_type, const Set& set, DefaultFixed qty) {
+	GetChunk(record_type).AddLimit(set, qty);
+}
+
 ProgramVisitor::ProgramVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report)
 	: SG::Visitor("GenerateCode::ProgramVisitor", report), recordTypeTable(recordTypeTable) {
+	branches.push_back(ProgramNetworkBranch());
 	return;
 }
 
 void ProgramVisitor::AddRequirement(size_t record_type, const Set& set, DefaultFixed qty) {
-	ProgramNetworkChunk* chunk = GetChunk(record_type);
-	chunk->AddRequirement(set, qty);
+	for(auto& branch : branches) {
+		branch.AddRequirement(record_type, set, qty);
+	}
 }
 
 void ProgramVisitor::AddLimit(size_t record_type, const Set& set, DefaultFixed qty) {
-	ProgramNetworkChunk* chunk = GetChunk(record_type);
-	chunk->AddLimit(set, qty);
+	for(auto& branch : branches) {
+		branch.AddLimit(record_type, set, qty);
+	}
 }
 
 void ProgramVisitor::VisitCompoundStatement(CompoundStatement& n) {
@@ -126,4 +143,18 @@ void ProgramVisitor::VisitLimitStatement(LimitStatement& n) {
 	n.Amount->Accept(pcv);
 
 	AddLimit(psv.result_record_type, psv.result, pcv.value);
+}
+
+void ProgramVisitor::VisitDisjunctionStatement(DisjunctionStatement& n) {
+
+	std::vector<ProgramNetworkBranch> next_branches;
+
+	ProgramVisitor v(recordTypeTable, Report);
+	for(auto& stmt : n.Statements) {
+		v.branches = branches;
+		stmt->Accept(v);
+		std::copy(v.branches.begin(), v.branches.end(), std::back_inserter(next_branches));
+	}
+
+	branches = next_branches;
 }

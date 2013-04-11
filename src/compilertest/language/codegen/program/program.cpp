@@ -77,6 +77,40 @@ Case(DisjointLimit) {
 	Test_Assert(prog->Solve(recordIndex, networkSolver));
 }
 
+Case(EitherOr1) {
+	ParseFiles({ "base.deg", "either_or.deg" });
+	AssertResult(0, 0);
+
+	// Branch 1
+	AddCourse(Faculty::SC, Subject::CMPUT, "101", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, networkSolver));
+}
+
+Case(EitherOr2) {
+	ParseFiles({ "base.deg", "either_or.deg" });
+	AssertResult(0, 0);
+
+	// Branch 2
+	AddCourse(Faculty::SC, Subject::CMPUT, "101", "3");
+	AddCourse(Faculty::SC, Subject::MATH, "101", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, networkSolver));
+}
+
+Case(EitherOr3) {
+	ParseFiles({ "base.deg", "either_or.deg" });
+	AssertResult(0, 0);
+
+	// Branch 1
+	AddCourse(Faculty::AR, Subject::ENGL, "101", "9");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, networkSolver));
+}
+
 Case(Example) {
 	ParseFiles({ "base.deg", "example.deg" });
 	AssertResult(0, 0);
