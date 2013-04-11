@@ -454,17 +454,36 @@ void ExpressionVisitor::VisitFunctionIfElseExpression(AST::FunctionIfElseExpress
 	ExpressionVisitor else_v(scope, Report);
 	n.ElseCode->Accept(else_v);
 
+	SG::ProgramType* if_pt = dynamic_cast<SG::ProgramType*>(if_v.GeneratedExpressionType.get());
+	SG::ProgramType* else_pt = dynamic_cast<SG::ProgramType*>(else_v.GeneratedExpressionType.get());
+
+	if(if_pt && else_pt) {
+		// Types are programs. Look for unifying base type.
+		SG::ProgramSymbol* base_sym = if_pt->ElementType;
+		while(base_sym) {
+			if(else_pt->ElementType->InheritsFrom(*base_sym)) {
+				GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(pred, if_v.GeneratedExpression, else_v.GeneratedExpression));
+				GeneratedExpressionType = std::unique_ptr<SG::Type>(new SG::ProgramType(base_sym));
+				return;
+			}
+			else {
+				base_sym = base_sym->Base;
+			}
+		}
+	}
+
 	if(if_v.GeneratedExpressionType->CanAcceptValueOfType(*else_v.GeneratedExpressionType)) {
 		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(pred, if_v.GeneratedExpression, else_v.GeneratedExpression));
 		GeneratedExpressionType = std::move(if_v.GeneratedExpressionType);
+		return;
 	}
 	else if(else_v.GeneratedExpressionType->CanAcceptValueOfType(*if_v.GeneratedExpressionType)) {
 		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::FunctionIfElseExpression(pred, if_v.GeneratedExpression, else_v.GeneratedExpression));
 		GeneratedExpressionType = std::move(else_v.GeneratedExpressionType);
+		return;
 	}
-	else {
-		GenerateErrorResult();
-		Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::ConditionalDomainMismatch, Diagnostics::ErrorLevel::Error,
-				VisitorName, "if/else domain mismatch", n.Location));
-	}
+
+	GenerateErrorResult();
+	Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::ConditionalDomainMismatch, Diagnostics::ErrorLevel::Error,
+			VisitorName, "if/else domain mismatch", n.Location));
 }

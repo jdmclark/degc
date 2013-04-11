@@ -20,9 +20,10 @@ class ExpressionVisitor : public SG::Visitor {
 	bool GetConstantEquals(SG::Expression& a, SG::Expression& b);
 
 public:
-	ExpressionVisitor(std::vector<std::unique_ptr<SG::Expression>>& FunctionArguments, Diagnostics::Report& report);
+	ExpressionVisitor(const std::vector<std::unique_ptr<SG::Expression>>& FunctionArguments, const std::vector<SG::EnumerationMemberSymbol*>& ProgramArguments, Diagnostics::Report& report);
 
-	std::vector<std::unique_ptr<SG::Expression>>& FunctionArguments;
+	const std::vector<std::unique_ptr<SG::Expression>>& FunctionArguments;
+	const std::vector<SG::EnumerationMemberSymbol*>& ProgramArguments;
 	std::unique_ptr<SG::Expression> GeneratedExpression;
 	bool ResultFoldable;
 

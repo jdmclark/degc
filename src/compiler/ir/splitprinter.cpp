@@ -65,6 +65,10 @@ void SplitPrinter::ConstF(const std::string& universal_name) {
 	for(auto p : printers) { p->ConstF(universal_name); }
 }
 
+void SplitPrinter::ConstP(const std::string& universal_name) {
+	for(auto p : printers) { p->ConstP(universal_name); }
+}
+
 void SplitPrinter::LoadS(size_t offset) {
 	for(auto p : printers) { p->LoadS(offset); }
 }

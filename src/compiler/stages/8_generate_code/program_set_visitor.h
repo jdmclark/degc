@@ -12,13 +12,13 @@ namespace GenerateCode {
 class ProgramSetVisitor : public SG::Visitor {
 private:
 	Runtime::Code::RecordTypeTable& recordTypeTable;
-	const std::vector<int>& programArguments;
+	const std::vector<SG::EnumerationMemberSymbol*>& programArguments;
 
 public:
 	Runtime::Math::Set result;
 	size_t result_record_type;
 
-	ProgramSetVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<int>& programArguments, Diagnostics::Report& report);
+	ProgramSetVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report);
 
 	void VisitConstrainedSetExpression(SG::ConstrainedSetExpression& e);
 	void VisitTypedSetExpression(SG::TypedSetExpression& e);

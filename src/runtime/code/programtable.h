@@ -11,20 +11,30 @@ namespace Code {
 
 class ProgramTable {
 private:
-	std::unordered_map<std::string, std::unique_ptr<Solver::Program>> programs;
+	std::vector<std::unique_ptr<Solver::Program>> programs;
+	std::unordered_map<std::string, size_t> program_map;
 
 public:
-	inline void AddProgram(const std::string& name, std::unique_ptr<Solver::Program>& program) {
-		programs.insert(std::make_pair(name, std::move(program)));
-	}
+	inline size_t GetProgramId(const std::string& name) {
+		auto it = program_map.find(name);
+		if(it == program_map.end()) {
+			// Reserve space
+			program_map.insert(std::make_pair(name, programs.size()));
+			programs.push_back(std::unique_ptr<Solver::Program>(nullptr));
 
-	inline Solver::Program* GetProgram(const std::string& name) const {
-		auto it = programs.find(name);
-		if(it == programs.end()) {
-			throw std::exception();
+			it = program_map.find(name);
 		}
 
-		return it->second.get();
+		return it->second;
+	}
+
+	inline void AddProgram(const std::string& name, std::unique_ptr<Solver::Program>& program) {
+		size_t id = GetProgramId(name);
+		programs[id] = std::move(program);
+	}
+
+	inline Solver::Program* GetProgram(const std::string& name) {
+		return programs[GetProgramId(name)].get();
 	}
 };
 

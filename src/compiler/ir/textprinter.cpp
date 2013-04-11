@@ -64,6 +64,10 @@ void TextPrinter::ConstF(const std::string& universal_name) {
 	os << "\tCONSTF " << boost::str(boost::format("@FUNCTION:%s") % universal_name) << std::endl;
 }
 
+void TextPrinter::ConstP(const std::string& universal_name) {
+	os << "\tCONSTP " << boost::str(boost::format("@PROGRAM:%s") % universal_name) << std::endl;
+}
+
 void TextPrinter::LoadS(size_t offset) {
 	os << "\tLOADS " << offset << std::endl;
 }

@@ -28,3 +28,7 @@ void NamedSymbolVisitor::VisitRecordSymbol(RecordSymbol& n) {
 void NamedSymbolVisitor::VisitEnumerationSymbol(EnumerationSymbol& n) {
 	TypenameType = std::unique_ptr<Type>(new EnumerationType(&n));
 }
+
+void NamedSymbolVisitor::VisitProgramSymbol(ProgramSymbol& n) {
+	TypenameType = std::unique_ptr<Type>(new ProgramType(&n));
+}

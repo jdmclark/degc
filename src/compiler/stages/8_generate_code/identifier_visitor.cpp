@@ -3,7 +3,7 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::IdentifierVisitor;
 
-IdentifierVisitor::IdentifierVisitor(IR::Printer& code, const std::vector<int>& programArguments, Diagnostics::Report& report)
+IdentifierVisitor::IdentifierVisitor(IR::Printer& code, const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report)
 	: SG::Visitor("GenerateCode::IdentifierVisitor", report), code(code), programArguments(programArguments) {
 	return;
 }
@@ -21,5 +21,9 @@ void IdentifierVisitor::VisitFunctionArgumentSymbol(FunctionArgumentSymbol& n) {
 }
 
 void IdentifierVisitor::VisitProgramArgumentSymbol(ProgramArgumentSymbol& n) {
-	code.ConstN(Runtime::Math::DefaultFixed(programArguments[n.Index]));
+	code.ConstN(Runtime::Math::DefaultFixed(programArguments[n.Index]->Value));
+}
+
+void IdentifierVisitor::VisitProgramSymbol(ProgramSymbol& n) {
+	code.ConstP(n.UniversalUniqueName);
 }

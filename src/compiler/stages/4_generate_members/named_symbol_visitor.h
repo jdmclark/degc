@@ -20,6 +20,7 @@ public:
 	void VisitBooleanSymbol(SG::BooleanSymbol& n);
 	void VisitRecordSymbol(SG::RecordSymbol& n);
 	void VisitEnumerationSymbol(SG::EnumerationSymbol& n);
+	void VisitProgramSymbol(SG::ProgramSymbol& n);
 };
 
 }

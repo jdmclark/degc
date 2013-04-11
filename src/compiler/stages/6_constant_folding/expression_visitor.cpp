@@ -3,8 +3,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::ConstantFolding::ExpressionVisitor;
 
-ExpressionVisitor::ExpressionVisitor(std::vector<std::unique_ptr<SG::Expression>>& FunctionArguments, Diagnostics::Report& report)
-	: SG::Visitor("ConstantFolding::ExpressionVisitor", report), FunctionArguments(FunctionArguments), ResultFoldable(false) {
+ExpressionVisitor::ExpressionVisitor(const std::vector<std::unique_ptr<SG::Expression>>& FunctionArguments, const std::vector<SG::EnumerationMemberSymbol*>& ProgramArguments, Diagnostics::Report& report)
+	: SG::Visitor("ConstantFolding::ExpressionVisitor", report), FunctionArguments(FunctionArguments), ProgramArguments(ProgramArguments), ResultFoldable(false) {
 	return;
 }
 
@@ -35,7 +35,7 @@ std::unique_ptr<Deg::Compiler::SG::Expression> ExpressionVisitor::GetConstantSet
 	}
 
 	SG::ConstrainedSetExpression& cse = dynamic_cast<SG::ConstrainedSetExpression&>(*GeneratedExpression);
-	ExpressionVisitor v(FunctionArguments, Report);
+	ExpressionVisitor v(FunctionArguments, ProgramArguments, Report);
 	cse.Filter->Accept(v);
 	return std::move(v.GeneratedExpression);
 }
@@ -47,7 +47,7 @@ Deg::Compiler::Diagnostics::ErrorLocation ExpressionVisitor::GetConstantSetLocat
 	}
 
 	SG::ConstrainedSetExpression& cse = dynamic_cast<SG::ConstrainedSetExpression&>(*GeneratedExpression);
-	ExpressionVisitor v(FunctionArguments, Report);
+	ExpressionVisitor v(FunctionArguments, ProgramArguments, Report);
 	cse.Filter->Accept(v);
 	return cse.Location;
 }
@@ -90,12 +90,17 @@ void ExpressionVisitor::VisitProgramSymbol(SG::ProgramSymbol& n) {
 }
 
 void ExpressionVisitor::VisitProgramArgumentSymbol(SG::ProgramArgumentSymbol& n) {
-	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
-	ResultFoldable = false;
+	if(!ProgramArguments.empty()) {
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(ProgramArguments[n.Index]));
+	}
+	else {
+		GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
+		ResultFoldable = false;
+	}
 }
 
 void ExpressionVisitor::VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n) {
-	ExpressionVisitor v(FunctionArguments, Report);
+	ExpressionVisitor v(FunctionArguments, ProgramArguments, Report);
 	FunctionArguments[n.Index]->Accept(v);
 	GeneratedExpression = std::move(v.GeneratedExpression);
 	ResultFoldable = v.ResultFoldable;
@@ -132,7 +137,7 @@ void ExpressionVisitor::VisitTypedSetExpression(SG::TypedSetExpression& n) {
 }
 
 void ExpressionVisitor::VisitConstrainedSetExpression(SG::ConstrainedSetExpression& n) {
-	ExpressionVisitor filter_v(FunctionArguments, Report);
+	ExpressionVisitor filter_v(FunctionArguments, ProgramArguments, Report);
 	n.Filter->Accept(filter_v);
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::ConstrainedSetExpression(n.ElementType, filter_v.GeneratedExpression, n.Location));
 	ResultFoldable = true;
@@ -148,7 +153,7 @@ void ExpressionVisitor::VisitIdentifierExpression(SG::IdentifierExpression& n) {
 }
 
 void ExpressionVisitor::VisitFunctionCallExpression(SG::FunctionCallExpression& n) {
-	ExpressionVisitor fn_v(FunctionArguments, Report);
+	ExpressionVisitor fn_v(FunctionArguments, ProgramArguments, Report);
 	n.FunctionTargetExpression->Accept(fn_v);
 
 	SG::IdentifierExpression& fn_exp = dynamic_cast<SG::IdentifierExpression&>(*fn_v.GeneratedExpression);
@@ -157,19 +162,19 @@ void ExpressionVisitor::VisitFunctionCallExpression(SG::FunctionCallExpression& 
 	std::vector<std::unique_ptr<SG::Expression>> args;
 
 	for(auto& arg : n.ArgumentExpressions) {
-		ExpressionVisitor arg_v(FunctionArguments, Report);
+		ExpressionVisitor arg_v(FunctionArguments, ProgramArguments, Report);
 		arg->Accept(arg_v);
 		args.push_back(std::move(arg_v.GeneratedExpression));
 	}
 
-	ExpressionVisitor value_v(args, Report);
+	ExpressionVisitor value_v(args, ProgramArguments, Report);
 	fn_sym.Code->Accept(value_v);
 	GeneratedExpression = std::move(value_v.GeneratedExpression);
 	ResultFoldable = value_v.ResultFoldable;
 }
 
 void ExpressionVisitor::VisitUnaryExpression(SG::UnaryExpression& n) {
-	ExpressionVisitor value_v(FunctionArguments, Report);
+	ExpressionVisitor value_v(FunctionArguments, ProgramArguments, Report);
 	n.Value->Accept(value_v);
 
 	if(!value_v.ResultFoldable) {
@@ -202,9 +207,9 @@ void ExpressionVisitor::VisitExistsExpression(SG::ExistsExpression& n) {
 }
 
 void ExpressionVisitor::VisitInfixExpression(SG::InfixExpression& n) {
-	ExpressionVisitor left_v(FunctionArguments, Report);
+	ExpressionVisitor left_v(FunctionArguments, ProgramArguments, Report);
 	n.LeftValue->Accept(left_v);
-	ExpressionVisitor right_v(FunctionArguments, Report);
+	ExpressionVisitor right_v(FunctionArguments, ProgramArguments, Report);
 	n.RightValue->Accept(right_v);
 
 	if(!left_v.ResultFoldable || !right_v.ResultFoldable) {
@@ -278,7 +283,7 @@ void ExpressionVisitor::VisitInfixExpression(SG::InfixExpression& n) {
 		auto p = left_v.GetConstantSetFilter();
 		auto q = right_v.GetConstantSetFilter();
 		std::unique_ptr<SG::Expression> filter_exp(new SG::InfixExpression(p, q, AST::InfixOperator::Or));
-		ExpressionVisitor filter_exp_v(FunctionArguments, Report);
+		ExpressionVisitor filter_exp_v(FunctionArguments, ProgramArguments, Report);
 		filter_exp->Accept(filter_exp_v);
 
 		Diagnostics::ErrorLocation left_loc = left_v.GetConstantSetLocation();
@@ -294,7 +299,7 @@ void ExpressionVisitor::VisitInfixExpression(SG::InfixExpression& n) {
 		auto p = left_v.GetConstantSetFilter();
 		auto q = right_v.GetConstantSetFilter();
 		std::unique_ptr<SG::Expression> filter_exp(new SG::InfixExpression(p, q, AST::InfixOperator::And));
-		ExpressionVisitor filter_exp_v(FunctionArguments, Report);
+		ExpressionVisitor filter_exp_v(FunctionArguments, ProgramArguments, Report);
 		filter_exp->Accept(filter_exp_v);
 
 		Diagnostics::ErrorLocation left_loc = left_v.GetConstantSetLocation();
@@ -311,7 +316,7 @@ void ExpressionVisitor::VisitInfixExpression(SG::InfixExpression& n) {
 		auto q = right_v.GetConstantSetFilter();
 		std::unique_ptr<SG::Expression> filter_neg(new SG::UnaryExpression(q, AST::UnaryOperator::Not));
 		std::unique_ptr<SG::Expression> filter_exp(new SG::InfixExpression(p, q, AST::InfixOperator::And));
-		ExpressionVisitor filter_exp_v(FunctionArguments, Report);
+		ExpressionVisitor filter_exp_v(FunctionArguments, ProgramArguments, Report);
 		filter_exp->Accept(filter_exp_v);
 
 		Diagnostics::ErrorLocation left_loc = left_v.GetConstantSetLocation();
@@ -331,18 +336,18 @@ void ExpressionVisitor::VisitInfixExpression(SG::InfixExpression& n) {
 }
 
 void ExpressionVisitor::VisitFunctionIfElseExpression(SG::FunctionIfElseExpression& n) {
-	ExpressionVisitor v(FunctionArguments, Report);
+	ExpressionVisitor v(FunctionArguments, ProgramArguments, Report);
 	n.Predicate->Accept(v);
 
 	bool branch = v.GetConstantBoolean();
 	if(branch) {
-		ExpressionVisitor bv(FunctionArguments, Report);
+		ExpressionVisitor bv(FunctionArguments, ProgramArguments, Report);
 		n.IfCode->Accept(bv);
 		GeneratedExpression = std::move(bv.GeneratedExpression);
 		ResultFoldable = bv.ResultFoldable;
 	}
 	else {
-		ExpressionVisitor bv(FunctionArguments, Report);
+		ExpressionVisitor bv(FunctionArguments, ProgramArguments, Report);
 		n.ElseCode->Accept(bv);
 		GeneratedExpression = std::move(bv.GeneratedExpression);
 		ResultFoldable = bv.ResultFoldable;

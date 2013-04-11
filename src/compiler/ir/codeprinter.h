@@ -4,6 +4,7 @@
 #include "runtime/code/codebuffer.h"
 #include "runtime/code/codebufferwritestream.h"
 #include "runtime/code/functiontable.h"
+#include "runtime/code/programtable.h"
 
 #include <iostream>
 #include <unordered_map>
@@ -19,12 +20,13 @@ private:
 	Runtime::Code::CodeBuffer& codeBuffer;
 	Runtime::Code::CodeBufferWriteStream stream;
 	Runtime::Code::FunctionTable& functionTable;
+	Runtime::Code::ProgramTable& programTable;
 
 	std::unordered_map<std::string, size_t> labelmap;
 	std::unordered_multimap<std::string, size_t> backpatchmap;
 
 public:
-	CodePrinter(Runtime::Code::CodeBuffer& codeBuffer, Runtime::Code::FunctionTable& functionTable);
+	CodePrinter(Runtime::Code::CodeBuffer& codeBuffer, Runtime::Code::FunctionTable& functionTable, Runtime::Code::ProgramTable& programTable);
 
 	void Backpatch();
 
@@ -43,6 +45,7 @@ public:
 	void ConstB(bool value);
 	void ConstN(Runtime::Math::DefaultFixed value);
 	void ConstF(const std::string& universal_name);
+	void ConstP(const std::string& universal_name);
 
 	void LoadS(size_t offset);
 

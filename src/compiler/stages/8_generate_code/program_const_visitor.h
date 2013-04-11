@@ -11,12 +11,12 @@ namespace GenerateCode {
 
 class ProgramConstVisitor : public SG::Visitor {
 private:
-	const std::vector<int>& programArguments;
+	const std::vector<SG::EnumerationMemberSymbol*>& programArguments;
 
 public:
 	Runtime::Math::DefaultFixed value;
 
-	ProgramConstVisitor(const std::vector<int>& programArguments, Diagnostics::Report& report);
+	ProgramConstVisitor(const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report);
 
 	void VisitNumericExpression(SG::NumericExpression& n);
 	void VisitIdentifierExpression(SG::IdentifierExpression& n);

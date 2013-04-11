@@ -44,7 +44,7 @@ void StatementVisitor::VisitTakeStatement(SG::TakeStatement& n) {
 	std::vector<std::unique_ptr<SG::Expression>> empty_args;
 
 	try {
-		ExpressionVisitor amt_v(empty_args, Report);
+		ExpressionVisitor amt_v(empty_args, {}, Report);
 		n.Amount->Accept(amt_v);
 		n.Amount = std::move(amt_v.GeneratedExpression);
 	}
@@ -54,7 +54,7 @@ void StatementVisitor::VisitTakeStatement(SG::TakeStatement& n) {
 	}
 
 	try {
-		ExpressionVisitor set_v(empty_args, Report);
+		ExpressionVisitor set_v(empty_args, {}, Report);
 		n.Set->Accept(set_v);
 		n.Set = std::move(set_v.GeneratedExpression);
 	}
@@ -68,7 +68,7 @@ void StatementVisitor::VisitLimitStatement(SG::LimitStatement& n) {
 	std::vector<std::unique_ptr<SG::Expression>> empty_args;
 
 	try {
-			ExpressionVisitor amt_v(empty_args, Report);
+			ExpressionVisitor amt_v(empty_args, {}, Report);
 			n.Amount->Accept(amt_v);
 			n.Amount = std::move(amt_v.GeneratedExpression);
 		}
@@ -78,7 +78,7 @@ void StatementVisitor::VisitLimitStatement(SG::LimitStatement& n) {
 		}
 
 		try {
-			ExpressionVisitor set_v(empty_args, Report);
+			ExpressionVisitor set_v(empty_args, {}, Report);
 			n.Set->Accept(set_v);
 			n.Set = std::move(set_v.GeneratedExpression);
 		}

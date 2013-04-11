@@ -1,0 +1,8 @@
+module ca.nullptr
+
+program EmbeddedProgram:
+    take 6 in { TakenCourse | subject = Subject.CMPUT }
+    
+program TestProgram:
+    take 6 in { TakenCourse | subject = Subject.ENGL }
+    embed EmbeddedProgram

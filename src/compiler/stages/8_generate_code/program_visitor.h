@@ -58,12 +58,12 @@ public:
 class ProgramVisitor : public SG::Visitor {
 private:
 	Runtime::Code::RecordTypeTable& recordTypeTable;
-	std::vector<int> programArguments;
+	std::vector<SG::EnumerationMemberSymbol*> programArguments;
 
 public:
 	std::vector<ProgramNetworkBranch> branches;
 
-	inline void SetProgramArguments(const std::vector<int>& args) {
+	inline void SetProgramArguments(const std::vector<SG::EnumerationMemberSymbol*>& args) {
 		programArguments = args;
 	}
 
@@ -76,6 +76,7 @@ public:
 	void VisitTakeStatement(SG::TakeStatement& n);
 	void VisitLimitStatement(SG::LimitStatement& n);
 	void VisitDisjunctionStatement(SG::DisjunctionStatement& n);
+	void VisitEmbedStatement(SG::EmbedStatement& n);
 };
 
 }

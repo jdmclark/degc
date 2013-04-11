@@ -28,6 +28,7 @@ public:
 	virtual void ConstB(bool value) = 0;
 	virtual void ConstN(Runtime::Math::DefaultFixed value) = 0;
 	virtual void ConstF(const std::string& universal_name) = 0;
+	virtual void ConstP(const std::string& universal_name) = 0;
 
 	virtual void LoadS(size_t offset) = 0;
 

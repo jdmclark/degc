@@ -5,7 +5,7 @@ using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ProgramSetExpressionVisitor;
 using namespace Deg::Runtime::Math;
 
-ProgramSetExpressionVisitor::ProgramSetExpressionVisitor(size_t record_width, const std::vector<int>& programArguments, Diagnostics::Report& report)
+ProgramSetExpressionVisitor::ProgramSetExpressionVisitor(size_t record_width, const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report)
 	: SG::Visitor("GenerateCode::ProgramSetExpressionVisitor", report), record_width(record_width), programArguments(programArguments), result(record_width) {
 	return;
 }

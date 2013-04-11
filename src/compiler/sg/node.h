@@ -207,9 +207,9 @@ public:
 class EnumerationMemberSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
-	unsigned int Value;
+	int Value;
 
-	EnumerationMemberSymbol(unsigned int Value);
+	EnumerationMemberSymbol(int Value);
 };
 
 class EnumerationSymbol : public Symbol {

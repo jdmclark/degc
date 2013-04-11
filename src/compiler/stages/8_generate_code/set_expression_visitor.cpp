@@ -4,7 +4,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::SetExpressionVisitor;
 
-SetExpressionVisitor::SetExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, size_t record_width, const std::vector<int>& programArguments, Diagnostics::Report& report)
+SetExpressionVisitor::SetExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, size_t record_width,
+		const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report)
 	: SG::Visitor("GenerateCode::SetExpressionVisitor", report), code(code), recordTypeTable(recordTypeTable), record_width(record_width), programArguments(programArguments) {
 	return;
 }

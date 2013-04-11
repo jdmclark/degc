@@ -1,6 +1,7 @@
 #include "program_visitor.h"
 #include "program_set_visitor.h"
 #include "program_const_visitor.h"
+#include "compiler/stages/6_constant_folding/expression_visitor.h"
 
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ProgramVisitor;
@@ -146,7 +147,6 @@ void ProgramVisitor::VisitLimitStatement(LimitStatement& n) {
 }
 
 void ProgramVisitor::VisitDisjunctionStatement(DisjunctionStatement& n) {
-
 	std::vector<ProgramNetworkBranch> next_branches;
 
 	ProgramVisitor v(recordTypeTable, Report);
@@ -157,4 +157,21 @@ void ProgramVisitor::VisitDisjunctionStatement(DisjunctionStatement& n) {
 	}
 
 	branches = next_branches;
+}
+
+void ProgramVisitor::VisitEmbedStatement(EmbedStatement& n) {
+	ConstantFolding::ExpressionVisitor pcv({}, programArguments, Report);
+	n.Value->Accept(pcv);
+
+	SG::IdentifierExpression& ie = dynamic_cast<SG::IdentifierExpression&>(*pcv.GeneratedExpression);
+	SG::ProgramSymbol& ps = dynamic_cast<SG::ProgramSymbol&>(*ie.ReferencedNode);
+
+	if(ps.Arguments.children_size() > 0) {
+		Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::FeatureNotImplemented, Diagnostics::ErrorLevel::CriticalError,
+				VisitorName, "feature not implemented: embedding parameterized programs"));
+		return;
+	}
+
+	// TODO: Handle base for embedded programs
+	ps.Statements->Accept(*this);
 }

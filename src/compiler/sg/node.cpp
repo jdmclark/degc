@@ -190,7 +190,7 @@ FunctionArgumentSymbol::FunctionArgumentSymbol(std::unique_ptr<Type>& InputType,
 	return;
 }
 
-EnumerationMemberSymbol::EnumerationMemberSymbol(unsigned int Value)
+EnumerationMemberSymbol::EnumerationMemberSymbol(int Value)
 	: Value(Value) {
 	return;
 }

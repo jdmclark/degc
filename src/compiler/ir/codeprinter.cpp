@@ -5,8 +5,8 @@
 using Deg::Compiler::IR::CodePrinter;
 using Deg::Runtime::VM::Opcode;
 
-CodePrinter::CodePrinter(Deg::Runtime::Code::CodeBuffer& codeBuffer, Deg::Runtime::Code::FunctionTable& functionTable)
-	: unique_label_id(0), codeBuffer(codeBuffer), stream(codeBuffer), functionTable(functionTable) {
+CodePrinter::CodePrinter(Deg::Runtime::Code::CodeBuffer& codeBuffer, Deg::Runtime::Code::FunctionTable& functionTable, Deg::Runtime::Code::ProgramTable& programTable)
+	: unique_label_id(0), codeBuffer(codeBuffer), stream(codeBuffer), functionTable(functionTable), programTable(programTable) {
 	return;
 }
 
@@ -80,6 +80,11 @@ void CodePrinter::ConstF(const std::string& universal_name) {
 	stream.Write(Opcode::CONSTF);
 	backpatchmap.insert(std::make_pair(boost::str(boost::format("@FUNCTION:%s") % universal_name), stream.Tell()));
 	stream.Write<size_t>(0);
+}
+
+void CodePrinter::ConstP(const std::string& universal_name) {
+	stream.Write(Opcode::CONSTP);
+	stream.Write<size_t>(programTable.GetProgramId(universal_name));
 }
 
 void CodePrinter::LoadS(size_t offset) {

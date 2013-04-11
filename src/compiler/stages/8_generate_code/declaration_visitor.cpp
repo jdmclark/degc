@@ -2,6 +2,7 @@
 #include "expression_visitor.h"
 #include "program_visitor.h"
 #include "program_const_visitor.h"
+#include "compiler/stages/6_constant_folding/expression_visitor.h"
 
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::DeclarationVisitor;
@@ -19,17 +20,20 @@ void DeclarationVisitor::VisitFunctionSymbol(FunctionSymbol& n) {
 	code.Ret();
 }
 
-void DeclarationVisitor::PopulateProgram(ProgramVisitor& pv, SG::ProgramSymbol& n, const std::vector<int>& params) {
+void DeclarationVisitor::PopulateProgram(ProgramVisitor& pv, SG::ProgramSymbol& n, const std::vector<SG::EnumerationMemberSymbol*>& params) {
 	// Add parent statements to pv.
 	if(n.Base) {
 		// Generate new argument vector.
-		std::vector<int> baseArgs;
+		std::vector<SG::EnumerationMemberSymbol*> baseArgs;
 
 		for(auto& arg : n.BaseArguments) {
-			ProgramConstVisitor v(params, Report);
+			ConstantFolding::ExpressionVisitor v({}, params, Report);
 			arg->Accept(v);
 
-			baseArgs.push_back(v.value.GetRawValue());
+			SG::IdentifierExpression& e = dynamic_cast<SG::IdentifierExpression&>(*v.GeneratedExpression);
+			SG::EnumerationMemberSymbol& ems = dynamic_cast<SG::EnumerationMemberSymbol&>(*e.ReferencedNode);
+
+			baseArgs.push_back(&ems);
 		}
 
 		PopulateProgram(pv, *n.Base, baseArgs);
@@ -41,7 +45,23 @@ void DeclarationVisitor::PopulateProgram(ProgramVisitor& pv, SG::ProgramSymbol& 
 	n.Statements->Accept(pv);
 }
 
-std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor::ReifyProgram(SG::ProgramSymbol& n, const std::vector<int>& params) {
+std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor::ReifyProgram(SG::ProgramSymbol& n, const std::vector<int>& bad_params,
+		const std::vector<SG::EnumerationSymbol*>& value_types) {
+	// Generate good params
+	std::vector<SG::EnumerationMemberSymbol*> params;
+	for(size_t i = 0; i < bad_params.size(); ++i) {
+		// Find matching enumeration value.
+		SG::EnumerationMemberSymbol* val = nullptr;
+		for(auto& member : value_types[i]->Values) {
+			SG::EnumerationMemberSymbol& ems = dynamic_cast<SG::EnumerationMemberSymbol&>(*member);
+			if(ems.Value == bad_params[i]) {
+				val = &ems;
+			}
+		}
+
+		params.push_back(val);
+	}
+
 	ProgramVisitor pv(recordTypeTable, Report);
 	PopulateProgram(pv, n, params);
 
@@ -131,30 +151,32 @@ std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor:
 		branches.push_back(networks);
 	}
 
-	return std::unique_ptr<Runtime::Solver::ProgramNetworkReified>(new Runtime::Solver::ProgramNetworkReified(branches, params));
+	return std::unique_ptr<Runtime::Solver::ProgramNetworkReified>(new Runtime::Solver::ProgramNetworkReified(branches, bad_params));
 }
 
 void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
 	std::unique_ptr<Runtime::Solver::Program> new_prog(new Runtime::Solver::Program());
 
 	if(n.Arguments.children_size() == 0) {
-		std::unique_ptr<Runtime::Solver::ProgramNetworkReified> reified_program = ReifyProgram(n, {});
+		std::unique_ptr<Runtime::Solver::ProgramNetworkReified> reified_program = ReifyProgram(n, {}, {});
 		new_prog->AddReifiedProgram(reified_program);
 	}
 	else {
 		// Generate cartesian product of parameters.
 		std::vector<int> params(n.Arguments.children_size(), 0);
 		std::vector<int> limit_values;
+		std::vector<SG::EnumerationSymbol*> value_types;
 		bool overflow = false;
 
 		for(auto& arg : n.Arguments) {
 			SG::ProgramArgumentSymbol& parg = dynamic_cast<SG::ProgramArgumentSymbol&>(*arg);
 			SG::EnumerationType& et = dynamic_cast<SG::EnumerationType&>(*parg.InputType);
 			limit_values.push_back(et.ElementType->Values.children_size());
+			value_types.push_back(et.ElementType);
 		}
 
 		while(!overflow) {
-			std::unique_ptr<Runtime::Solver::ProgramNetworkReified> reified_program = ReifyProgram(n, params);
+			std::unique_ptr<Runtime::Solver::ProgramNetworkReified> reified_program = ReifyProgram(n, params, value_types);
 			new_prog->AddReifiedProgram(reified_program);
 
 			// Increment param vector

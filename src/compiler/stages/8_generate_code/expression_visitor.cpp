@@ -6,7 +6,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ExpressionVisitor;
 
-ExpressionVisitor::ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<int>& programArguments, Diagnostics::Report& report)
+ExpressionVisitor::ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable,
+		const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report)
 	: SG::Visitor("GenerateCode::ExpressionVisitor", report), code(code), recordTypeTable(recordTypeTable), programArguments(programArguments) {
 	return;
 }

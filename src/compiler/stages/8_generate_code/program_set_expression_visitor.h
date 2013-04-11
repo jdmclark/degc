@@ -12,12 +12,12 @@ namespace GenerateCode {
 class ProgramSetExpressionVisitor : public SG::Visitor {
 private:
 	size_t record_width;
-	const std::vector<int>& programArguments;
+	const std::vector<SG::EnumerationMemberSymbol*>& programArguments;
 
 public:
 	Runtime::Math::Set result;
 
-	ProgramSetExpressionVisitor(size_t record_width, const std::vector<int>& programArguments, Diagnostics::Report& report);
+	ProgramSetExpressionVisitor(size_t record_width, const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report);
 
 	void VisitInfixExpression(SG::InfixExpression& e);
 	void VisitSetClauseExpression(SG::SetClauseExpression& e);

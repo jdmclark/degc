@@ -5,6 +5,7 @@
 #include "compiler/ir/printer.h"
 #include "runtime/math/fixed.h"
 #include "runtime/code/recordtypetable.h"
+#include "runtime/code/programtable.h"
 #include <memory>
 #include <vector>
 
@@ -17,10 +18,10 @@ class ExpressionVisitor : public SG::Visitor {
 private:
 	IR::Printer& code;
 	Runtime::Code::RecordTypeTable& recordTypeTable;
-	const std::vector<int>& programArguments;
+	const std::vector<SG::EnumerationMemberSymbol*>& programArguments;
 
 public:
-	ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<int>& programArguments, Diagnostics::Report& report);
+	ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report);
 
 	void VisitNumericExpression(SG::NumericExpression& e);
 	void VisitBooleanExpression(SG::BooleanExpression& e);

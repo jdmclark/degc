@@ -15,6 +15,7 @@ enum class Opcode : unsigned char {
 	CONSTB,					// Load constant boolean
 	CONSTN,					// Load constant numeric
 	CONSTF,					// Load constant function reference
+	CONSTP,					// Load constant program reference
 
 	LOADS,					// Load from stack offset
 

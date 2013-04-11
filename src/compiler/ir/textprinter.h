@@ -32,6 +32,7 @@ public:
 	void ConstB(bool value);
 	void ConstN(Runtime::Math::DefaultFixed value);
 	void ConstF(const std::string& universal_name);
+	void ConstP(const std::string& universal_name);
 
 	void LoadS(size_t offset);
 

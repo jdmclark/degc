@@ -76,7 +76,8 @@ Deg::Runtime::VM::VirtualMachine::Type Deg::Runtime::VM::VirtualMachine::Execute
 			}
 			break;
 
-		case Opcode::CONSTF: {
+		case Opcode::CONSTF:
+		case Opcode::CONSTP: {
 				size_t v = stream.Read<size_t>();
 				Push(v);
 			}

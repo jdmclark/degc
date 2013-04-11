@@ -5,7 +5,7 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ProgramSetVisitor;
 
-ProgramSetVisitor::ProgramSetVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<int>& programArguments, Diagnostics::Report& report)
+ProgramSetVisitor::ProgramSetVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<SG::EnumerationMemberSymbol*>& programArguments, Diagnostics::Report& report)
 	: SG::Visitor("GenerateCode::ProgramSetVisitor", report), recordTypeTable(recordTypeTable), programArguments(programArguments), result(0), result_record_type(0) {
 	return;
 }
