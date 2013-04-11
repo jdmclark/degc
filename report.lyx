@@ -644,16 +644,151 @@ or:
 For All*
 \end_layout
 
+\begin_layout Standard
+For All loops execute the statement body for each record in the matching
+ set.
+ This allows programs to make assertions about all records in the ontology.
+\end_layout
+
+\begin_layout Standard
+For All loops may not contain 
+\emph on
+take
+\emph default
+ or 
+\emph on
+limit
+\emph default
+ statements.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+for all course in { TakenCourse | subject = Subject.CMPUT }:
+\end_layout
+
+\begin_layout LyX-Code
+    assert course.grade >= 2.7
+\end_layout
+
 \begin_layout Subsubsection
 For Any*
+\end_layout
+
+\begin_layout Standard
+For Any loops execute the statement body for any one, arbitrarily-chosen
+ record in the ontology.
+\end_layout
+
+\begin_layout Standard
+For Any loops may not contain 
+\emph on
+take
+\emph default
+ or 
+\emph on
+limit
+\emph default
+ statements.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+for any status in { RegistrationStatus }:
+\end_layout
+
+\begin_layout LyX-Code
+    assert status.registered
 \end_layout
 
 \begin_layout Subsubsection
 For Best*
 \end_layout
 
+\begin_layout Standard
+For Best loops execute the statement body for the best matching record,
+ where the best record is identified with an order predicate.
+\end_layout
+
+\begin_layout Standard
+For Best loops may not contain 
+\emph on
+take
+\emph default
+ or 
+\emph on
+limit
+\emph default
+ statements.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+function HighestGrade(TakenCourse a, TakenCourse b)->bool:
+\end_layout
+
+\begin_layout LyX-Code
+    a.grade >= b.grade
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+for best course by HighestGrade in { TakenCourse }:
+\end_layout
+
+\begin_layout LyX-Code
+    assert course.grade >= 4.0
+\end_layout
+
 \begin_layout Subsubsection
 Conditional*
+\end_layout
+
+\begin_layout Standard
+Conditional statements are used to indicate a discriminated branch.
+ Conditional statements are used to branch program execution predicated
+ upon the value of a boolean expression.
+ Conditional statement bodies may not contain 
+\emph on
+take
+\emph default
+ or 
+\emph on
+limit
+\emph default
+ statements.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+if exists { RoyalConservatoryPiano | grade >= 6 }:
+\end_layout
+
+\begin_layout LyX-Code
+    assert not exists { PianoExemptionExam }
+\end_layout
+
+\begin_layout LyX-Code
+else:
+\end_layout
+
+\begin_layout LyX-Code
+    assert exists { PianoExemptionExam }
 \end_layout
 
 \begin_layout Subsubsection
