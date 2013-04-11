@@ -194,10 +194,12 @@ LimitStatement* Factory::MakeLimitStatement(Expression* Amount, Expression* Set,
 	return val;
 }
 
-Program* Factory::MakeProgram(const std::string& Name, const std::string& Extends, Statement* Code, const Diagnostics::ErrorLocation& yyl) {
+Program* Factory::MakeProgram(const std::string& Name, std::vector<FunctionArgument*>* Arguments, const std::string& Extends, std::vector<Expression*>* BaseArguments, Statement* Code, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(Program);
 	val->Name = Name;
+	val->Arguments = Arguments;
 	val->Extends = Extends;
+	val->BaseArguments = BaseArguments;
 	val->Code = Code;
 	return val;
 }

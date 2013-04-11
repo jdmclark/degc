@@ -21,6 +21,7 @@
 	x(NumberSymbol) \
 	x(QuantitySymbol) \
 	x(BooleanSymbol) \
+	x(ProgramArgumentSymbol) \
 	x(ProgramSymbol) \
 	x(FunctionArgumentSymbol) \
 	x(FunctionSymbol) \

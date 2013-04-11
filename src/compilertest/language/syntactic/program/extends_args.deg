@@ -1,0 +1,12 @@
+module ca.ualberta
+
+enum SomeEnum:
+
+program BaseProgram(SomeEnum arg):
+    assert true
+
+program Program(SomeEnum arg, SomeEnum arg2) extends BaseProgram(arg):
+    assert true
+
+program Program(SomeEnum arg, SomeEnum arg2,) extends BaseProgram(arg, arg2,):
+    assert true

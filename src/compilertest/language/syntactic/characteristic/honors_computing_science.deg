@@ -38,7 +38,7 @@ program Program:
     for all TakenCourse course:
         assert satisfy(course.requirements)
 
-program HonorsComputingScience(Program):
+program HonorsComputingScience extends Program:
     # Honors program requirements
     for all EnrolledFallWinterTerm term:
         assert mean({TakenCourse | term=term.id}, GradeMap) >= 3.0

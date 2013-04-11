@@ -1,12 +1,12 @@
 module ca.ualberta
 
 program FirstConcentration:
-program EnglishFirstConcentration(FirstConcentration):
-program FrenchFirstConcentration(FirstConcentration):
-program SpanishFirstConcentration(FirstConcentration):
+program EnglishFirstConcentration extends FirstConcentration:
+program FrenchFirstConcentration extends FirstConcentration:
+program SpanishFirstConcentration extends FirstConcentration:
 program SecondConcentration:
-program EnglishSecondConcentration(SecondConcentration):
-program FrenchSecondConcentration(SecondConcentration):
+program EnglishSecondConcentration extends SecondConcentration:
+program FrenchSecondConcentration extends SecondConcentration:
 
 enum ConcentrationType:
     English

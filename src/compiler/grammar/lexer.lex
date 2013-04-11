@@ -98,6 +98,7 @@ E			[Ee][+-]?{D}+
 	"embed"			{ return EMBED; }
 	"enum"			{ return ENUM; }
 	"exists"		{ return EXISTS; }
+	"extends"		{ return EXTENDS; }
 	"for"			{ return FOR; }
 	"from"			{ return FROM; }
 	"function"		{ return FUNCTION; }

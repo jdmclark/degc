@@ -11,6 +11,11 @@ public:
 
 BeginSuiteFixture(ProgramSyntacticTest, ProgramSyntacticTestFixture);
 
+Case(Args) {
+	ParseFile("args.deg");
+	AssertResult(0, 0);
+}
+
 Case(Assert) {
 	ParseFile("assert.deg");
 	AssertResult(0, 0);
@@ -33,6 +38,11 @@ Case(Embed) {
 
 Case(Empty) {
 	ParseFile("empty.deg");
+	AssertResult(0, 0);
+}
+
+Case(ExtendsArgs) {
+	ParseFile("extends_args.deg");
 	AssertResult(0, 0);
 }
 

@@ -81,7 +81,7 @@ public:
 	TakeStatement* MakeTakeStatement(Expression* Amount, Expression* Set, const Diagnostics::ErrorLocation& yyl);
 	LimitStatement* MakeLimitStatement(Expression* Amount, Expression* Set, const Diagnostics::ErrorLocation& yyl);
 
-	Program* MakeProgram(const std::string& Name, const std::string& Extends, Statement* Code, const Diagnostics::ErrorLocation& yyl);
+	Program* MakeProgram(const std::string& Name, std::vector<FunctionArgument*>* Arguments, const std::string& Extends, std::vector<Expression*>* BaseArguments, Statement* Code, const Diagnostics::ErrorLocation& yyl);
 
 	FunctionArgument* MakeFunctionArgument(Typename* Type, const std::string& Name, const Diagnostics::ErrorLocation& yyl);
 	Function* MakeFunction(const std::string& Name, std::vector<FunctionArgument*>* Arguments, Typename* Codomain, Expression* Code, const Diagnostics::ErrorLocation& yyl);

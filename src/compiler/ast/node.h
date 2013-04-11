@@ -296,16 +296,6 @@ public:
 	Expression* Set;
 };
 
-/* Program */
-
-class Program : public Declaration {
-	ASTVISITOR_ACCEPT
-public:
-	std::string Name;
-	std::string Extends;
-	Statement* Code;
-};
-
 /* Functions */
 
 class FunctionIfElseExpression : public Expression {
@@ -330,6 +320,18 @@ public:
 	std::vector<FunctionArgument*>* Arguments;
 	Typename* Codomain;
 	Expression* Code;
+};
+
+/* Program */
+
+class Program : public Declaration {
+	ASTVISITOR_ACCEPT
+public:
+	std::string Name;
+	std::vector<FunctionArgument*>* Arguments;
+	std::string Extends;
+	std::vector<Expression*>* BaseArguments;
+	Statement* Code;
 };
 
 /* Records */

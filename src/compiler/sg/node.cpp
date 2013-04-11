@@ -153,6 +153,11 @@ bool ErrorType::CanAcceptValueOfType(const Type& t) const {
 	return true;
 }
 
+ProgramArgumentSymbol::ProgramArgumentSymbol(std::unique_ptr<Type>& InputType, unsigned int Index)
+	: InputType(std::move(InputType)), Index(Index) {
+	return;
+}
+
 ProgramSymbol::ProgramSymbol()
 	: ast_program(nullptr), Base(nullptr) {
 	return;
@@ -292,6 +297,7 @@ SGVISITOR_ACCEPT_IMPL(ErrorType);
 SGVISITOR_ACCEPT_IMPL(NumberSymbol);
 SGVISITOR_ACCEPT_IMPL(QuantitySymbol);
 SGVISITOR_ACCEPT_IMPL(BooleanSymbol);
+SGVISITOR_ACCEPT_IMPL(ProgramArgumentSymbol);
 SGVISITOR_ACCEPT_IMPL(ProgramSymbol);
 SGVISITOR_ACCEPT_IMPL(EnumerationMemberSymbol);
 SGVISITOR_ACCEPT_IMPL(EnumerationSymbol);

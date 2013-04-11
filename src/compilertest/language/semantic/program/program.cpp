@@ -11,6 +11,11 @@ public:
 
 BeginSuiteFixture(ProgramSemanticTest, ProgramSemanticTestFixture);
 
+Case(ArgNotEnum) {
+	ParseFile("arg_not_enum.deg");
+	AssertResult(1, 0);
+}
+
 Case(AssertNotBoolean) {
 	ParseFile("assert_not_boolean.deg");
 	AssertResult(1, 0);

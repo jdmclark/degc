@@ -142,6 +142,15 @@ class BooleanSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 };
 
+class ProgramArgumentSymbol : public Symbol {
+	SGVISITOR_ACCEPT
+public:
+	std::unique_ptr<Type> InputType;
+	unsigned int Index;
+
+	ProgramArgumentSymbol(std::unique_ptr<Type>& InputType, unsigned int Index);
+};
+
 class ProgramSymbol : public Symbol {
 	SGVISITOR_ACCEPT
 public:
@@ -149,6 +158,7 @@ public:
 	AST::Program* ast_program;
 	ProgramSymbol* Base;
 	std::unique_ptr<Statement> Statements;
+	Scope Arguments;
 
 	ProgramSymbol();
 	bool InheritsFrom(const ProgramSymbol& program) const;

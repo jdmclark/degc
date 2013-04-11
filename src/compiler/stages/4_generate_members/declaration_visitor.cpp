@@ -2,6 +2,7 @@
 #include "enumeration_member_visitor.h"
 #include "record_member_visitor.h"
 #include "function_argument_visitor.h"
+#include "program_argument_visitor.h"
 #include "program_base_visitor.h"
 #include "typename_visitor.h"
 #include "compiler/sg/error_helper.h"
@@ -28,6 +29,11 @@ void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
 			n.Base = nullptr;
 			SG::ErrorHelper::UndefinedSymbol(Report, VisitorName, n.ast_program->Location, n.ast_program->Extends);
 		}
+	}
+
+	ProgramArgumentVisitor v(n, module, Report);
+	for(auto member : *n.ast_program->Arguments) {
+		member->Accept(v);
 	}
 	return;
 }

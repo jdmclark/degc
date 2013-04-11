@@ -56,6 +56,7 @@ enum class ErrorCode {
 	SetFilterNotOrthogonal		= 4034,
 	SetFilterNotIsolated		= 4035,
 	SetFilterIrrelevant			= 4036,
+	ProgArgNotEnumeration		= 4037,
 
 	// Code generation errors
 	LimitNotDisjoint			= 5000,

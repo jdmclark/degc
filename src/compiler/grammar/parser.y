@@ -70,7 +70,7 @@
 }
 
 /* Keywords */
-%token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM EXISTS FOR FROM
+%token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM EXISTS EXTENDS FOR FROM
 %token FUNCTION IF IMPORT INTERSECT IN LIMIT MODULE NOT OR PANIC PROGRAM
 %token RECORD SETMINUS SET TAKE UNION
 
@@ -392,9 +392,17 @@ program_statement_part
 
 program
 	: PROGRAM IDENTIFIER ':' ENDLN program_statement_part
-		{ $$ = ast->MakeProgram($2, "", $5, @$); }
-	| PROGRAM IDENTIFIER '(' IDENTIFIER ')' ':' ENDLN program_statement_part
-		{ $$ = ast->MakeProgram($2, $4, $8, @$); }
+		{ $$ = ast->MakeProgram($2, ast->MakeList<FunctionArgument>(), "", ast->MakeList<Expression>(), $5, @$); }
+	| PROGRAM IDENTIFIER '(' function_argument_list ':' ENDLN program_statement_part
+		{ $$ = ast->MakeProgram($2, $4, "", ast->MakeList<Expression>(), $7, @$); }
+	| PROGRAM IDENTIFIER EXTENDS IDENTIFIER ':' ENDLN program_statement_part
+		{ $$ = ast->MakeProgram($2, ast->MakeList<FunctionArgument>(), $4, ast->MakeList<Expression>(), $7, @$); }
+	| PROGRAM IDENTIFIER '(' function_argument_list EXTENDS IDENTIFIER ':' ENDLN program_statement_part
+		{ $$ = ast->MakeProgram($2, $4, $6, ast->MakeList<Expression>(), $9, @$); }
+	| PROGRAM IDENTIFIER EXTENDS IDENTIFIER '(' argument_expression_list ':' ENDLN program_statement_part
+		{ $$ = ast->MakeProgram($2, ast->MakeList<FunctionArgument>(), $4, $6, $9, @$); }
+	| PROGRAM IDENTIFIER '(' function_argument_list EXTENDS IDENTIFIER '(' argument_expression_list ':' ENDLN program_statement_part
+		{ $$ = ast->MakeProgram($2, $4, $6, $8, $11, @$); }
 	;
 	
 /********** Function **********/

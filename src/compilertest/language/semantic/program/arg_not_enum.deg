@@ -1,0 +1,8 @@
+module ca.ualberta
+
+enum SomeEnum:
+    Foo
+    Bar
+    
+program TestProgram(SomeEnum arg1, number arg2):
+    assert true
