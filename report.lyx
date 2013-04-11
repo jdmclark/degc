@@ -1,0 +1,881 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass scrbook
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+theorems-ams-extended
+enumitem
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize letterpaper
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Degc Language
+\end_layout
+
+\begin_layout Author
+Jonathan Clark
+\end_layout
+
+\begin_layout Chapter
+Language Specification
+\end_layout
+
+\begin_layout Section
+Lexical Grammar
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+Lexical grammar is similar to the 
+\emph on
+Python
+\emph default
+ language.
+\end_layout
+
+\begin_layout Standard
+The Degc tokenizer always returns the longest possible token which can be
+ produced from the input.
+ Tokens are delimited by non-matching characters and by whitespace.
+ An unrecognized character or sequence is treated as an error.
+\end_layout
+
+\begin_layout Standard
+In Degc, whitespace is syntactically significant.
+ Four (
+\begin_inset Formula $4$
+\end_inset
+
+) spaces are used to indent blocks, and other whitespace characters are
+ ignored.
+ Spaces are also ignored inside parenthesized 
+\begin_inset Formula $(,)$
+\end_inset
+
+ and bracketed 
+\begin_inset Formula $[,]$
+\end_inset
+
+ code.
+\end_layout
+
+\begin_layout Standard
+Line comments are indicated with a hash # symbol.
+ All input from the hash sign to the end of the current line is ignored.
+\end_layout
+
+\begin_layout Subsection
+Identifiers
+\end_layout
+
+\begin_layout Standard
+Types and functions are designated by a string identifier.
+ Valid identifiers may begin with an underscore, or any upper- or lower-case
+ English letter.
+ Identifiers may not begin with numbers, but numbers are permitted in the
+ remainder of the identifier.
+\end_layout
+
+\begin_layout Standard
+Identifiers which begin with a number, or contain any symbols other than
+ English letters, numbers, and underscores, are invalid.
+\end_layout
+
+\begin_layout Subsection
+Literals
+\end_layout
+
+\begin_layout Standard
+Degc includes the Boolean literal values 
+\emph on
+true
+\emph default
+ and 
+\emph on
+false
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Numeric literals denote fractional decimal numbers, and may contain any
+ Arabic number from 
+\begin_inset Formula $0$
+\end_inset
+
+ to 
+\begin_inset Formula $9$
+\end_inset
+
+, and optionally a single decimal 
+\begin_inset Formula $.$
+\end_inset
+
+ which must be followed by additional numbers.
+ Degc supports fixed-precision numbers with 
+\begin_inset Formula $\varepsilon=0.0001$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Keywords and Punctuators
+\end_layout
+
+\begin_layout Standard
+The Degc lexicon contains the following keywords: 
+\emph on
+all, and, any, assert, as, best, by, either, else, embed, enum, exists,
+ extends, for, from, function, if, import, intersect, in, limit, module,
+ not, or, panic, program, record, setminus, set, take, union.
+\end_layout
+
+\begin_layout Standard
+The Degc lexicon also contains the following punctuators: 
+\emph on
+@ : , .
+ -> + - * / < <= > >= = != ( ) [ ] { } |
+\end_layout
+
+\begin_layout Section
+Syntactic Grammar
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+Degc is a declarative language for describing academic programs.
+ As such, Degc programs are written to model the given problem, rather than
+ written to execute specific computations.
+\end_layout
+
+\begin_layout Standard
+Degc programs operate over an input 
+\emph on
+ontology
+\emph default
+ - a set of facts, which are described using records.
+ Degc programs do not have direct access to the contents of records.
+ Instead, Degc programs contain assertions about the ontology.
+ A Degc program evaluates 
+\emph on
+true
+\emph default
+ when all of its assertions are true, and 
+\emph on
+false
+\emph default
+ otherwise.
+\end_layout
+
+\begin_layout Subsection
+Declarations
+\end_layout
+
+\begin_layout Subsubsection
+Records
+\end_layout
+
+\begin_layout Standard
+A record is a quantum of the input ontology.
+ Records contain relevant facts, such as courses or certifications taken,
+ student status, etc.
+\end_layout
+
+\begin_layout Standard
+A record may optionally have one 
+\emph on
+quantity
+\emph default
+ field.
+ A record type must have a quantity field to use 
+\emph on
+take 
+\emph default
+and 
+\emph on
+limit 
+\emph default
+statements.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+record TakenCourse:
+\end_layout
+
+\begin_layout LyX-Code
+    Faculty faculty
+\end_layout
+
+\begin_layout LyX-Code
+    Subject subject
+\end_layout
+
+\begin_layout LyX-Code
+    number level
+\end_layout
+
+\begin_layout LyX-Code
+    quantity credits
+\end_layout
+
+\begin_layout Subsubsection
+Enumerations
+\end_layout
+
+\begin_layout Standard
+Enumerations are a list of options.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+enum Subject:
+\end_layout
+
+\begin_layout LyX-Code
+    CMPUT
+\end_layout
+
+\begin_layout LyX-Code
+    MATH
+\end_layout
+
+\begin_layout LyX-Code
+    ENGL
+\end_layout
+
+\begin_layout LyX-Code
+    PHIL
+\end_layout
+
+\begin_layout Subsubsection
+Functions
+\end_layout
+
+\begin_layout Standard
+Degc contains an embedded functional programming language which can be accessed
+ by writing functions.
+ Degc supports higher-order functions, but not lexical closures.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+function SubjectLevelCourse(Subject sub, number lev) -> set(TakenCourse):
+\end_layout
+
+\begin_layout LyX-Code
+    { TakenCourse | subject = sub and level >= lev and level < (lev + 100)
+ }
+\end_layout
+
+\begin_layout Subsubsection
+Programs
+\end_layout
+
+\begin_layout Standard
+Degc programs describe statements about the ontology.
+ Programs may inherit from other programs.
+ Programs may be parameterized, but are restricted to enumeration arguments.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+program ExampleProgram(Subject majorSubject):
+\end_layout
+
+\begin_layout LyX-Code
+    take 6 in { TakenCourse | subject = majorSubject }
+\end_layout
+
+\begin_layout Subsection
+Expressions
+\end_layout
+
+\begin_layout Subsubsection
+Overview
+\end_layout
+
+\begin_layout Standard
+Deg expressions are similar to those in other languages.
+ As is typical, function calls have the highest precedence, followed by
+ member access, unary operators (arithmetic and boolean negation), multiplicatio
+n, addition, relations, equality, logical and, and logical or.
+ A higher precedence may be imposed with parentheses.
+\end_layout
+
+\begin_layout Subsubsection
+Logical and Arithmetic
+\end_layout
+
+\begin_layout Standard
+Degc supports the usual arithmetic operators for number types: 
+\emph on
++,-,*,/
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Degc also supports the following logical operations: 
+\emph on
+and, or, not
+\emph default
+.
+\end_layout
+
+\begin_layout Subsubsection
+Set
+\end_layout
+
+\begin_layout Standard
+Set expressions are used to describe a portion of the ontology.
+ They are constructed using a typical set builder notation.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+{ TakenCourse }
+\end_layout
+
+\begin_layout Standard
+This code describes a set of all records with the type 
+\emph on
+TakenCourse
+\emph default
+.
+\end_layout
+
+\begin_layout LyX-Code
+{ TakenCourse | subject = Subject.CMPUT and level < 200 }
+\end_layout
+
+\begin_layout Standard
+This code describes a set of all records with the type 
+\family typewriter
+\emph on
+TakenCourse
+\emph default
+, a subject of 
+\emph on
+CMPUT
+\emph default
+, and a level which is below 
+\begin_inset Formula $200$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+It must be possible to represent the constructed set as a union of orthogonal
+ ranges.
+ As a result, set clause relations must each depend on a single record member,
+ and that member must be isolated on a single side of the relational operator.
+\end_layout
+
+\begin_layout Standard
+Sets support the 
+\emph on
+exists, union, intersect, 
+\emph default
+and 
+\emph on
+setminus
+\emph default
+ operators.
+ The 
+\emph on
+exists
+\emph default
+ operator returns true if and only if there is at least one record matching
+ the input set.
+ The other operators function as expected.
+\end_layout
+
+\begin_layout Subsubsection
+Panic
+\end_layout
+
+\begin_layout Standard
+Degc supports a rudimentary exception mechanism.
+ Panic will immediately cause the executing program to terminate with a
+ result of 
+\emph on
+false
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Statements
+\end_layout
+
+\begin_layout Subsubsection
+Overview
+\end_layout
+
+\begin_layout Standard
+Program statements are used to describe facts about the ontology.
+ In the following, an asterisk (*) indicates that the statement type is
+ planned but not currently supported by the reference implementation.
+\end_layout
+
+\begin_layout Subsubsection
+Assertions*
+\end_layout
+
+\begin_layout Standard
+Assertions execute a boolean expression.
+ If the expression evaluates as 
+\emph on
+false
+\emph default
+, the current execution is rejected.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+assert exists { RoyalConservatoryPiano | grade >= 6 }
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Subsubsection
+Embed
+\end_layout
+
+\begin_layout Standard
+Embed statements include, in-line, the contents of another program.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+embed MajorProgramMap(majorSubject)
+\end_layout
+
+\begin_layout Standard
+The embed keyword may also be used to enclose program statements in a nested
+ block:
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+take 6 in { TakenCourse | subject = majorSubject }
+\end_layout
+
+\begin_layout LyX-Code
+embed:
+\end_layout
+
+\begin_layout LyX-Code
+    assert exists { StudentRegistered }
+\end_layout
+
+\begin_layout LyX-Code
+    take 6 in { TakenCourse | subject = minorSubject }
+\end_layout
+
+\begin_layout LyX-Code
+take 3 in { TakenCourse }
+\end_layout
+
+\begin_layout Subsubsection
+Disjunction
+\end_layout
+
+\begin_layout Standard
+Disjunctions are used to indicate a non-discriminated branch.
+ Program execution is successful if at least one branch may be taken.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+either:
+\end_layout
+
+\begin_layout LyX-Code
+    assert exists { TakenCourse | subject = Subject.MUS and level = 110 }
+\end_layout
+
+\begin_layout LyX-Code
+or:
+\end_layout
+
+\begin_layout LyX-Code
+    assert exists { PianoExemptionExam | grade >= 0.8 }
+\end_layout
+
+\begin_layout LyX-Code
+or:
+\end_layout
+
+\begin_layout LyX-Code
+    assert exists { RoyalConservatoryPiano | grade >= 6 }
+\end_layout
+
+\begin_layout Subsubsection
+For All*
+\end_layout
+
+\begin_layout Subsubsection
+For Any*
+\end_layout
+
+\begin_layout Subsubsection
+For Best*
+\end_layout
+
+\begin_layout Subsubsection
+Conditional*
+\end_layout
+
+\begin_layout Subsubsection
+Take
+\end_layout
+
+\begin_layout Standard
+Take statements are used to allocate a specified quantity from a set.
+ Once taken, the quantity cannot be used to fulfill another 
+\emph on
+take
+\emph default
+ requirement.
+\end_layout
+
+\begin_layout Standard
+For example, an academic program may require 
+\begin_inset Formula $6$
+\end_inset
+
+ credits from art courses and 
+\begin_inset Formula $3$
+\end_inset
+
+ additional credits in free options.
+ Although art credits may be applied toward the free option requirement,
+ art credits may not simultaneously be applied to both requirements.
+\end_layout
+
+\begin_layout LyX-Code
+take 6 in { TakenCourse | faculty = Faculty.AR }
+\end_layout
+
+\begin_layout LyX-Code
+take 3 in { TakenCourse }
+\end_layout
+
+\begin_layout Standard
+In this example, the student always requires at least 
+\begin_inset Formula $9$
+\end_inset
+
+ credits in taken courses.
+\end_layout
+
+\begin_layout Subsubsection
+Limit
+\end_layout
+
+\begin_layout Standard
+Limit statements are used to constrain the quantity which may be taken from
+ a set.
+\end_layout
+
+\begin_layout Standard
+For example, a typical academic program will apply a restriction on the
+ number of introductory-level courses which may be applied to a program
+ of study.
+ Limit statements allow these types of requirements to be imposed while
+ still maximizing the assignment of credits.
+\end_layout
+
+\begin_layout LyX-Code
+limit 42 in { TakenCourse | level < 200 }
+\end_layout
+
+\begin_layout Standard
+Due to the algorithm used for solving programs, limit sets must either be
+ point-wise disjoint or a sub/super-set.
+ Compliant Degc compilers must produce an error when a program contains
+ limit statements which do not satisfy this restriction.
+\end_layout
+
+\begin_layout Chapter
+Execution Model
+\end_layout
+
+\begin_layout Section
+Overview
+\end_layout
+
+\begin_layout Standard
+TODO: Explain at a high level how the execution model works and why.
+\end_layout
+
+\begin_layout Section
+Proof of Correspondence
+\end_layout
+
+\begin_layout Note
+The 
+\emph on
+take
+\emph default
+ and 
+\emph on
+limit
+\emph default
+ statements of a Degc program describe an integer program of a particular
+ form.
+\end_layout
+
+\begin_layout Note
+Any requirement is of the form 
+\end_layout
+
+\begin_layout Note
+Suppose, for example, we have the following simple program:
+\end_layout
+
+\begin_layout LyX-Code
+take 6 from { TakenCourse | faculty=Faculty.SC and subject=Subject.CMPUT }
+     # R1
+\end_layout
+
+\begin_layout LyX-Code
+take 6 from { TakenCourse | faculty=Faculty.SC }                        
+       # R2
+\end_layout
+
+\begin_layout LyX-Code
+limit 3 from { TakenCourse | level<200 }                               
+        # L1
+\end_layout
+
+\begin_layout Standard
+After some work, the compiler will reduce this program to some relevant
+ pair-disjoint subsets:
+\end_layout
+
+\begin_layout LyX-Code
+{ TakenCourse | subject=Subject.CMPUT and faculty=Faculty.SC and level<200
+ }   # A1
+\end_layout
+
+\begin_layout LyX-Code
+{ TakenCourse | subject=Subject.CMPUT and faculty=Faculty.SC and level>=200
+ }  # A2
+\end_layout
+
+\begin_layout LyX-Code
+{ TakenCourse | subject!=Subject.CMPUT and faculty=Faculty.SC and level<200
+ }  # A3
+\end_layout
+
+\begin_layout LyX-Code
+{ TakenCourse | subject!=Subject.CMPUT and faculty=Faculty.SC and level>=200
+ } # A4
+\end_layout
+
+\begin_layout LyX-Code
+{ TakenCourse | faculty!=Faculty.SC and level<200 }                     
+       # A5
+\end_layout
+
+\begin_layout Standard
+Suppose the input ontology has quantities of 
+\begin_inset Formula $c_{1},\dots,c_{5}$
+\end_inset
+
+ for sets 
+\begin_inset Formula $A_{1},\dots,A_{5}$
+\end_inset
+
+, respectively.
+ Then, the following integer program is equivalent:
+\end_layout
+
+\begin_layout Quotation
+maximize 
+\begin_inset Formula $\sum_{i}\alpha_{i}$
+\end_inset
+
+ subject to:
+\end_layout
+
+\begin_deeper
+\begin_layout Quotation
+\begin_inset Formula $\alpha_{1}+\alpha_{2}\le c_{1}$
+\end_inset
+
+ # credits assigned from 
+\begin_inset Formula $A_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{2}$
+\end_inset
+
+ to requirement 
+\begin_inset Formula $R_{1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Quotation
+\begin_inset Formula $\alpha_{3}+\alpha_{4}+\alpha_{5}+\alpha_{6}\le c_{2}$
+\end_inset
+
+ # credits assigned from 
+\begin_inset Formula $A_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $A_{2}$
+\end_inset
+
+, 
+\begin_inset Formula $A_{3}$
+\end_inset
+
+, and 
+\begin_inset Formula $A_{4}$
+\end_inset
+
+ to requirement 
+\begin_inset Formula $R_{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Quotation
+\begin_inset Formula $\alpha_{5}+\alpha_{6}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Theorem
+Any integer program of the form:
+\end_layout
+
+\begin_layout Theorem
+maximize 
+\begin_inset Formula $\alpha_{1}+\alpha_{2}+\cdots+\alpha_{n}+\beta_{1}+\beta_{2}+\cdots+\beta_{n}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Theorem
+subject to 
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
