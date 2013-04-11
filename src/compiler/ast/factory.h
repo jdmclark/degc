@@ -70,7 +70,7 @@ public:
 	NamedStatement* MakeNamedStatement(const std::string& Name, Statement* Code, const Diagnostics::ErrorLocation& yyl);
 	CompoundStatement* MakeCompoundStatement(std::vector<Statement*>* Statements, const Diagnostics::ErrorLocation& yyl);
 	AssertStatement* MakeAssertStatement(Expression* Value, const Diagnostics::ErrorLocation& yyl);
-	EmbedStatement* MakeEmbedStatement(Expression* Value, const Diagnostics::ErrorLocation& yyl);
+	EmbedStatement* MakeEmbedStatement(Expression* Value, std::vector<Expression*>* Arguments, const Diagnostics::ErrorLocation& yyl);
 	EmbedInlineStatement* MakeEmbedInlineStatement(Statement* Code, const Diagnostics::ErrorLocation& yyl);
 	DisjunctionStatement* MakeDisjunctionStatement(std::vector<Statement*>* Statements, const Diagnostics::ErrorLocation& yyl);
 	ForAllStatement* MakeForAllStatement(const std::string& Typename, const std::string& ElementName, Expression* Set, Statement* Code, const Diagnostics::ErrorLocation& yyl);

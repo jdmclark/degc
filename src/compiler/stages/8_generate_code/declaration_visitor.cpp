@@ -20,33 +20,9 @@ void DeclarationVisitor::VisitFunctionSymbol(FunctionSymbol& n) {
 	code.Ret();
 }
 
-void DeclarationVisitor::PopulateProgram(ProgramVisitor& pv, SG::ProgramSymbol& n, const std::vector<SG::EnumerationMemberSymbol*>& params) {
-	// Add parent statements to pv.
-	if(n.Base) {
-		// Generate new argument vector.
-		std::vector<SG::EnumerationMemberSymbol*> baseArgs;
-
-		for(auto& arg : n.BaseArguments) {
-			ConstantFolding::ExpressionVisitor v({}, params, Report);
-			arg->Accept(v);
-
-			SG::IdentifierExpression& e = dynamic_cast<SG::IdentifierExpression&>(*v.GeneratedExpression);
-			SG::EnumerationMemberSymbol& ems = dynamic_cast<SG::EnumerationMemberSymbol&>(*e.ReferencedNode);
-
-			baseArgs.push_back(&ems);
-		}
-
-		PopulateProgram(pv, *n.Base, baseArgs);
-	}
-
-	pv.SetProgramArguments(params);
-
-	// Add current statements
-	n.Statements->Accept(pv);
-}
-
 std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor::ReifyProgram(SG::ProgramSymbol& n, const std::vector<int>& bad_params,
 		const std::vector<SG::EnumerationSymbol*>& value_types) {
+
 	// Generate good params
 	std::vector<SG::EnumerationMemberSymbol*> params;
 	for(size_t i = 0; i < bad_params.size(); ++i) {
@@ -63,7 +39,15 @@ std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor:
 	}
 
 	ProgramVisitor pv(recordTypeTable, Report);
-	PopulateProgram(pv, n, params);
+	pv.SetProgramArguments(params);
+
+	// Embed base program
+	if(n.Base) {
+		pv.EmbedProgram(*n.Base, n.BaseArguments);
+	}
+
+	// Embed self program
+	n.Statements->Accept(pv);
 
 	std::vector<std::vector<Runtime::Solver::ProgramNetwork>> branches;
 

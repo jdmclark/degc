@@ -367,6 +367,7 @@ class EmbedStatement : public Statement {
 	SGVISITOR_ACCEPT
 public:
 	std::unique_ptr<Expression> Value;
+	std::vector<std::unique_ptr<Expression>> Arguments;
 
 	EmbedStatement(std::unique_ptr<Expression>& Value);
 };

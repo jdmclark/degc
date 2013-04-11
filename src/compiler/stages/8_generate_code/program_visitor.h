@@ -77,6 +77,8 @@ public:
 	void VisitLimitStatement(SG::LimitStatement& n);
 	void VisitDisjunctionStatement(SG::DisjunctionStatement& n);
 	void VisitEmbedStatement(SG::EmbedStatement& n);
+
+	void EmbedProgram(SG::ProgramSymbol& n, const std::vector<std::unique_ptr<SG::Expression>>& args);
 };
 
 }

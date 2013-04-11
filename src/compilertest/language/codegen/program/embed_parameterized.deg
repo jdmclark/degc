@@ -1,0 +1,20 @@
+module ca.nullptr
+
+function SubjectMajorMap(Subject sub) -> MajorProgram:
+    if sub = Subject.CMPUT:
+        CmputMajor
+    else:
+        InvalidMajor
+
+program MajorProgram(Subject minorSubject):
+    take 3 in { TakenCourse | subject = minorSubject }
+
+program CmputMajor(Subject minorSubject) extends MajorProgram(minorSubject):
+    take 6 in { TakenCourse | subject = Subject.CMPUT }
+    
+program InvalidMajor(Subject minorSubject) extends MajorProgram(minorSubject):
+    limit 0 in { TakenCourse }
+    
+program TestProgram(Subject majorSubject, Subject minorSubject):
+    take 3 in { TakenCourse }
+    embed SubjectMajorMap(majorSubject) with (minorSubject)

@@ -2,6 +2,8 @@
 #include "program_set_visitor.h"
 #include "program_const_visitor.h"
 #include "compiler/stages/6_constant_folding/expression_visitor.h"
+#include <boost/format.hpp>
+#include <iostream>
 
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ProgramVisitor;
@@ -166,12 +168,56 @@ void ProgramVisitor::VisitEmbedStatement(EmbedStatement& n) {
 	SG::IdentifierExpression& ie = dynamic_cast<SG::IdentifierExpression&>(*pcv.GeneratedExpression);
 	SG::ProgramSymbol& ps = dynamic_cast<SG::ProgramSymbol&>(*ie.ReferencedNode);
 
-	if(ps.Arguments.children_size() > 0) {
-		Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::FeatureNotImplemented, Diagnostics::ErrorLevel::CriticalError,
-				VisitorName, "feature not implemented: embedding parameterized programs"));
-		return;
+	EmbedProgram(ps, n.Arguments);
+}
+
+void ProgramVisitor::EmbedProgram(SG::ProgramSymbol& n, const std::vector<std::unique_ptr<SG::Expression>>& args) {
+	// Generate new argument vector for embedding.
+	std::vector<SG::EnumerationMemberSymbol*> baseArgs;
+
+	if(n.Arguments.children_size() != args.size()) {
+		Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::ProgramArgCountMismatch, Diagnostics::ErrorLevel::Error,
+				VisitorName, boost::str(boost::format("embedded program expected %d arguments, found %d") % n.Arguments.children_size() % args.size()), n.ast_program->Location));
 	}
 
-	// TODO: Handle base for embedded programs
-	ps.Statements->Accept(*this);
+	std::vector<SG::EnumerationSymbol*> expectedTypes;
+	for(auto& arg : n.Arguments) {
+		expectedTypes.push_back(dynamic_cast<SG::EnumerationType&>(*dynamic_cast<SG::ProgramArgumentSymbol&>(*arg).InputType).ElementType);
+	}
+
+	auto jt = expectedTypes.begin();
+	for(auto it = args.begin(); it != args.end() && jt != expectedTypes.end(); ++it, ++jt) {
+		ConstantFolding::ExpressionVisitor v({}, programArguments, Report);
+		(*it)->Accept(v);
+
+		SG::IdentifierExpression& e = dynamic_cast<SG::IdentifierExpression&>(*v.GeneratedExpression);
+		SG::EnumerationMemberSymbol& ems = dynamic_cast<SG::EnumerationMemberSymbol&>(*e.ReferencedNode);
+
+		bool found = false;
+		for(const auto& sym : (*jt)->Values) {
+			if(sym.get() == &ems) {
+				found = true;
+				break;
+			}
+		}
+
+		if(!found) {
+			Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::ProgramArgTypeMismatch, Diagnostics::ErrorLevel::Error,
+					VisitorName, "embedded program parameter type mismatch", n.ast_program->Location));
+		}
+
+		baseArgs.push_back(&ems);
+	}
+
+	std::vector<SG::EnumerationMemberSymbol*> oldParams = programArguments;
+	SetProgramArguments(baseArgs);
+
+	if(n.Base) {
+		EmbedProgram(*n.Base, n.BaseArguments);
+	}
+
+	// Add current statements
+	n.Statements->Accept(*this);
+
+	SetProgramArguments(oldParams);
 }

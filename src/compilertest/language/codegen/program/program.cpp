@@ -155,6 +155,17 @@ Case(EitherOr3) {
 	Test_Assert(prog->Solve(recordIndex, networkSolver));
 }
 
+Case(EmbedParameterized) {
+	ParseFiles({ "base.deg", "embed_parameterized.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::CMPUT, "101", "6");
+	AddCourse(Faculty::AR, Subject::ENGL, "101", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::CMPUT), static_cast<int>(Subject::ENGL) }));
+}
+
 Case(EmbedParametric) {
 	ParseFiles({ "base.deg", "embed_parametric.deg" });
 	AssertResult(0, 0);

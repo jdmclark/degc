@@ -119,9 +119,10 @@ AssertStatement* Factory::MakeAssertStatement(Expression* Value, const Diagnosti
 	return val;
 }
 
-EmbedStatement* Factory::MakeEmbedStatement(Expression* Value, const Diagnostics::ErrorLocation& yyl) {
+EmbedStatement* Factory::MakeEmbedStatement(Expression* Value, std::vector<Expression*>* Arguments, const Diagnostics::ErrorLocation& yyl) {
 	MAKE(EmbedStatement);
 	val->Value = Value;
+	val->Arguments = Arguments;
 	return val;
 }
 

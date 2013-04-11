@@ -59,6 +59,7 @@ enum class ErrorCode {
 	ProgArgNotEnumeration		= 4037,
 	ProgramArgTypeMismatch		= 4038,
 	ProgramArgCountMismatch		= 4039,
+	EmbedParamNotEnumeration	= 4040,
 
 	// Code generation errors
 	LimitNotDisjoint			= 5000,

@@ -19,7 +19,6 @@ private:
 	Runtime::Code::RecordTypeTable& recordTypeTable;
 	Runtime::Code::ProgramTable& programTable;
 	
-	void PopulateProgram(ProgramVisitor& pv, SG::ProgramSymbol& n, const std::vector<SG::EnumerationMemberSymbol*>& params);
 	std::unique_ptr<Runtime::Solver::ProgramNetworkReified> ReifyProgram(SG::ProgramSymbol& n, const std::vector<int>& params, const std::vector<SG::EnumerationSymbol*>& value_types);
 
 public:

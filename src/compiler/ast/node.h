@@ -209,6 +209,7 @@ class EmbedStatement : public Statement {
 	ASTVISITOR_ACCEPT
 public:
 	Expression* Value;
+	std::vector<Expression*>* Arguments;
 };
 
 class EmbedInlineStatement : public Statement {

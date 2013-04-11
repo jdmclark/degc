@@ -44,12 +44,6 @@ void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
 		}
 	}
 
-	for(auto arg : *n.ast_program->BaseArguments) {
-		ExpressionVisitor ev(scope, Report);
-		arg->Accept(ev);
-		n.BaseArguments.push_back(std::move(ev.GeneratedExpression));
-	}
-
 	StatementVisitor v(scope, false, Report);
 	n.ast_program->Code->Accept(v);
 

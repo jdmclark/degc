@@ -72,7 +72,7 @@
 /* Keywords */
 %token ALL AND ANY ASSERT AS BEST BY EITHER ELSE EMBED ENUM EXISTS EXTENDS FOR FROM
 %token FUNCTION IF IMPORT INTERSECT IN LIMIT MODULE NOT OR PANIC PROGRAM
-%token RECORD SETMINUS SET TAKE UNION
+%token RECORD SETMINUS SET TAKE UNION WITH
 
 /* Punctuators */
 %token INDENT DEDENT ENDLN MAPS_TO NE_OP GE_OP LE_OP
@@ -307,7 +307,9 @@ assert_statement
 	
 embed_statement
 	: EMBED expression ENDLN
-		{ $$ = ast->MakeEmbedStatement($2, @$); }
+		{ $$ = ast->MakeEmbedStatement($2, ast->MakeList<Expression>(), @$); }
+	| EMBED expression WITH '(' argument_expression_list ENDLN
+		{ $$ = ast->MakeEmbedStatement($2, $5, @$); }
 	| EMBED ':' ENDLN program_statement_part
 		{ $$ = ast->MakeEmbedInlineStatement($4, @$); }
 	;

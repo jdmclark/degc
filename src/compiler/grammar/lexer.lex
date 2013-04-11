@@ -117,6 +117,7 @@ E			[Ee][+-]?{D}+
 	"set"			{ return SET; }
 	"take"			{ return TAKE; }
 	"union"			{ return UNION; }
+	"with"			{ return WITH; }
 	
 	"true"			{ yylval->boolean = true; return BOOLEAN_LITERAL; }
 	"false"			{ yylval->boolean = false; return BOOLEAN_LITERAL; }

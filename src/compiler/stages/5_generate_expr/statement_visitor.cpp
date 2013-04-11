@@ -66,7 +66,21 @@ void StatementVisitor::VisitEmbedStatement(AST::EmbedStatement& n) {
 
 	SG::ProgramType* pt = dynamic_cast<SG::ProgramType*>(v.GeneratedExpressionType.get());
 	if(pt) {
-		GeneratedStatement = std::unique_ptr<SG::Statement>(new SG::EmbedStatement(v.GeneratedExpression));
+		std::unique_ptr<SG::EmbedStatement> es(new SG::EmbedStatement(v.GeneratedExpression));
+
+		for(auto arg : *n.Arguments) {
+			ExpressionVisitor v(scope, Report);
+			arg->Accept(v);
+			es->Arguments.push_back(std::move(v.GeneratedExpression));
+
+			SG::EnumerationType* et = dynamic_cast<SG::EnumerationType*>(v.GeneratedExpressionType.get());
+			if(!et) {
+				Report.AddError(Diagnostics::Error(Diagnostics::ErrorCode::EmbedParamNotEnumeration, Diagnostics::ErrorLevel::Error,
+						VisitorName, "embed parameter is not enumeration type", arg->Location));
+			}
+		}
+
+		GeneratedStatement = std::move(es);
 	}
 	else {
 		GeneratedStatement = std::unique_ptr<SG::Statement>(new SG::ErrorStatement());
@@ -156,7 +170,7 @@ void StatementVisitor::VisitForAnyStatement(AST::ForAnyStatement& n) {
 		stmt->Iterators.MakeMember<SG::VariableSymbol>(n.ElementName, &rec_sym);
 
 		scope.PushScope(stmt->Iterators);
-		StatementVisitor code_v(scope, InsideLoop, Report);
+		StatementVisitor code_v(scope, true, Report);
 		n.Code->Accept(code_v);
 		scope.PopScope();
 
@@ -210,7 +224,7 @@ void StatementVisitor::VisitForBestStatement(AST::ForBestStatement& n) {
 		stmt->Iterators.MakeMember<SG::VariableSymbol>(n.ElementName, &rec_sym);
 
 		scope.PushScope(stmt->Iterators);
-		StatementVisitor code_v(scope, InsideLoop, Report);
+		StatementVisitor code_v(scope, true, Report);
 		n.Code->Accept(code_v);
 		scope.PopScope();
 
