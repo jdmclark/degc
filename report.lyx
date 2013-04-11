@@ -190,7 +190,7 @@ The Degc lexicon contains the following keywords:
 \emph on
 all, and, any, assert, as, best, by, either, else, embed, enum, exists,
  extends, for, from, function, if, import, intersect, in, limit, module,
- not, or, panic, program, record, setminus, set, take, union.
+ not, or, panic, program, record, setminus, set, take, union, with.
 \end_layout
 
 \begin_layout Standard
@@ -402,6 +402,26 @@ and, or, not
 \end_layout
 
 \begin_layout Subsubsection
+Relational
+\end_layout
+
+\begin_layout Standard
+Degc supports the following relational operators: 
+\emph on
+=,!=,>,>=,<,<=
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Nominal types - enumerations and booleans - support the identity relations.
+\end_layout
+
+\begin_layout Standard
+The ordinal numeric type supports all relational operators.
+\end_layout
+
+\begin_layout Subsubsection
 Set
 \end_layout
 
@@ -539,7 +559,19 @@ Example:
 \end_layout
 
 \begin_layout LyX-Code
-embed MajorProgramMap(majorSubject)
+embed ComputingScienceMajor
+\end_layout
+
+\begin_layout Standard
+Parameterized programs may also be embedded with included arguments.
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+embed MajorProgramMap(majorSubject) with (minorSubject,)
 \end_layout
 
 \begin_layout Standard
