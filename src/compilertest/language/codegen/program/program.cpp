@@ -48,6 +48,50 @@ public:
 
 BeginSuiteFixture(ProgramCodegenTest, ProgramCodegenTestFixture);
 
+Case(Args1) {
+	ParseFiles({ "base.deg", "args.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::CMPUT, "101", "6");
+	AddCourse(Faculty::AR, Subject::ENGL, "101", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::CMPUT) }));
+	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::ENGL) }));
+}
+
+Case(Args2) {
+	ParseFiles({ "base.deg", "args.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::CMPUT, "101", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(!prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::ENGL) }));
+}
+
+Case(BaseArgs1) {
+	ParseFiles({ "base.deg", "base_args.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::CMPUT, "101", "3");
+	AddCourse(Faculty::AR, Subject::ENGL, "101", "6");
+	AddCourse(Faculty::AR, Subject::PHIL, "101", "3");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::ENGL), static_cast<int>(Subject::PHIL) }));
+}
+
+Case(BaseArgs2) {
+	ParseFiles({ "base.deg", "base_args.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::CMPUT, "101", "12");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::CMPUT), static_cast<int>(Subject::CMPUT) }));
+}
+
 Case(DeepNestedLimit) {
 	ParseFiles({ "base.deg", "deep_nested_limit.deg" });
 	AssertResult(0, 0);

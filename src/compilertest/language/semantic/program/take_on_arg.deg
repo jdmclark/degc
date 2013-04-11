@@ -1,0 +1,12 @@
+module ca.ualberta
+
+enum Subject:
+    CMPUT
+    ENGL
+
+record TakenCourse:
+    quantity credits
+    Subject subject
+    
+program TestProgram(Subject majorSubject):
+    take 6 in { TakenCourse | subject = majorSubject }

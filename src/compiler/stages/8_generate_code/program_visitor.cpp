@@ -126,20 +126,20 @@ void ProgramVisitor::VisitCompoundStatement(CompoundStatement& n) {
 }
 
 void ProgramVisitor::VisitTakeStatement(TakeStatement& n) {
-	ProgramSetVisitor psv(recordTypeTable, Report);
+	ProgramSetVisitor psv(recordTypeTable, programArguments, Report);
 	n.Set->Accept(psv);
 
-	ProgramConstVisitor pcv(Report);
+	ProgramConstVisitor pcv(programArguments, Report);
 	n.Amount->Accept(pcv);
 
 	AddRequirement(psv.result_record_type, psv.result, pcv.value);
 }
 
 void ProgramVisitor::VisitLimitStatement(LimitStatement& n) {
-	ProgramSetVisitor psv(recordTypeTable, Report);
+	ProgramSetVisitor psv(recordTypeTable, programArguments, Report);
 	n.Set->Accept(psv);
 
-	ProgramConstVisitor pcv(Report);
+	ProgramConstVisitor pcv(programArguments, Report);
 	n.Amount->Accept(pcv);
 
 	AddLimit(psv.result_record_type, psv.result, pcv.value);

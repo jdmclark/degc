@@ -5,6 +5,8 @@
 #include "compiler/ir/printer.h"
 #include "runtime/code/recordtypetable.h"
 #include "runtime/code/programtable.h"
+#include "runtime/solver/program.h"
+#include "program_visitor.h"
 
 namespace Deg {
 namespace Compiler {
@@ -17,6 +19,9 @@ private:
 	Runtime::Code::RecordTypeTable& recordTypeTable;
 	Runtime::Code::ProgramTable& programTable;
 	
+	void PopulateProgram(ProgramVisitor& pv, SG::ProgramSymbol& n, const std::vector<int>& params);
+	std::unique_ptr<Runtime::Solver::ProgramNetworkReified> ReifyProgram(SG::ProgramSymbol& n, const std::vector<int>& params);
+
 public:
 	DeclarationVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report);
 

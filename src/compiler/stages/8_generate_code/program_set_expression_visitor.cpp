@@ -5,14 +5,14 @@ using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ProgramSetExpressionVisitor;
 using namespace Deg::Runtime::Math;
 
-ProgramSetExpressionVisitor::ProgramSetExpressionVisitor(size_t record_width, Diagnostics::Report& report)
-	: SG::Visitor("GenerateCode::ProgramSetExpressionVisitor", report), record_width(record_width), result(record_width) {
+ProgramSetExpressionVisitor::ProgramSetExpressionVisitor(size_t record_width, const std::vector<int>& programArguments, Diagnostics::Report& report)
+	: SG::Visitor("GenerateCode::ProgramSetExpressionVisitor", report), record_width(record_width), programArguments(programArguments), result(record_width) {
 	return;
 }
 
 void ProgramSetExpressionVisitor::VisitInfixExpression(InfixExpression& e) {
-	ProgramSetExpressionVisitor left_v(record_width, Report);
-	ProgramSetExpressionVisitor right_v(record_width, Report);
+	ProgramSetExpressionVisitor left_v(record_width, programArguments, Report);
+	ProgramSetExpressionVisitor right_v(record_width, programArguments, Report);
 
 	e.LeftValue->Accept(left_v);
 	e.RightValue->Accept(right_v);
@@ -35,7 +35,7 @@ void ProgramSetExpressionVisitor::VisitInfixExpression(InfixExpression& e) {
 }
 
 void ProgramSetExpressionVisitor::VisitSetClauseExpression(SetClauseExpression& e) {
-	ProgramConstVisitor cv(Report);
+	ProgramConstVisitor cv(programArguments, Report);
 	e.Value->Accept(cv);
 
 	switch(e.Operator) {

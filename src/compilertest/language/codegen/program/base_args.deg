@@ -1,0 +1,9 @@
+module ca.nullptr
+
+program BaseProgram(Subject majorSubject, Subject minorSubject):
+    take 3 in { TakenCourse | subject = majorSubject }
+    take 3 in { TakenCourse | subject = minorSubject }
+    
+program TestProgram(Subject minorSubject, Subject concSubject) extends BaseProgram(Subject.CMPUT, minorSubject):
+    take 3 in { TakenCourse | subject = minorSubject }
+    take 3 in { TakenCourse | subject = concSubject }

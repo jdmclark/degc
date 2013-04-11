@@ -5,8 +5,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ProgramSetVisitor;
 
-ProgramSetVisitor::ProgramSetVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report)
-	: SG::Visitor("GenerateCode::ProgramSetVisitor", report), recordTypeTable(recordTypeTable), result(0), result_record_type(0) {
+ProgramSetVisitor::ProgramSetVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<int>& programArguments, Diagnostics::Report& report)
+	: SG::Visitor("GenerateCode::ProgramSetVisitor", report), recordTypeTable(recordTypeTable), programArguments(programArguments), result(0), result_record_type(0) {
 	return;
 }
 
@@ -20,7 +20,7 @@ void ProgramSetVisitor::VisitConstrainedSetExpression(ConstrainedSetExpression& 
 	auto type_info = recordTypeTable.GetRecordType(e.ElementType->UniversalUniqueName);
 	result_record_type = type_info.type_id;
 
-	ProgramSetExpressionVisitor psev(type_info.width, Report);
+	ProgramSetExpressionVisitor psev(type_info.width, programArguments, Report);
 	e.Filter->Accept(psev);
 
 	result = psev.result;

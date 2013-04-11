@@ -27,12 +27,12 @@ bool Deg::Runtime::Solver::ProgramNetwork::Solve(const RecordIndex& recordIndex,
 	return ns.Solve(network, sources, limits, limit_subsets);
 }
 
-Deg::Runtime::Solver::Program::Program(const std::vector<std::vector<ProgramNetwork>>& branches)
-	: branches(branches) {
+Deg::Runtime::Solver::ProgramNetworkReified::ProgramNetworkReified(const std::vector<std::vector<ProgramNetwork>>& branches, const std::vector<int>& parameters)
+	: branches(branches), parameters(parameters) {
 	return;
 }
 
-bool Deg::Runtime::Solver::Program::SolveOne(const std::vector<ProgramNetwork>& chunks, const RecordIndex& recordIndex, NetworkSolver& ns) const {
+bool Deg::Runtime::Solver::ProgramNetworkReified::SolveOne(const std::vector<ProgramNetwork>& chunks, const RecordIndex& recordIndex, NetworkSolver& ns) const {
 	for(const auto& chunk : chunks) {
 		if(!chunk.Solve(recordIndex, ns)) {
 			return false;
@@ -42,10 +42,25 @@ bool Deg::Runtime::Solver::Program::SolveOne(const std::vector<ProgramNetwork>& 
 	return true;
 }
 
-bool Deg::Runtime::Solver::Program::Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const {
+bool Deg::Runtime::Solver::ProgramNetworkReified::Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const {
 	for(const auto& branch : branches) {
 		if(SolveOne(branch, recordIndex, ns)) {
 			return true;
+		}
+	}
+
+	return false;
+}
+
+void Deg::Runtime::Solver::Program::AddReifiedProgram(std::unique_ptr<ProgramNetworkReified>& prog) {
+	choices.push_back(std::move(prog));
+}
+
+bool Deg::Runtime::Solver::Program::Solve(const RecordIndex& recordIndex, NetworkSolver& ns, const std::vector<int>& params) const {
+	// (Slow) locate reified program matching input parameters.
+	for(const auto& rprog : choices) {
+		if(rprog->parameters == params) {
+			return rprog->Solve(recordIndex, ns);
 		}
 	}
 

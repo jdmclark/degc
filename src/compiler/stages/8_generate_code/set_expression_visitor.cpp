@@ -4,8 +4,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::SetExpressionVisitor;
 
-SetExpressionVisitor::SetExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, size_t record_width, Diagnostics::Report& report)
-	: SG::Visitor("GenerateCode::SetExpressionVisitor", report), code(code), recordTypeTable(recordTypeTable), record_width(record_width) {
+SetExpressionVisitor::SetExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, size_t record_width, const std::vector<int>& programArguments, Diagnostics::Report& report)
+	: SG::Visitor("GenerateCode::SetExpressionVisitor", report), code(code), recordTypeTable(recordTypeTable), record_width(record_width), programArguments(programArguments) {
 	return;
 }
 
@@ -31,7 +31,7 @@ void SetExpressionVisitor::VisitInfixExpression(InfixExpression& e) {
 }
 
 void SetExpressionVisitor::VisitSetClauseExpression(SetClauseExpression& e) {
-	ExpressionVisitor ev(code, recordTypeTable, Report);
+	ExpressionVisitor ev(code, recordTypeTable, programArguments, Report);
 	e.Value->Accept(ev);
 
 	switch(e.Operator) {

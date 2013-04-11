@@ -29,6 +29,7 @@ public:
 	void DefaultAction(const std::string& action, SG::Node& n);
 
 	void VisitProgramSymbol(SG::ProgramSymbol& n);
+	void VisitProgramArgumentSymbol(SG::ProgramArgumentSymbol& n);
 	void VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n);
 	void VisitFunctionSymbol(SG::FunctionSymbol& n);
 	void VisitEnumerationMemberSymbol(SG::EnumerationMemberSymbol& n);

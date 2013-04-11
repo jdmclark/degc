@@ -3,8 +3,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ProgramConstVisitor;
 
-ProgramConstVisitor::ProgramConstVisitor(Diagnostics::Report& report)
-	: SG::Visitor("GenerateCode::ProgramConstVisitor", report) {
+ProgramConstVisitor::ProgramConstVisitor(const std::vector<int>& programArguments, Diagnostics::Report& report)
+	: SG::Visitor("GenerateCode::ProgramConstVisitor", report), programArguments(programArguments) {
 	return;
 }
 
@@ -18,4 +18,8 @@ void ProgramConstVisitor::VisitIdentifierExpression(IdentifierExpression& n) {
 
 void ProgramConstVisitor::VisitEnumerationMemberSymbol(EnumerationMemberSymbol& n) {
 	value = Runtime::Math::DefaultFixed(n.Value);
+}
+
+void ProgramConstVisitor::VisitProgramArgumentSymbol(ProgramArgumentSymbol& n) {
+	value = Runtime::Math::DefaultFixed(programArguments[n.Index]);
 }

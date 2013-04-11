@@ -89,6 +89,11 @@ void ExpressionVisitor::VisitProgramSymbol(SG::ProgramSymbol& n) {
 	ResultFoldable = true;
 }
 
+void ExpressionVisitor::VisitProgramArgumentSymbol(SG::ProgramArgumentSymbol& n) {
+	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
+	ResultFoldable = false;
+}
+
 void ExpressionVisitor::VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n) {
 	ExpressionVisitor v(FunctionArguments, Report);
 	FunctionArguments[n.Index]->Accept(v);

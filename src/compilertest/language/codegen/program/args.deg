@@ -1,0 +1,4 @@
+module ca.nullptr
+
+program TestProgram(Subject majorSubject):
+    take 6 in { TakenCourse | subject = majorSubject }

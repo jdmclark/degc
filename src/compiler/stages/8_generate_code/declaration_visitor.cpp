@@ -1,6 +1,7 @@
 #include "declaration_visitor.h"
 #include "expression_visitor.h"
 #include "program_visitor.h"
+#include "program_const_visitor.h"
 
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::DeclarationVisitor;
@@ -13,21 +14,36 @@ DeclarationVisitor::DeclarationVisitor(IR::Printer& code, Runtime::Code::RecordT
 
 void DeclarationVisitor::VisitFunctionSymbol(FunctionSymbol& n) {
 	code.Function(n.UniversalUniqueName);
-	ExpressionVisitor v(code, recordTypeTable, Report);
+	ExpressionVisitor v(code, recordTypeTable, {}, Report);
 	n.Code->Accept(v);
 	code.Ret();
 }
 
-void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
-	ProgramVisitor pv(recordTypeTable, Report);
-
+void DeclarationVisitor::PopulateProgram(ProgramVisitor& pv, SG::ProgramSymbol& n, const std::vector<int>& params) {
 	// Add parent statements to pv.
 	if(n.Base) {
-		n.Base->Accept(pv);
+		// Generate new argument vector.
+		std::vector<int> baseArgs;
+
+		for(auto& arg : n.BaseArguments) {
+			ProgramConstVisitor v(params, Report);
+			arg->Accept(v);
+
+			baseArgs.push_back(v.value.GetRawValue());
+		}
+
+		PopulateProgram(pv, *n.Base, baseArgs);
 	}
+
+	pv.SetProgramArguments(params);
 
 	// Add current statements
 	n.Statements->Accept(pv);
+}
+
+std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor::ReifyProgram(SG::ProgramSymbol& n, const std::vector<int>& params) {
+	ProgramVisitor pv(recordTypeTable, Report);
+	PopulateProgram(pv, n, params);
 
 	std::vector<std::vector<Runtime::Solver::ProgramNetwork>> branches;
 
@@ -115,6 +131,47 @@ void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
 		branches.push_back(networks);
 	}
 
-	std::unique_ptr<Runtime::Solver::Program> new_prog(new Runtime::Solver::Program(branches));
+	return std::unique_ptr<Runtime::Solver::ProgramNetworkReified>(new Runtime::Solver::ProgramNetworkReified(branches, params));
+}
+
+void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {
+	std::unique_ptr<Runtime::Solver::Program> new_prog(new Runtime::Solver::Program());
+
+	if(n.Arguments.children_size() == 0) {
+		std::unique_ptr<Runtime::Solver::ProgramNetworkReified> reified_program = ReifyProgram(n, {});
+		new_prog->AddReifiedProgram(reified_program);
+	}
+	else {
+		// Generate cartesian product of parameters.
+		std::vector<int> params(n.Arguments.children_size(), 0);
+		std::vector<int> limit_values;
+		bool overflow = false;
+
+		for(auto& arg : n.Arguments) {
+			SG::ProgramArgumentSymbol& parg = dynamic_cast<SG::ProgramArgumentSymbol&>(*arg);
+			SG::EnumerationType& et = dynamic_cast<SG::EnumerationType&>(*parg.InputType);
+			limit_values.push_back(et.ElementType->Values.children_size());
+		}
+
+		while(!overflow) {
+			std::unique_ptr<Runtime::Solver::ProgramNetworkReified> reified_program = ReifyProgram(n, params);
+			new_prog->AddReifiedProgram(reified_program);
+
+			// Increment param vector
+			for(size_t i = 0; i < params.size() && i < limit_values.size(); ++i) {
+				overflow = false;
+
+				++params[i];
+				if(params[i] >= limit_values[i]) {
+					params[i] = 0;
+					overflow = true;
+				}
+				else {
+					break;
+				}
+			}
+		}
+	}
+
 	programTable.AddProgram(n.UniversalUniqueName, new_prog);
 }

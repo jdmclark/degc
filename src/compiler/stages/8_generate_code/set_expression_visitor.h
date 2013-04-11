@@ -18,9 +18,10 @@ private:
 	IR::Printer& code;
 	Runtime::Code::RecordTypeTable& recordTypeTable;
 	size_t record_width;
+	const std::vector<int>& programArguments;
 
 public:
-	SetExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, size_t record_width, Diagnostics::Report& report);
+	SetExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, size_t record_width, const std::vector<int>& programArguments, Diagnostics::Report& report);
 
 	void VisitInfixExpression(SG::InfixExpression& e);
 	void VisitSetClauseExpression(SG::SetClauseExpression& e);

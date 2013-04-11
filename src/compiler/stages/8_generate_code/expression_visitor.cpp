@@ -6,8 +6,8 @@
 using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::ExpressionVisitor;
 
-ExpressionVisitor::ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report)
-	: SG::Visitor("GenerateCode::ExpressionVisitor", report), code(code), recordTypeTable(recordTypeTable) {
+ExpressionVisitor::ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<int>& programArguments, Diagnostics::Report& report)
+	: SG::Visitor("GenerateCode::ExpressionVisitor", report), code(code), recordTypeTable(recordTypeTable), programArguments(programArguments) {
 	return;
 }
 
@@ -24,7 +24,7 @@ void ExpressionVisitor::VisitTypedSetExpression(TypedSetExpression& e) {
 }
 
 void ExpressionVisitor::VisitConstrainedSetExpression(ConstrainedSetExpression& e) {
-	SetExpressionVisitor v(code, recordTypeTable, e.ElementType->Members.children_size(), Report);
+	SetExpressionVisitor v(code, recordTypeTable, e.ElementType->Members.children_size(), programArguments, Report);
 	e.Filter->Accept(v);
 }
 
@@ -33,7 +33,7 @@ void ExpressionVisitor::VisitPanicExpression(PanicExpression& e) {
 }
 
 void ExpressionVisitor::VisitIdentifierExpression(IdentifierExpression& e) {
-	IdentifierVisitor v(code, Report);
+	IdentifierVisitor v(code, programArguments, Report);
 	e.ReferencedNode->Accept(v);
 }
 

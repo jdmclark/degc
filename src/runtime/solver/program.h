@@ -24,16 +24,24 @@ public:
 	bool Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const;
 };
 
-class Program {
-private:
+class ProgramNetworkReified {
+public:
 	std::vector<std::vector<ProgramNetwork>> branches;
+	std::vector<int> parameters;
 
 	bool SolveOne(const std::vector<ProgramNetwork>& chunks, const RecordIndex& recordIndex, NetworkSolver& ns) const;
 
-public:
-	Program(const std::vector<std::vector<ProgramNetwork>>& branches);
+	ProgramNetworkReified(const std::vector<std::vector<ProgramNetwork>>& branches, const std::vector<int>& parameters);
 
 	bool Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const;
+};
+
+class Program {
+private:
+	std::vector<std::unique_ptr<ProgramNetworkReified>> choices;
+public:
+	void AddReifiedProgram(std::unique_ptr<ProgramNetworkReified>& prog);
+	bool Solve(const RecordIndex& recordIndex, NetworkSolver& ns, const std::vector<int>& parameters = {}) const;
 };
 
 }

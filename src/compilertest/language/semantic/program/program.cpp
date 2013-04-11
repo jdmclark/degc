@@ -141,6 +141,11 @@ Case(TakeNotNumber) {
 	AssertResult(1, 0);
 }
 
+Case(TakeOnArg) {
+	ParseFile("take_on_arg.deg");
+	AssertResult(0, 0);
+}
+
 Case(TakeOnLoopValue) {
 	ParseFile("take_on_loop_value.deg");
 	AssertResult(1, 0);

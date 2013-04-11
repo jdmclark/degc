@@ -17,9 +17,10 @@ class ExpressionVisitor : public SG::Visitor {
 private:
 	IR::Printer& code;
 	Runtime::Code::RecordTypeTable& recordTypeTable;
+	const std::vector<int>& programArguments;
 
 public:
-	ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report);
+	ExpressionVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, const std::vector<int>& programArguments, Diagnostics::Report& report);
 
 	void VisitNumericExpression(SG::NumericExpression& e);
 	void VisitBooleanExpression(SG::BooleanExpression& e);

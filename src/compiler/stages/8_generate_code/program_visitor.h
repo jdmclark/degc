@@ -58,9 +58,14 @@ public:
 class ProgramVisitor : public SG::Visitor {
 private:
 	Runtime::Code::RecordTypeTable& recordTypeTable;
+	std::vector<int> programArguments;
 
 public:
 	std::vector<ProgramNetworkBranch> branches;
+
+	inline void SetProgramArguments(const std::vector<int>& args) {
+		programArguments = args;
+	}
 
 	void AddRequirement(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
 	void AddLimit(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
