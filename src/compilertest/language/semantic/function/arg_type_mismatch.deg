@@ -1,0 +1,15 @@
+module ca.ualberta
+
+enum SomeEnum:
+    Bar
+    Baz
+    
+enum SomeOtherEnum:
+    Bar
+    Baz
+
+function TestFunction1(SomeEnum a)->bool:
+    true
+    
+function TestFunction2()->bool:
+    TestFunction1(SomeOtherEnum.Bar)

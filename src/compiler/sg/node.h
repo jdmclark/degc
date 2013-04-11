@@ -159,6 +159,7 @@ public:
 	ProgramSymbol* Base;
 	std::unique_ptr<Statement> Statements;
 	Scope Arguments;
+	std::vector<std::unique_ptr<Expression>> BaseArguments;
 
 	ProgramSymbol();
 	bool InheritsFrom(const ProgramSymbol& program) const;

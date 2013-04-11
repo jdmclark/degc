@@ -1,0 +1,9 @@
+module ca.ualberta
+
+enum SomeEnum:
+
+program BaseProgram(SomeEnum a, SomeEnum b):
+    assert true
+    
+program ChildProgram(SomeEnum a, SomeEnum b) extends BaseProgram(a):
+    assert true

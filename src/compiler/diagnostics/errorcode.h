@@ -57,6 +57,8 @@ enum class ErrorCode {
 	SetFilterNotIsolated		= 4035,
 	SetFilterIrrelevant			= 4036,
 	ProgArgNotEnumeration		= 4037,
+	ProgramArgTypeMismatch		= 4038,
+	ProgramArgCountMismatch		= 4039,
 
 	// Code generation errors
 	LimitNotDisjoint			= 5000,

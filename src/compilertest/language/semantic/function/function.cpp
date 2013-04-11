@@ -16,6 +16,11 @@ Case(ArgRedefinition) {
 	AssertResult(1, 0);
 }
 
+Case(ArgTypeMismatch) {
+	ParseFile("arg_type_mismatch.deg");
+	AssertResult(1, 0);
+}
+
 Case(ArgUnknownType) {
 	ParseFile("arg_unknown_type.deg");
 	AssertResult(1, 0);

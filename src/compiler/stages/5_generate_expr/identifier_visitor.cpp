@@ -25,6 +25,11 @@ void IdentifierVisitor::VisitRecordMemberSymbol(SG::RecordMemberSymbol& n) {
 	GeneratedExpressionType = n.InputType->Clone();
 }
 
+void IdentifierVisitor::VisitProgramArgumentSymbol(SG::ProgramArgumentSymbol& n) {
+	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
+	GeneratedExpressionType = n.InputType->Clone();
+}
+
 void IdentifierVisitor::VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n) {
 	GeneratedExpression = std::unique_ptr<SG::Expression>(new SG::IdentifierExpression(&n));
 	GeneratedExpressionType = n.InputType->Clone();

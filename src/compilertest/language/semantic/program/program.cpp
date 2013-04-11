@@ -11,8 +11,18 @@ public:
 
 BeginSuiteFixture(ProgramSemanticTest, ProgramSemanticTestFixture);
 
+Case(ArgCountMismatch) {
+	ParseFile("arg_count_mismatch.deg");
+	AssertResult(1, 0);
+}
+
 Case(ArgNotEnum) {
 	ParseFile("arg_not_enum.deg");
+	AssertResult(1, 0);
+}
+
+Case(ArgTypeMismatch) {
+	ParseFile("arg_type_mismatch.deg");
 	AssertResult(1, 0);
 }
 

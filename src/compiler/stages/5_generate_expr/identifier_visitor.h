@@ -24,6 +24,7 @@ public:
 
 	void VisitProgramSymbol(SG::ProgramSymbol& n);
 	void VisitRecordMemberSymbol(SG::RecordMemberSymbol& n);
+	void VisitProgramArgumentSymbol(SG::ProgramArgumentSymbol& n);
 	void VisitFunctionArgumentSymbol(SG::FunctionArgumentSymbol& n);
 	void VisitFunctionSymbol(SG::FunctionSymbol& n);
 };
