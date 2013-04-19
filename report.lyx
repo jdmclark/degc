@@ -760,15 +760,6 @@ Conditional
 Conditional statements are used to indicate a discriminated branch.
  Conditional statements are used to branch program execution predicated
  upon the value of a boolean expression.
- Conditional statement bodies may not contain 
-\emph on
-take
-\emph default
- or 
-\emph on
-limit
-\emph default
- statements.
 \end_layout
 
 \begin_layout Standard
@@ -871,11 +862,62 @@ Overview
 \end_layout
 
 \begin_layout Standard
-TODO: Explain at a high level how the execution model works and why.
+Degc uses a hybrid execution model which combines an integer program with
+ assertions defined using a programming language.
 \end_layout
 
+\begin_layout Standard
+Due to the specific form of integer programs written in Degc, it is possible
+ to describe the integer program portions as an instance of network max-flow.
+ This correspondence allows a larger amount of preprocessing and a guaranteed
+ polynomial execution time.
+ The disadvantage to this approach is a greater demand for storage space.
+ Since branches may produce significantly different networks, each possible
+ branch and combination of program parameters must be enumerated into a
+ separate network.
+\end_layout
+
+\begin_layout Standard
+The accompanying bytecode program serves to prune the set of feasible networks
+ which must be tested.
+ Any branch which contains a failing assertion is flagged as infeasible,
+ and it is excluded during program execution.
+\end_layout
+
+\begin_layout Standard
+Programs are thus executed in three major stages:
+\end_layout
+
+\begin_layout Enumerate
+The fully specified program is selected based on the input parameters.
+\end_layout
+
+\begin_layout Enumerate
+The bytecode program is executed, masking impossible branches.
+\end_layout
+
+\begin_layout Enumerate
+The max-flow is computed for each possible branch.
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Credit quantities are computed from the ontology and assigned to the network
+ inputs.
+\end_layout
+
+\begin_layout Enumerate
+The max-flow is computed with the Edmonds-Karp algorithm.
+\end_layout
+
+\begin_layout Enumerate
+If the max-flow is sufficient, the program has been satisfied and returns
+ immediately.
+\end_layout
+
+\end_deeper
 \begin_layout Section
-Proof of Correspondence
+Integer Program - Network Correspondence
 \end_layout
 
 \begin_layout Note
@@ -1042,6 +1084,650 @@ subject to
 \end_inset
 
 
+\end_layout
+
+\begin_layout Chapter
+Implementation
+\end_layout
+
+\begin_layout Section
+Compiling Degc
+\end_layout
+
+\begin_layout Subsection
+Requirements
+\end_layout
+
+\begin_layout Standard
+Degc has been built and tested using Ubuntu 12.10.
+ This is currently the only supported platform.
+\end_layout
+
+\begin_layout Standard
+Degc requires the following additional libraries and tools:
+\end_layout
+
+\begin_layout Itemize
+GCC 4.7 or Clang 3.3
+\end_layout
+
+\begin_layout Itemize
+Make 3.8
+\end_layout
+
+\begin_layout Itemize
+Bison 2.5
+\end_layout
+
+\begin_layout Itemize
+Flex 2.5
+\end_layout
+
+\begin_layout Itemize
+Boost 1.49
+\end_layout
+
+\begin_layout Itemize
+NullUnit 0.3 (available here: http://code.google.com/p/nullunit)
+\end_layout
+
+\begin_layout Subsection
+Compiling
+\end_layout
+
+\begin_layout Standard
+Navigate to the directory where Degc has been extracted and run the following
+ command:
+\end_layout
+
+\begin_layout LyX-Code
+$ make
+\end_layout
+
+\begin_layout Standard
+This command will automatically compile Degc and run the test cases.
+\end_layout
+
+\begin_layout Section
+Development Guide
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+This portion of the document contains a high-level description of the major
+ namespaces and components in the Degc implementation.
+\end_layout
+
+\begin_layout Standard
+The Degc compiler is a multi-pass design, translating the input text to
+ executable code over 8 self-contained stages.
+ This design simplifies the implementation of new features, as the behavior
+ of each stage can be implemented and tested separately.
+\end_layout
+
+\begin_layout Standard
+The recommended approach for introducing new features is to write failing
+ test cases.
+ The compiler will automatically generate unimplemented feature errors,
+ letting you know what files must be modified to support your feature.
+\end_layout
+
+\begin_layout Subsection
+compiler::ast
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+ast
+\emph default
+ namespace contains the Abstract Syntax Tree implementation.
+ The parser output consists of AST nodes, which encode the language in a
+ tree structure.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+factory
+\noun default
+ - An AST node factory, used by the parser rules to generate AST nodes.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+node
+\noun default
+ - Contains declarations of AST node types.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+visitor
+\noun default
+ - An abstract visitor interface used by later compiler stages to inspect
+ the AST.
+\end_layout
+
+\begin_layout Subsection
+compiler::diagnostics
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+diagnostics
+\emph default
+ namespace contains utilities and helper functions for error reporting.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+error
+\noun default
+ - Container object describing a single error.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+errorcode
+\noun default
+ - Names error codes.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+errorlevel
+\noun default
+ - Names error levels.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+errorlocation
+\noun default
+ - Container object describing the filename and position of an error.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+report
+\noun default
+ - Abstract error report interface.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+storedreport
+\noun default
+ - Error reporter which stores Error objects.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+streamreport
+\noun default
+ - Error reporter which prints errors to a provided std::ostream&.
+\end_layout
+
+\begin_layout Subsection
+compiler::grammar
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+grammar 
+\emph default
+namespace contains the parser and lexical analyzer.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+instance
+\noun default
+ - Encapsulates an instance of the parser.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+lexer.lex
+\noun default
+ - GNU Flex lexer rules.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+parser.y
+\noun default
+ - GNU Bison parser rules.
+\end_layout
+
+\begin_layout Subsection
+compiler::ir
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+ir
+\emph default
+ namespace contains helper classes for generating bytecode.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+printer 
+\noun default
+- Abstract interface for a bytecode printer.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+codeprinter
+\noun default
+ - Prints executable bytecode.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+textprinter
+\noun default
+ - Prints human-readable text.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+splitprinter
+\noun default
+ - Prints to multiple printer implementations.
+\end_layout
+
+\begin_layout Subsection
+compiler::sg
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+sg
+\emph default
+ namespace contains the Semantic Graph implementation.
+ The first compiler stages convert the Abstract Syntax Tree to the Semantic
+ Graph data structure, which is more useful for performing semantic analysis.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+error_helper
+\noun default
+ - Contains helper functions for reporting semantic errors.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+module
+\noun default
+ - Records all of the symbols contained within a single module.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+node
+\noun default
+ - Contains declarations of Semantic Graph node types.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+scope_stack
+\noun default
+ - Contains a stack of scopes, allowing argument look-up within nested scopes.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+scope
+\noun default
+ - A single scope containing symbols (e.g.
+ function arguments, record members).
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+table
+\noun default
+ - Semantic Graph root node.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+visitor
+\noun default
+ - An abstract visitor interface used by later compiler stages to inspect
+ the SG.
+\end_layout
+
+\begin_layout Subsection
+compiler::stages
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+stages
+\emph default
+ namespace contains the transformation rules used for translating the input
+ program into the bytecode and network output.
+\end_layout
+
+\begin_layout Subsubsection
+generate_ast
+\end_layout
+
+\begin_layout Standard
+Constructs an Abstract Syntax Tree from an input source file.
+\end_layout
+
+\begin_layout Subsubsection
+generate_sg
+\end_layout
+
+\begin_layout Standard
+Constructs a basic Semantic Graph from the Abstract Syntax Tree generated
+ in the previous stage.
+\end_layout
+
+\begin_layout Standard
+The basic SG contains built-in types, along with user-defined modules and
+ symbols, although the contents of type, function, and program symbols are
+ not yet initialized.
+\end_layout
+
+\begin_layout Subsubsection
+resolve_imports
+\end_layout
+
+\begin_layout Standard
+Associates named imports with the actual symbol nodes generated in the previous
+ stage.
+\end_layout
+
+\begin_layout Subsubsection
+generate_members
+\end_layout
+
+\begin_layout Standard
+Populates user-defined type symbols - records, enumerations, and function
+ arguments.
+\end_layout
+
+\begin_layout Subsubsection
+generate_expr
+\end_layout
+
+\begin_layout Standard
+Generates expressions from the AST, replacing names with SG node references,
+ and performs semantic analysis.
+\end_layout
+
+\begin_layout Subsubsection
+constant_folding
+\end_layout
+
+\begin_layout Standard
+Performs any possible off-line computation, converting constant expressions
+ into constant values.
+\end_layout
+
+\begin_layout Subsubsection
+generate_set_expr
+\end_layout
+
+\begin_layout Standard
+Normalizes set filter expressions, verifying that set filters can be expressed
+ as a union of orthogonal ranges.
+\end_layout
+
+\begin_layout Subsubsection
+generate_code
+\end_layout
+
+\begin_layout Standard
+Generates networks and bytecode for programs and functions.
+\end_layout
+
+\begin_layout Subsection
+runtime::code
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+code
+\emph default
+ namespace contains data structures used to record facts about an executable
+ program.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+codebuffer
+\noun default
+ - Contains an executable bytecode stream.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+codebufferreadstream
+\noun default
+ - Reads from a CodeBuffer at a specified offset.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+codebufferwritestream
+\noun default
+ - Appends to a CodeBuffer, used by 
+\noun on
+compiler::ir::codeprinter
+\noun default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+functiontable
+\noun default
+ - Uniquely associates function names with a CodeBuffer offset.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+programtable
+\noun default
+ - Uniquely associates program names with a program data structure.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+recordtypetable
+\noun default
+ - Uniquely associates record names with an integer identifier.
+\end_layout
+
+\begin_layout Subsection
+runtime::math
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+math
+\emph default
+ namespace contains utility classes used for compiling and solving programs.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+fixed
+\noun default
+ - Defines a fixed-point decimal data type.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+interval
+\noun default
+ - Defines an interval on a data type.
+ Used by 
+\noun on
+set
+\noun default
+.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+relation
+\noun default
+ - Defines the relations used by 
+\noun on
+set
+\noun default
+ to construct intervals.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+set
+\noun default
+ - Defines a set on the ontology as a union of orthogonal ranges.
+\end_layout
+
+\begin_layout Subsection
+runtime::solver
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+solver
+\emph default
+ namespace contains utility classes used for solving programs.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+record
+\noun default
+ - Describes the contents of a single record field.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+recordtable
+\noun default
+ - Abstract interface for a collection of records of a particular type.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+linearrecordtable
+\noun default
+ - Implementation of RecordTable which uses linear search.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+recordindex
+\noun default
+ - Collection of RecordTable instances, one for each type in the ontology.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+network
+\noun default
+ - Network data structure and implementation of Edmonds-Karp algorithm.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+program
+\noun default
+ - Program data structure.
+\end_layout
+
+\begin_layout Subsection
+runtime::vm
+\end_layout
+
+\begin_layout Standard
+The 
+\emph on
+vm
+\emph default
+ namespace contains the bytecode virtual machine implementation.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+opcode
+\noun default
+ - Defines the opcodes which can be executed by the virtual machine.
+\end_layout
+
+\begin_layout Itemize
+
+\noun on
+virtualmachine
+\noun default
+ - The virtual machine implementation.
+ Executes programs via bytecode interpretation.
 \end_layout
 
 \end_body
