@@ -522,7 +522,7 @@ Program statements are used to describe facts about the ontology.
 \end_layout
 
 \begin_layout Subsubsection
-Assertions*
+Assertions
 \end_layout
 
 \begin_layout Standard
@@ -753,7 +753,7 @@ for best course by HighestGrade in { TakenCourse }:
 \end_layout
 
 \begin_layout Subsubsection
-Conditional*
+Conditional
 \end_layout
 
 \begin_layout Standard

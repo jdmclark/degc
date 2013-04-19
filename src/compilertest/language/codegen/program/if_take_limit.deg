@@ -1,0 +1,14 @@
+module ca.nullptr
+
+program TestProgram:
+    assert exists { TakenCourse | subject = Subject.MATH }
+    take 12 in { TakenCourse }
+    
+    if exists { TakenCourse | subject = Subject.MATH and level = 100 }:
+        limit 6 in { TakenCourse | subject != Subject.ENGL }
+    else if exists { TakenCourse | subject = Subject.MATH and level = 200 }:
+        take 3 in { TakenCourse | subject = Subject.CMPUT and level = 495 }
+        limit 6 in { TakenCourse | subject != Subject.CMPUT }
+    else:
+        limit 6 in { TakenCourse | level < 200 }
+ 

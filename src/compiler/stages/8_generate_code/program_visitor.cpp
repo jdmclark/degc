@@ -202,6 +202,7 @@ void ProgramVisitor::VisitIfElseStatement(IfElseStatement& n) {
 	EndBasicBlock();
 
 	std::vector<ProgramNetworkBranch> current_branches = branches;
+	std::vector<ProgramNetworkBranch> if_branches;
 
 	// Encode 'if' block as either: assert [condition] or: [not condition]
 	BeginBasicBlock();
@@ -213,6 +214,9 @@ void ProgramVisitor::VisitIfElseStatement(IfElseStatement& n) {
 	n.Code->Accept(*this);
 
 	EndBasicBlock();
+
+	if_branches = branches;
+	branches = current_branches;
 
 	// Else block
 	BeginBasicBlock();
@@ -226,7 +230,7 @@ void ProgramVisitor::VisitIfElseStatement(IfElseStatement& n) {
 
 	EndBasicBlock();
 
-	std::copy(current_branches.begin(), current_branches.end(), std::back_inserter(branches));
+	std::copy(if_branches.begin(), if_branches.end(), std::back_inserter(branches));
 
 	BeginBasicBlock();
 }

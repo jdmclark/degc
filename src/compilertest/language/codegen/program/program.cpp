@@ -192,6 +192,27 @@ Case(EitherOrCorrectBranch2) {
 	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
+Case(EitherOrLimit1) {
+	ParseFiles({ "base.deg", "either_or_limit.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::CMPUT, "201", "12");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(EitherOrLimit2) {
+	ParseFiles({ "base.deg", "either_or_limit.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::CMPUT, "100", "6");
+	AddCourse(Faculty::SC, Subject::MATH, "100", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
 Case(EitherOrNever) {
 	ParseFiles({ "base.deg", "either_or_never.deg" });
 	AssertResult(0, 0);
@@ -290,6 +311,71 @@ Case(IfElseNever) {
 Case(IfNever) {
 	ParseFiles({ "base.deg", "if_never.deg" });
 	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfTakeLimit1) {
+	ParseFiles({ "base.deg", "if_take_limit.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::AR, Subject::PHIL, "101", "12");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfTakeLimit2) {
+	ParseFiles({ "base.deg", "if_take_limit.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::MATH, "0", "0");
+	AddCourse(Faculty::AR, Subject::PHIL, "201", "12");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfTakeLimit3) {
+	ParseFiles({ "base.deg", "if_take_limit.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::MATH, "100", "12");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfTakeLimit4) {
+	ParseFiles({ "base.deg", "if_take_limit.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::MATH, "100", "12");
+	AddCourse(Faculty::AR, Subject::ENGL, "100", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfTakeLimit5) {
+	ParseFiles({ "base.deg", "if_take_limit.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::MATH, "200", "12");
+	AddCourse(Faculty::SC, Subject::CMPUT, "100", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfTakeLimit6) {
+	ParseFiles({ "base.deg", "if_take_limit.deg" });
+	AssertResult(0, 0);
+
+	AddCourse(Faculty::SC, Subject::MATH, "200", "12");
+	AddCourse(Faculty::SC, Subject::CMPUT, "100", "6");
+	AddCourse(Faculty::SC, Subject::CMPUT, "495", "3");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
 	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));

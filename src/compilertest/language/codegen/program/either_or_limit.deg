@@ -1,0 +1,8 @@
+module ca.nullptr
+
+program TestProgram:
+    take 12 in { TakenCourse }
+    either:
+        limit 6 in { TakenCourse | subject = Subject.CMPUT }
+    or:
+        limit 6 in { TakenCourse | level < 200 }
