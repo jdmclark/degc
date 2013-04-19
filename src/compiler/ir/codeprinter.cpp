@@ -49,6 +49,11 @@ void CodePrinter::Panic() {
 	stream.Write(Opcode::PANIC);
 }
 
+void CodePrinter::Assert(int path) {
+	stream.Write(Opcode::ASSERT);
+	stream.Write<int>(path);
+}
+
 void CodePrinter::Call(const std::string& universal_name, size_t arg_ct) {
 	stream.Write(Opcode::CALL);
 	backpatchmap.insert(std::make_pair(boost::str(boost::format("@FUNCTION:%s") % universal_name), stream.Tell()));

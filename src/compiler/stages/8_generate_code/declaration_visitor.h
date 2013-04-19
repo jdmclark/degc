@@ -5,6 +5,7 @@
 #include "compiler/ir/printer.h"
 #include "runtime/code/recordtypetable.h"
 #include "runtime/code/programtable.h"
+#include "runtime/code/functiontable.h"
 #include "runtime/solver/program.h"
 #include "program_visitor.h"
 
@@ -17,12 +18,14 @@ class DeclarationVisitor : public SG::Visitor {
 private:
 	IR::Printer& code;
 	Runtime::Code::RecordTypeTable& recordTypeTable;
+	Runtime::Code::FunctionTable& functionTable;
 	Runtime::Code::ProgramTable& programTable;
 	
 	std::unique_ptr<Runtime::Solver::ProgramNetworkReified> ReifyProgram(SG::ProgramSymbol& n, const std::vector<int>& params, const std::vector<SG::EnumerationSymbol*>& value_types);
 
 public:
-	DeclarationVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report);
+	DeclarationVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Runtime::Code::FunctionTable& functionTable,
+			Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report);
 
 	SGCONSUME(NumberSymbol);
 	SGCONSUME(QuantitySymbol);

@@ -27,8 +27,13 @@ bool Deg::Runtime::Solver::ProgramNetwork::Solve(const RecordIndex& recordIndex,
 	return ns.Solve(network, sources, limits, limit_subsets);
 }
 
-Deg::Runtime::Solver::ProgramNetworkReified::ProgramNetworkReified(const std::vector<std::vector<ProgramNetwork>>& branches, const std::vector<int>& parameters)
-	: branches(branches), parameters(parameters) {
+Deg::Runtime::Solver::ProgramNetworkBranch::ProgramNetworkBranch(const std::vector<ProgramNetwork>& chunks, const std::vector<int>& exclusion_sets)
+	: chunks(chunks), exclusion_sets(exclusion_sets) {
+	return;
+}
+
+Deg::Runtime::Solver::ProgramNetworkReified::ProgramNetworkReified(const std::vector<ProgramNetworkBranch>& branches, const std::vector<int>& parameters, size_t code_ptr)
+	: branches(branches), parameters(parameters), code_ptr(code_ptr) {
 	return;
 }
 
@@ -42,9 +47,26 @@ bool Deg::Runtime::Solver::ProgramNetworkReified::SolveOne(const std::vector<Pro
 	return true;
 }
 
-bool Deg::Runtime::Solver::ProgramNetworkReified::Solve(const RecordIndex& recordIndex, NetworkSolver& ns) const {
+bool Deg::Runtime::Solver::ProgramNetworkReified::Solve(const RecordIndex& recordIndex, VM::VirtualMachine& vm, NetworkSolver& ns) const {
+	// Execute attached code, storing results in rejection list.
+	std::set<int>* old_rejects = vm.GetRejectionList();
+	std::set<int> rejects;
+	vm.SetRejectionList(&rejects);
+	vm.Call<bool>(code_ptr);
+	vm.SetRejectionList(old_rejects); // Restore previous rejection list
+
+	// Evaluate branches not in rejection list:
 	for(const auto& branch : branches) {
-		if(SolveOne(branch, recordIndex, ns)) {
+		bool exec_br = true;
+
+		for(int exc : branch.exclusion_sets) {
+			if(rejects.count(exc) > 0) {
+				exec_br = false;
+				break;
+			}
+		}
+
+		if(exec_br && SolveOne(branch.chunks, recordIndex, ns)) {
 			return true;
 		}
 	}
@@ -56,11 +78,11 @@ void Deg::Runtime::Solver::Program::AddReifiedProgram(std::unique_ptr<ProgramNet
 	choices.push_back(std::move(prog));
 }
 
-bool Deg::Runtime::Solver::Program::Solve(const RecordIndex& recordIndex, NetworkSolver& ns, const std::vector<int>& params) const {
+bool Deg::Runtime::Solver::Program::Solve(const RecordIndex& recordIndex, VM::VirtualMachine& vm, NetworkSolver& ns, const std::vector<int>& params) const {
 	// (Slow) locate reified program matching input parameters.
 	for(const auto& rprog : choices) {
 		if(rprog->parameters == params) {
-			return rprog->Solve(recordIndex, ns);
+			return rprog->Solve(recordIndex, vm, ns);
 		}
 	}
 

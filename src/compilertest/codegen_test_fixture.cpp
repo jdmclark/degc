@@ -58,7 +58,7 @@ void CodegenTestFixture::ParseFiles(const std::vector<boost::filesystem::path>& 
 	Deg::Compiler::IR::CodePrinter code_printer(code, functionTable, programTable);
 	Deg::Compiler::IR::SplitPrinter split_printer({&text_printer, &code_printer});
 
-	Deg::Compiler::Stages::GenerateCode::GenerateCode(symbolTable, split_printer, recordTypeTable, programTable, Report);
+	Deg::Compiler::Stages::GenerateCode::GenerateCode(symbolTable, split_printer, recordTypeTable, functionTable, programTable, Report);
 	if(Report.GetErrorCount() > 0) {
 		return;
 	}

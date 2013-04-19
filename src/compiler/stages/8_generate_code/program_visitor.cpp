@@ -1,6 +1,7 @@
 #include "program_visitor.h"
 #include "program_set_visitor.h"
 #include "program_const_visitor.h"
+#include "expression_visitor.h"
 #include "compiler/stages/6_constant_folding/expression_visitor.h"
 #include <boost/format.hpp>
 #include <iostream>
@@ -104,8 +105,8 @@ void ProgramNetworkBranch::AddLimit(size_t record_type, const Set& set, DefaultF
 	GetChunk(record_type).AddLimit(set, qty);
 }
 
-ProgramVisitor::ProgramVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report)
-	: SG::Visitor("GenerateCode::ProgramVisitor", report), recordTypeTable(recordTypeTable) {
+ProgramVisitor::ProgramVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report)
+	: SG::Visitor("GenerateCode::ProgramVisitor", report), code(code), recordTypeTable(recordTypeTable), current_block(0) {
 	branches.push_back(ProgramNetworkBranch());
 	return;
 }
@@ -120,6 +121,13 @@ void ProgramVisitor::AddLimit(size_t record_type, const Set& set, DefaultFixed q
 	for(auto& branch : branches) {
 		branch.AddLimit(record_type, set, qty);
 	}
+}
+
+void ProgramVisitor::VisitAssertStatement(AssertStatement& n) {
+	ExpressionVisitor ev(code, recordTypeTable, programArguments, Report);
+	n.Value->Accept(ev);
+
+	code.LAnd();
 }
 
 void ProgramVisitor::VisitCompoundStatement(CompoundStatement& n) {
@@ -149,16 +157,24 @@ void ProgramVisitor::VisitLimitStatement(LimitStatement& n) {
 }
 
 void ProgramVisitor::VisitDisjunctionStatement(DisjunctionStatement& n) {
+	EndBasicBlock();
+
+	std::vector<ProgramNetworkBranch> current_branches = branches;
 	std::vector<ProgramNetworkBranch> next_branches;
 
-	ProgramVisitor v(recordTypeTable, Report);
 	for(auto& stmt : n.Statements) {
-		v.branches = branches;
-		stmt->Accept(v);
-		std::copy(v.branches.begin(), v.branches.end(), std::back_inserter(next_branches));
+		branches = current_branches;
+
+		BeginBasicBlock();
+		stmt->Accept(*this);
+		EndBasicBlock();
+
+		std::copy(branches.begin(), branches.end(), std::back_inserter(next_branches));
 	}
 
 	branches = next_branches;
+
+	BeginBasicBlock();
 }
 
 void ProgramVisitor::VisitEmbedStatement(EmbedStatement& n) {
@@ -220,4 +236,17 @@ void ProgramVisitor::EmbedProgram(SG::ProgramSymbol& n, const std::vector<std::u
 	n.Statements->Accept(*this);
 
 	SetProgramArguments(oldParams);
+}
+
+void ProgramVisitor::BeginBasicBlock() {
+	code.ConstB(true);
+}
+
+void ProgramVisitor::EndBasicBlock() {
+	for(auto& branch : branches) {
+		branch.exclusion_sets.push_back(current_block);
+	}
+
+	code.Assert(current_block);
+	++current_block;
 }

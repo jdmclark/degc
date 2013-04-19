@@ -25,6 +25,8 @@ public:
 	void Nop();
 	void Panic();
 
+	void Assert(int path);
+
 	void Call(const std::string& universal_name, size_t arg_ct);
 	void CallS(size_t offset, size_t arg_ct);
 	void Ret();

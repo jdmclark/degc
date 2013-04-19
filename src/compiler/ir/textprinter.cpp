@@ -40,6 +40,10 @@ void TextPrinter::Panic() {
 	os << "\tPANIC" << std::endl;
 }
 
+void TextPrinter::Assert(int path) {
+	os << "\tASSERT " << path << std::endl;
+}
+
 void TextPrinter::Call(const std::string& universal_name, size_t arg_ct) {
 	os << "\tCALL(" << arg_ct << ") " << boost::str(boost::format("@FUNCTION:%s") % universal_name) << std::endl;
 }

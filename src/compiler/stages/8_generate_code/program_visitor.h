@@ -4,6 +4,7 @@
 #include "runtime/math/set.h"
 #include "runtime/solver/network.h"
 #include "runtime/code/recordtypetable.h"
+#include "compiler/ir/printer.h"
 #include <unordered_map>
 #include <memory>
 #include <vector>
@@ -50,6 +51,7 @@ private:
 
 public:
 	std::vector<ProgramNetworkChunk> chunks;
+	std::vector<int> exclusion_sets;
 
 	void AddRequirement(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
 	void AddLimit(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
@@ -57,8 +59,10 @@ public:
 
 class ProgramVisitor : public SG::Visitor {
 private:
+	IR::Printer& code;
 	Runtime::Code::RecordTypeTable& recordTypeTable;
 	std::vector<SG::EnumerationMemberSymbol*> programArguments;
+	int current_block;
 
 public:
 	std::vector<ProgramNetworkBranch> branches;
@@ -70,8 +74,9 @@ public:
 	void AddRequirement(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
 	void AddLimit(size_t record_type, const Runtime::Math::Set& set, Runtime::Math::DefaultFixed qty);
 
-	ProgramVisitor(Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report);
+	ProgramVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Diagnostics::Report& report);
 
+	void VisitAssertStatement(SG::AssertStatement& n);
 	void VisitCompoundStatement(SG::CompoundStatement& n);
 	void VisitTakeStatement(SG::TakeStatement& n);
 	void VisitLimitStatement(SG::LimitStatement& n);
@@ -79,6 +84,8 @@ public:
 	void VisitEmbedStatement(SG::EmbedStatement& n);
 
 	void EmbedProgram(SG::ProgramSymbol& n, const std::vector<std::unique_ptr<SG::Expression>>& args);
+	void BeginBasicBlock();
+	void EndBasicBlock();
 };
 
 }

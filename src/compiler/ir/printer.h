@@ -21,6 +21,8 @@ public:
 	virtual void Nop() = 0;
 	virtual void Panic() = 0;
 
+	virtual void Assert(int path) = 0;
+
 	virtual void Call(const std::string& universal_name, size_t arg_ct) = 0;
 	virtual void CallS(size_t offset, size_t arg_ct) = 0;
 	virtual void Ret() = 0;

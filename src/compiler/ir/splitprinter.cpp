@@ -41,6 +41,10 @@ void SplitPrinter::Panic() {
 	for(auto p : printers) { p->Panic(); }
 }
 
+void SplitPrinter::Assert(int path) {
+	for(auto p : printers) { p->Assert(path); }
+}
+
 void SplitPrinter::Call(const std::string& universal_name, size_t arg_ct) {
 	for(auto p : printers) { p->Call(universal_name, arg_ct); }
 }

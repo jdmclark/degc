@@ -56,8 +56,8 @@ Case(Args1) {
 	AddCourse(Faculty::AR, Subject::ENGL, "101", "6");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::CMPUT) }));
-	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::ENGL) }));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver, { static_cast<int>(Subject::CMPUT) }));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver, { static_cast<int>(Subject::ENGL) }));
 }
 
 Case(Args2) {
@@ -67,7 +67,23 @@ Case(Args2) {
 	AddCourse(Faculty::SC, Subject::CMPUT, "101", "6");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(!prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::ENGL) }));
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver, { static_cast<int>(Subject::ENGL) }));
+}
+
+Case(AssertAlways) {
+	ParseFiles({ "base.deg", "assert_always.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(AssertNever) {
+	ParseFiles({ "base.deg", "assert_never.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(BaseArgs1) {
@@ -79,7 +95,7 @@ Case(BaseArgs1) {
 	AddCourse(Faculty::AR, Subject::PHIL, "101", "3");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::ENGL), static_cast<int>(Subject::PHIL) }));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver, { static_cast<int>(Subject::ENGL), static_cast<int>(Subject::PHIL) }));
 }
 
 Case(BaseArgs2) {
@@ -89,7 +105,7 @@ Case(BaseArgs2) {
 	AddCourse(Faculty::SC, Subject::CMPUT, "101", "12");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::CMPUT), static_cast<int>(Subject::CMPUT) }));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver, { static_cast<int>(Subject::CMPUT), static_cast<int>(Subject::CMPUT) }));
 }
 
 Case(DeepNestedLimit) {
@@ -103,7 +119,7 @@ Case(DeepNestedLimit) {
 	AddCourse(Faculty::AR, Subject::PHIL, "102", "1500");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(!prog->Solve(recordIndex, networkSolver));
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(DisjointLimit) {
@@ -118,7 +134,7 @@ Case(DisjointLimit) {
 	AddCourse(Faculty::SC, Subject::MATH, "101", "3");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(EitherOr1) {
@@ -129,7 +145,7 @@ Case(EitherOr1) {
 	AddCourse(Faculty::SC, Subject::CMPUT, "101", "6");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(EitherOr2) {
@@ -141,7 +157,7 @@ Case(EitherOr2) {
 	AddCourse(Faculty::SC, Subject::MATH, "101", "6");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(EitherOr3) {
@@ -152,7 +168,7 @@ Case(EitherOr3) {
 	AddCourse(Faculty::AR, Subject::ENGL, "101", "9");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(EmbedParameterized) {
@@ -163,7 +179,7 @@ Case(EmbedParameterized) {
 	AddCourse(Faculty::AR, Subject::ENGL, "101", "6");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::CMPUT), static_cast<int>(Subject::ENGL) }));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver, { static_cast<int>(Subject::CMPUT), static_cast<int>(Subject::ENGL) }));
 }
 
 Case(EmbedParametric) {
@@ -174,8 +190,8 @@ Case(EmbedParametric) {
 	AddCourse(Faculty::AR, Subject::ENGL, "101", "6");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::CMPUT) }));
-	Test_Assert(!prog->Solve(recordIndex, networkSolver, { static_cast<int>(Subject::ENGL) }));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver, { static_cast<int>(Subject::CMPUT) }));
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver, { static_cast<int>(Subject::ENGL) }));
 }
 
 Case(EmbedStatic) {
@@ -186,7 +202,7 @@ Case(EmbedStatic) {
 	AddCourse(Faculty::AR, Subject::ENGL, "101", "6");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(Example) {
@@ -204,7 +220,7 @@ Case(Example) {
 	AddCourse(Faculty::AR, Subject::PHIL, "100", "3");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(OverlapLimit) {
@@ -222,7 +238,7 @@ Case(SubsetLimit) {
 	AddCourse(Faculty::SC, Subject::MATH, "102", "3");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(!prog->Solve(recordIndex, networkSolver));
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(SubsetLimitPass) {
@@ -237,7 +253,7 @@ Case(SubsetLimitPass) {
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
 
-	Test_Assert(prog->Solve(recordIndex, networkSolver));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
 Case(SubsetLimitPass2) {
@@ -250,7 +266,7 @@ Case(SubsetLimitPass2) {
 	AddCourse(Faculty::AR, Subject::PHIL, "101", "3");
 
 	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
-	Test_Assert(prog->Solve(recordIndex, networkSolver));
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
 EndSuite(ProgramCodegenTest);

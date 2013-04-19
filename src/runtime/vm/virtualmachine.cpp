@@ -6,7 +6,7 @@
 using Deg::Runtime::Math::DefaultFixed;
 
 Deg::Runtime::VM::VirtualMachine::VirtualMachine(const Code::CodeBuffer& code, const Solver::RecordIndex& record_index)
-	: code(code), record_index(record_index), si(0) {
+	: code(code), record_index(record_index), si(0), rejects(nullptr) {
 	return;
 }
 
@@ -23,6 +23,15 @@ Deg::Runtime::VM::VirtualMachine::Type Deg::Runtime::VM::VirtualMachine::Execute
 
 		case Opcode::PANIC:
 			throw std::exception();
+
+		case Opcode::ASSERT: {
+				int path = stream.Read<int>();
+				bool value = Pop<bool>();
+				if(!value) {
+					rejects->insert(path);
+				}
+			}
+			break;
 
 		case Opcode::CALL: {
 				size_t tgt_pc = stream.Read<size_t>();

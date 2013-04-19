@@ -6,6 +6,7 @@
 #include "runtime/solver/record.h"
 #include "runtime/solver/recordindex.h"
 #include <vector>
+#include <set>
 #include <boost/variant.hpp>
 #include <boost/variant/get.hpp>
 
@@ -22,6 +23,7 @@ private:
 	std::vector<size_t> si_stack;
 	std::vector<size_t> pc_stack;
 	size_t si;
+	std::set<int>* rejects;
 
 	Type Execute(size_t pc);
 
@@ -60,6 +62,14 @@ public:
 		pc_stack.clear();
 		push_cons(arg...);
 		return boost::get<T>(Execute(pc));
+	}
+
+	inline void SetRejectionList(std::set<int>* rejects) {
+		this->rejects = rejects;
+	}
+
+	inline std::set<int>* GetRejectionList() const {
+		return rejects;
 	}
 };
 

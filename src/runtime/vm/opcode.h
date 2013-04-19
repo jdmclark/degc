@@ -8,6 +8,8 @@ enum class Opcode : unsigned char {
 	NOP,
 	PANIC,
 
+	ASSERT,					// If top value is false, rejects paths with given number
+
 	CALL,					// Calls a static function
 	CALLS,					// Calls the function stored at the stack offset
 	RET,					// Returns value to calling stack frame

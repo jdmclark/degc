@@ -8,8 +8,9 @@ using namespace Deg::Compiler::SG;
 using Deg::Compiler::Stages::GenerateCode::DeclarationVisitor;
 using namespace Deg::Runtime::Math;
 
-DeclarationVisitor::DeclarationVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report)
-	: SG::Visitor("GenerateCode::DeclarationVisitor", report), code(code), recordTypeTable(recordTypeTable), programTable(programTable) {
+DeclarationVisitor::DeclarationVisitor(IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Runtime::Code::FunctionTable& functionTable,
+		Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report)
+	: SG::Visitor("GenerateCode::DeclarationVisitor", report), code(code), recordTypeTable(recordTypeTable), functionTable(functionTable), programTable(programTable) {
 	return;
 }
 
@@ -23,7 +24,7 @@ void DeclarationVisitor::VisitFunctionSymbol(FunctionSymbol& n) {
 std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor::ReifyProgram(SG::ProgramSymbol& n, const std::vector<int>& bad_params,
 		const std::vector<SG::EnumerationSymbol*>& value_types) {
 
-	// Generate good params
+	// Generate params vector matching actual enumeration members to integer arguments.
 	std::vector<SG::EnumerationMemberSymbol*> params;
 	for(size_t i = 0; i < bad_params.size(); ++i) {
 		// Find matching enumeration value.
@@ -38,8 +39,19 @@ std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor:
 		params.push_back(val);
 	}
 
-	ProgramVisitor pv(recordTypeTable, Report);
+	// Add function label
+	std::stringstream ss;
+	ss << n.UniversalUniqueName;
+	for(int i : bad_params) {
+		ss << "@" << i;
+	}
+	std::string fn_label = ss.str();
+	code.Function(fn_label);
+
+	ProgramVisitor pv(code, recordTypeTable, Report);
 	pv.SetProgramArguments(params);
+
+	pv.BeginBasicBlock();
 
 	// Embed base program
 	if(n.Base) {
@@ -49,7 +61,12 @@ std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor:
 	// Embed self program
 	n.Statements->Accept(pv);
 
-	std::vector<std::vector<Runtime::Solver::ProgramNetwork>> branches;
+	// Close program code
+	pv.EndBasicBlock();
+	code.ConstB(true);
+	code.Ret();
+
+	std::vector<Runtime::Solver::ProgramNetworkBranch> branches;
 
 	for(const auto& branch : pv.branches) {
 		std::vector<Runtime::Solver::ProgramNetwork> networks;
@@ -132,10 +149,11 @@ std::unique_ptr<Deg::Runtime::Solver::ProgramNetworkReified> DeclarationVisitor:
 			networks.emplace_back(chunk.record_type, source_sets, limit_sets, limit_subsets, net);
 		}
 
-		branches.push_back(networks);
+		branches.emplace_back(networks, branch.exclusion_sets);
 	}
 
-	return std::unique_ptr<Runtime::Solver::ProgramNetworkReified>(new Runtime::Solver::ProgramNetworkReified(branches, bad_params));
+	return std::unique_ptr<Runtime::Solver::ProgramNetworkReified>(new Runtime::Solver::ProgramNetworkReified(branches, bad_params,
+			functionTable.GetFunction(fn_label)));
 }
 
 void DeclarationVisitor::VisitProgramSymbol(ProgramSymbol& n) {

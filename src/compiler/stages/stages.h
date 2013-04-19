@@ -61,7 +61,8 @@ void GenerateSetExpressions(SG::SymbolTable& symbolTable, Diagnostics::Report& r
 }
 
 namespace GenerateCode {
-void GenerateCode(SG::SymbolTable& symbolTable, IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable, Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report);
+void GenerateCode(SG::SymbolTable& symbolTable, IR::Printer& code, Runtime::Code::RecordTypeTable& recordTypeTable,
+		Runtime::Code::FunctionTable& functionTable, Runtime::Code::ProgramTable& programTable, Diagnostics::Report& report);
 }
 
 }
