@@ -52,7 +52,13 @@ bool Deg::Runtime::Solver::ProgramNetworkReified::Solve(const RecordIndex& recor
 	std::set<int>* old_rejects = vm.GetRejectionList();
 	std::set<int> rejects;
 	vm.SetRejectionList(&rejects);
-	vm.Call<bool>(code_ptr);
+	try {
+		vm.Call<bool>(code_ptr);
+	}
+	catch(const std::exception&) {
+		return false;
+	}
+
 	vm.SetRejectionList(old_rejects); // Restore previous rejection list
 
 	// Evaluate branches not in rejection list:

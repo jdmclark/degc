@@ -1,0 +1,4 @@
+module ca.nullptr
+
+program TestProgram:
+    assert panic

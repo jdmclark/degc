@@ -86,6 +86,14 @@ Case(AssertNever) {
 	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
 }
 
+Case(AssertPanic) {
+	ParseFiles({ "base.deg", "assert_panic.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
+}
+
 Case(BaseArgs1) {
 	ParseFiles({ "base.deg", "base_args.deg" });
 	AssertResult(0, 0);
