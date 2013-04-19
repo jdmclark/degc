@@ -1,0 +1,11 @@
+module ca.nullptr
+
+program TestProgram:
+    if false:
+        assert false
+    else if false:
+        assert false
+    else if true:
+        assert true
+    else:
+        assert false

@@ -81,6 +81,8 @@ public:
 	void VisitTakeStatement(SG::TakeStatement& n);
 	void VisitLimitStatement(SG::LimitStatement& n);
 	void VisitDisjunctionStatement(SG::DisjunctionStatement& n);
+	void VisitIfStatement(SG::IfStatement& n);
+	void VisitIfElseStatement(SG::IfElseStatement& n);
 	void VisitEmbedStatement(SG::EmbedStatement& n);
 
 	void EmbedProgram(SG::ProgramSymbol& n, const std::vector<std::unique_ptr<SG::Expression>>& args);

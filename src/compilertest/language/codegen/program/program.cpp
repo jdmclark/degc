@@ -263,6 +263,38 @@ Case(Example) {
 	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
+Case(IfAlways) {
+	ParseFiles({ "base.deg", "if_always.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfElseAlways) {
+	ParseFiles({ "base.deg", "if_else_always.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfElseNever) {
+	ParseFiles({ "base.deg", "if_else_never.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(IfNever) {
+	ParseFiles({ "base.deg", "if_never.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
 Case(OverlapLimit) {
 	ParseFiles({ "base.deg", "overlap_limit.deg" });
 	AssertResult(1, 0);

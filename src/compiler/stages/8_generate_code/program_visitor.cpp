@@ -177,6 +177,60 @@ void ProgramVisitor::VisitDisjunctionStatement(DisjunctionStatement& n) {
 	BeginBasicBlock();
 }
 
+void ProgramVisitor::VisitIfStatement(IfStatement& n) {
+	EndBasicBlock();
+
+	std::vector<ProgramNetworkBranch> current_branches = branches;
+
+	// Encode 'if' block as either: assert [condition] or: pass
+	BeginBasicBlock();
+
+	ExpressionVisitor ev(code, recordTypeTable, programArguments, Report);
+	n.Predicate->Accept(ev);
+	code.LAnd();
+
+	n.Code->Accept(*this);
+
+	EndBasicBlock();
+
+	std::copy(current_branches.begin(), current_branches.end(), std::back_inserter(branches));
+
+	BeginBasicBlock();
+}
+
+void ProgramVisitor::VisitIfElseStatement(IfElseStatement& n) {
+	EndBasicBlock();
+
+	std::vector<ProgramNetworkBranch> current_branches = branches;
+
+	// Encode 'if' block as either: assert [condition] or: [not condition]
+	BeginBasicBlock();
+
+	ExpressionVisitor ev(code, recordTypeTable, programArguments, Report);
+	n.Predicate->Accept(ev);
+	code.LAnd();
+
+	n.Code->Accept(*this);
+
+	EndBasicBlock();
+
+	// Else block
+	BeginBasicBlock();
+
+	ExpressionVisitor eev(code, recordTypeTable, programArguments, Report);
+	n.Predicate->Accept(eev);
+	code.LNot();
+	code.LAnd();
+
+	n.ElseCode->Accept(*this);
+
+	EndBasicBlock();
+
+	std::copy(current_branches.begin(), current_branches.end(), std::back_inserter(branches));
+
+	BeginBasicBlock();
+}
+
 void ProgramVisitor::VisitEmbedStatement(EmbedStatement& n) {
 	ConstantFolding::ExpressionVisitor pcv({}, programArguments, Report);
 	n.Value->Accept(pcv);

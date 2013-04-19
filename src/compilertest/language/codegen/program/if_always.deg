@@ -1,0 +1,5 @@
+module ca.nullptr
+
+program TestProgram:
+    if true:
+        assert true
