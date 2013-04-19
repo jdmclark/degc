@@ -87,7 +87,7 @@
 %type <expression_list> argument_expression_list
 %type <unary_operator> unary_operator
 %type <infix_operator> multiplicative_operator additive_operator relational_operator equality_operator
-%type <expression> literal_expression set_expression primary_expression postfix_expression unary_expression
+%type <expression> literal_expression set_expression primary_expression postfix_expression exists_expression unary_expression
 %type <expression> multiplicative_expression additive_expression relational_expression equality_expression
 %type <expression> and_expression or_expression expression function_selection_expression function_expression
 %type <statement_list> program_statement_seq disjunction_statement_part_seq
@@ -200,6 +200,12 @@ postfix_expression
 		{ $$ = ast->MakeMemberAccessExpression($1, $3, @$); }
 	;
 	
+exists_expression
+	: postfix_expression
+	| EXISTS postfix_expression
+		{ $$ = ast->MakeExistsExpression($2, @$); }
+	;
+	
 unary_operator
 	: '-'
 		{ $$ = UnaryOperator::Minus; }
@@ -208,11 +214,9 @@ unary_operator
 	;
 	
 unary_expression
-	: postfix_expression
-	| unary_operator postfix_expression
+	: exists_expression
+	| unary_operator exists_expression
 		{ $$ = ast->MakeUnaryExpression($1, $2, @$); }
-	| EXISTS unary_expression
-		{ $$ = ast->MakeExistsExpression($2, @$); }
 	;
 	
 multiplicative_operator

@@ -160,6 +160,46 @@ Case(EitherOr2) {
 	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
 }
 
+Case(EitherOrAlways) {
+	ParseFiles({ "base.deg", "either_or_always.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(EitherOrCorrectBranch1) {
+	ParseFiles({ "base.deg", "either_or_correct_branch.deg" });
+	AssertResult(0, 0);
+
+	// Having a single Philosophy course triggers branch 2
+	AddCourse(Faculty::AR, Subject::PHIL, "101", "3");
+	AddCourse(Faculty::AR, Subject::ENGL, "101", "3");
+	AddCourse(Faculty::SC, Subject::MATH, "101", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(EitherOrCorrectBranch2) {
+	ParseFiles({ "base.deg", "either_or_correct_branch.deg" });
+	AssertResult(0, 0);
+
+	// Having no Philosophy courses triggers branch 1
+	AddCourse(Faculty::SC, Subject::CMPUT, "101", "6");
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(prog->Solve(recordIndex, vm, networkSolver));
+}
+
+Case(EitherOrNever) {
+	ParseFiles({ "base.deg", "either_or_never.deg" });
+	AssertResult(0, 0);
+
+	auto prog = programTable.GetProgram("ca.nullptr.TestProgram");
+	Test_Assert(!prog->Solve(recordIndex, vm, networkSolver));
+}
+
 Case(EitherOr3) {
 	ParseFiles({ "base.deg", "either_or.deg" });
 	AssertResult(0, 0);
