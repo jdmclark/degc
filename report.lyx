@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass scrbook
+\begin_preamble
+\usepackage{tkz-graph}
+\end_preamble
 \use_default_options true
 \begin_modules
 theorems-ams
@@ -871,10 +874,18 @@ Due to the specific form of integer programs written in Degc, it is possible
  to describe the integer program portions as an instance of network max-flow.
  This correspondence allows a larger amount of preprocessing and a guaranteed
  polynomial execution time.
- The disadvantage to this approach is a greater demand for storage space.
- Since branches may produce significantly different networks, each possible
+ The disadvantage to this approach is a greater demand for storage space:
+ since branches may produce significantly different networks, each possible
  branch and combination of program parameters must be enumerated into a
  separate network.
+ See 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sub:Alternative-Approaches"
+
+\end_inset
+
+ for a detailed discussion of alternative approaches.
 \end_layout
 
 \begin_layout Standard
@@ -920,7 +931,11 @@ If the max-flow is sufficient, the program has been satisfied and returns
 Integer Program - Network Correspondence
 \end_layout
 
-\begin_layout Note
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
 The 
 \emph on
 take
@@ -933,157 +948,762 @@ limit
  form.
 \end_layout
 
-\begin_layout Note
-Any requirement is of the form 
-\end_layout
-
-\begin_layout Note
-Suppose, for example, we have the following simple program:
-\end_layout
-
-\begin_layout LyX-Code
-take 6 from { TakenCourse | faculty=Faculty.SC and subject=Subject.CMPUT }
-     # R1
-\end_layout
-
-\begin_layout LyX-Code
-take 6 from { TakenCourse | faculty=Faculty.SC }                        
-       # R2
-\end_layout
-
-\begin_layout LyX-Code
-limit 3 from { TakenCourse | level<200 }                               
-        # L1
-\end_layout
-
 \begin_layout Standard
-After some work, the compiler will reduce this program to some relevant
- pair-disjoint subsets:
-\end_layout
-
-\begin_layout LyX-Code
-{ TakenCourse | subject=Subject.CMPUT and faculty=Faculty.SC and level<200
- }   # A1
-\end_layout
-
-\begin_layout LyX-Code
-{ TakenCourse | subject=Subject.CMPUT and faculty=Faculty.SC and level>=200
- }  # A2
-\end_layout
-
-\begin_layout LyX-Code
-{ TakenCourse | subject!=Subject.CMPUT and faculty=Faculty.SC and level<200
- }  # A3
-\end_layout
-
-\begin_layout LyX-Code
-{ TakenCourse | subject!=Subject.CMPUT and faculty=Faculty.SC and level>=200
- } # A4
-\end_layout
-
-\begin_layout LyX-Code
-{ TakenCourse | faculty!=Faculty.SC and level<200 }                     
-       # A5
-\end_layout
-
-\begin_layout Standard
-Suppose the input ontology has quantities of 
-\begin_inset Formula $c_{1},\dots,c_{5}$
+Let 
+\begin_inset Formula $S_{1},\dots,S_{n}$
 \end_inset
 
- for sets 
-\begin_inset Formula $A_{1},\dots,A_{5}$
+ be disjoint subsets of the ontology of a single common type.
+ A Degc integer program consists of some number of variables, 
+\begin_inset Formula $\alpha_{1},\dots,\alpha_{\ell}\in\mathbb{Z}$
+\end_inset
+
+, which we may intuitively understand as an assignment of credits from the
+ 
+\begin_inset Formula $S_{1},\dots S_{n}$
+\end_inset
+
+ input subsets to the requirements that must be satisfied.
+ Since the goal is to fully satisfy all requirements, 
+\begin_inset Formula $\alpha_{1}+\alpha_{2}+\cdots+\alpha_{\ell}$
+\end_inset
+
+ should be maximized, subject to three types of constraints: 
+\emph on
+supply
+\emph default
+ constraints, 
+\emph on
+demand
+\emph default
+ constraints, and 
+\emph on
+limit
+\emph default
+ constraints.
+\end_layout
+
+\begin_layout Standard
+Supply constraints are imposed implicitly by the input.
+ Suppose 
+\begin_inset Formula $\alpha_{b_{1}},\dots,\alpha_{b_{k}}$
+\end_inset
+
+ represent the amounts of quantity assigned from the ontology subset 
+\begin_inset Formula $S_{b}$
+\end_inset
+
+ to various requirements.
+ If the input ontology only has some 
+\begin_inset Formula $c_{b}\in\mathbb{Z}$
+\end_inset
+
+ quantity in subset 
+\begin_inset Formula $S_{b}$
+\end_inset
+
+, it follows that 
+\begin_inset Formula $\alpha_{b_{1}}+\alpha_{b_{2}}+\cdots+\alpha_{b_{k}}\le c_{b}$
+\end_inset
+
+, since the total amount of quantity consumed from 
+\begin_inset Formula $S_{b}$
+\end_inset
+
+ cannot exceed 
+\begin_inset Formula $c_{b}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Demand constraints are imposed by the program.
+ Suppose a requirement 
+\begin_inset Formula $R_{d}$
+\end_inset
+
+ for 
+\begin_inset Formula $c_{d}\in\mathbb{Z}$
+\end_inset
+
+ quantity takes 
+\begin_inset Formula $\alpha_{d_{1}},\dots,\alpha_{d_{j}}$
+\end_inset
+
+ quantity respectively from each of 
+\begin_inset Formula $S_{e_{1}},S_{e_{2}},\dots,S_{e_{j}}$
+\end_inset
+
+.
+ Then, 
+\begin_inset Formula $\alpha_{d_{1}}+\alpha_{d_{2}}+\cdots+\alpha_{d_{j}}\le c_{d}$
+\end_inset
+
+, since no more than 
+\begin_inset Formula $c_{d}$
+\end_inset
+
+ quantity may be consumed by such a requirement.
+\end_layout
+
+\begin_layout Standard
+Limit constraints are imposed by constraining the total number of quantity
+ which may be consumed by some subsets.
+ Suppose 
+\begin_inset Formula $L_{g}$
+\end_inset
+
+ is a limit of 
+\begin_inset Formula $c_{g}\in\mathbb{Z}$
+\end_inset
+
+ imposed upon some collection of subsets which respectively contribute 
+\begin_inset Formula $\alpha_{g_{1}},\alpha_{g_{2}},\dots,\alpha_{g_{p}}$
+\end_inset
+
+ quantity to some number of requirements.
+ Then, 
+\begin_inset Formula $\alpha_{g_{1}}+\alpha_{g_{2}}+\cdots+\alpha_{g_{p}}\le c_{g}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+With the exception of limit constraints, each of these constraints can be
+ directly represented as a network flow.
+ Limit constraints require some modification, which is discussed below.
+\end_layout
+
+\begin_layout Subsection
+Supply Constraints
+\end_layout
+
+\begin_layout Standard
+As discussed previously, suppose 
+\begin_inset Formula $\alpha_{b_{1}},\alpha_{b_{2}},\dots,\alpha_{b_{k}}$
+\end_inset
+
+ represent the amounts of quantity consumed from an ontology subset 
+\begin_inset Formula $S_{b}$
+\end_inset
+
+.
+ Then, 
+\begin_inset Formula $\alpha_{b_{1}}+\alpha_{b_{2}}+\cdots+\alpha_{b_{k}}\le c_{b}$
+\end_inset
+
+, where 
+\begin_inset Formula $c_{b}\in\mathbb{Z}$
+\end_inset
+
+ is the total amount of quantity contained within 
+\begin_inset Formula $S_{b}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This constraint can be represented directly in a network: let 
+\begin_inset Formula $S_{b}$
+\end_inset
+
+ be represented by a graph node, with outbound arcs to requirements representing
+ 
+\begin_inset Formula $\alpha_{b_{1}},\dots,\alpha_{b_{k}}$
+\end_inset
+
+.
+ Then, the total flow through 
+\begin_inset Formula $S_{b}$
+\end_inset
+
+ is constrained by adding a 
+\begin_inset Formula $c_{b}$
+\end_inset
+
+-capacity arc from the 
+\begin_inset Formula $S_{b}$
+\end_inset
+
+ node to the network source node (see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:ip-supply-constraint"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+tikzstyle{vertex}=[circle,draw,thick,fill=none,minimum size=20pt,inner sep=0pt]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+tikzstyle{edge} = [draw,thick,->]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}
+\end_layout
+
+\begin_layout Plain Layout
+
+	[scale=1,auto=left,every node/.style={circle,fill=white!20}]
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+foreach 
+\backslash
+pos/
+\backslash
+name in {{(5,0)/s},{(5,6)/t},
+\end_layout
+
+\begin_layout Plain Layout
+
+                            {(5,2)/S_b},{(2,4)/R_1},{(5,4)/R_2},{(8,4)/R_3}}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+node[vertex] (
+\backslash
+name) at 
+\backslash
+pos {$
+\backslash
+name$};
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+foreach 
+\backslash
+source/
+\backslash
+dest/
+\backslash
+name in {s/S_b/c_b,S_b/R_1/
+\backslash
+alpha_{b_1},S_b/R_2/
+\backslash
+alpha_{b_2},S_b/R_3/
+\backslash
+alpha_{b_3},R_1/t/c_1,R_2/t/c_2,R_3/t/c_3}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+path[edge] (
+\backslash
+source) -- (
+\backslash
+dest) node [pos=0.4,fill=white,rectangle,above] {$
+\backslash
+name$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ip-supply-constraint"
+
+\end_inset
+
+Illustrates the network flow analogue to the implicit supply constraint.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Demand Constraints
+\end_layout
+
+\begin_layout Standard
+As discussed previously, suppose 
+\begin_inset Formula $\alpha_{d_{1}},\alpha_{d_{2}},\dots,\alpha_{d_{\ell}}$
+\end_inset
+
+ represent the amounts of quantity consumed by a requirement 
+\begin_inset Formula $R_{d}$
+\end_inset
+
+.
+ Then, 
+\begin_inset Formula $\alpha_{d_{1}}+\alpha_{d_{2}}+\cdots+\alpha_{d_{\ell}}\ge c_{d}$
+\end_inset
+
+, where 
+\begin_inset Formula $c_{d}\in\mathbb{Z}$
+\end_inset
+
+ is the total amount of quantity demanded by the requirement.
+\end_layout
+
+\begin_layout Standard
+As before, this constraint can be represented directly in a network: let
+ 
+\begin_inset Formula $R_{d}$
+\end_inset
+
+ be represented by a graph node, with inbound arcs from the disjoint subsets
+ representing 
+\begin_inset Formula $\alpha_{d_{1}},\dots,\alpha_{d_{\ell}}$
+\end_inset
+
+, and an additional infinite-capacity arc from the requirement node to the
+ network sink node.
+ Since the solver computes max-flow, the 
+\begin_inset Formula $\alpha_{d_{1}},\dots,\alpha_{d_{i}}$
+\end_inset
+
+ are maximized, with the requirement successfully satisfied iff 
+\begin_inset Formula $\alpha_{d_{1}}+\cdots+\alpha_{d_{i}}\ge c_{d}$
+\end_inset
+
+ (see 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:ip-demand-constraint"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+tikzstyle{vertex}=[circle,draw,thick,fill=none,minimum size=20pt,inner sep=0pt]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+tikzstyle{edge} = [draw,thick,->]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tikzpicture}
+\end_layout
+
+\begin_layout Plain Layout
+
+	[scale=1,auto=left,every node/.style={circle,fill=white!20}]
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+foreach 
+\backslash
+pos/
+\backslash
+name in {{(5,0)/s},{(5,6)/t},
+\end_layout
+
+\begin_layout Plain Layout
+
+                            {(2,2)/S_1},{(5,2)/S_2},{(8,2)/S_3},
+\end_layout
+
+\begin_layout Plain Layout
+
+                            {(5,4)/R_d}}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+node[vertex] (
+\backslash
+name) at 
+\backslash
+pos {$
+\backslash
+name$};
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\backslash
+foreach 
+\backslash
+source/
+\backslash
+dest/
+\backslash
+name in {s/S_1/c_1,s/S_2/c_2,s/S_3/c_3,S_1/R_d/
+\backslash
+alpha_{d_1},S_2/R_d/
+\backslash
+alpha_{d_2},S_3/R_d/
+\backslash
+alpha_{d_3},R_d/t/f_d}
+\end_layout
+
+\begin_layout Plain Layout
+
+		
+\backslash
+path[edge] (
+\backslash
+source) -- (
+\backslash
+dest) node [pos=0.4,fill=white,rectangle,above] {$
+\backslash
+name$};
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ip-demand-constraint"
+
+\end_inset
+
+Illustrates the network flow analogue to the implicit supply constraint.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Limit Constraints
+\end_layout
+
+\begin_layout Standard
+In general, limit constraints cannot be represented in a network.
+ The exception is when every limit is either a subset, a superset, or disjoint
+ from every other set involved in a limit.
+\end_layout
+
+\begin_layout Subsubsection
+Disjoint
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $L$
+\end_inset
+
+ is a disjoint limit constraint, imposing a constraint 
+\begin_inset Formula $c$
+\end_inset
+
+ on a family of ontology subsets 
+\begin_inset Formula $S_{1},S_{2},\dots,S_{n}$
+\end_inset
+
+, which are constrained to supply maximum quantities of 
+\begin_inset Formula $s_{1},s_{2},\dots,s_{n}$
 \end_inset
 
 , respectively.
- Then, the following integer program is equivalent:
+ Suppose also 
+\begin_inset Formula $\alpha_{1},\alpha_{2},\dots,\alpha_{n}\in\mathbb{Z}$
+\end_inset
+
+, where 
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+ represents the amount of quantity 
+\begin_inset Formula $S_{i}$
+\end_inset
+
+ provides to any number of requirements.
+ Then, 
+\begin_inset Formula $L$
+\end_inset
+
+ has an equivalent 
+\emph on
+demand constraint 
+\emph default
+representation.
 \end_layout
 
-\begin_layout Quotation
-maximize 
-\begin_inset Formula $\sum_{i}\alpha_{i}$
+\begin_layout Proof
+Let 
+\begin_inset Formula $\beta_{i}=s_{i}-\alpha_{i}$
 \end_inset
 
- subject to:
-\end_layout
-
-\begin_deeper
-\begin_layout Quotation
-\begin_inset Formula $\alpha_{1}+\alpha_{2}\le c_{1}$
-\end_inset
-
- # credits assigned from 
-\begin_inset Formula $A_{1}$
-\end_inset
-
- and 
-\begin_inset Formula $A_{2}$
-\end_inset
-
- to requirement 
-\begin_inset Formula $R_{1}$
+, for any 
+\begin_inset Formula $1\le i\le n$
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Quotation
-\begin_inset Formula $\alpha_{3}+\alpha_{4}+\alpha_{5}+\alpha_{6}\le c_{2}$
+\begin_layout Proof
+\begin_inset Formula 
+\begin{eqnarray*}
+ &  & \sum_{i=1}^{n}\alpha_{i}\le c\\
+ & \iff & -\sum_{i=1}^{n}\alpha_{i}\ge-c\\
+ & \iff & \sum_{i=1}^{n}s_{i}-\sum_{i=1}^{n}\alpha_{i}\ge\sum_{i=1}^{n}s_{i}-c\\
+ & \iff & \sum_{i=1}^{n}\beta_{i}\ge\sum_{i=1}^{n}s_{i}-c
+\end{eqnarray*}
+
 \end_inset
 
- # credits assigned from 
-\begin_inset Formula $A_{1}$
+
+\end_layout
+
+\begin_layout Proof
+Which is, indeed, the form needed for a demand constraint.
+\end_layout
+
+\begin_layout Standard
+Therefore, disjoint limit constraints are constructed as demand constraints,
+ where the sum of all incoming quantity is greater than the difference between
+ the sum of all possible quantity and the limit constraint value.
+\end_layout
+
+\begin_layout Standard
+(Note that all of the 
+\begin_inset Formula $\beta_{i}$
 \end_inset
 
-, 
-\begin_inset Formula $A_{2}$
+ are positive.
+ Therefore, when the supplied quantity is less than the limit amount, all
+ of the 
+\begin_inset Formula $\beta_{i}=0$
 \end_inset
 
-, 
-\begin_inset Formula $A_{3}$
+.)
+\end_layout
+
+\begin_layout Subsubsection
+Superset/Subset
+\end_layout
+
+\begin_layout Standard
+Subset limit constraints are constructed similar to disjoint limit constraints,
+ with the zero-clamped requirement constraint of each subset subtracted
+ from the requirement constraint of the next-largest superset.
+\end_layout
+
+\begin_layout Proof
+Let 
+\begin_inset Formula $L_{1},L_{2}$
 \end_inset
 
-, and 
-\begin_inset Formula $A_{4}$
+ be limit constraints, such that 
+\begin_inset Formula $L_{1}$
 \end_inset
 
- to requirement 
-\begin_inset Formula $R_{2}$
+ is the largest subset of 
+\begin_inset Formula $L_{2}$
+\end_inset
+
+ among all limit constraints.
+ Suppose the corresponding limit for 
+\begin_inset Formula $L_{1}$
+\end_inset
+
+ is 
+\begin_inset Formula $\sum_{i=1}^{n}\beta_{i}\ge\sum_{i=1}^{n}s_{i}-c$
+\end_inset
+
+, while the corresponding limit for 
+\begin_inset Formula $L_{2}$
+\end_inset
+
+ is 
+\begin_inset Formula $\sum_{i=1}^{m}\beta_{i}\ge\sum_{i=1}^{m}s_{i}-d$
+\end_inset
+
+ (where, clearly, 
+\begin_inset Formula $m>n$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Proof
+Case 1: Suppose 
+\begin_inset Formula $\sum_{i=1}^{n}s_{i}-c$
+\end_inset
+
+ is non-positive.
+ Then, 
+\begin_inset Formula $\sum_{i=1}^{m}\beta_{i}=0$
+\end_inset
+
+, and the constraint is valid and applies only to 
+\begin_inset Formula $L_{2}\setminus L_{1}$
 \end_inset
 
 .
 \end_layout
 
-\begin_layout Quotation
-\begin_inset Formula $\alpha_{5}+\alpha_{6}$
+\begin_layout Proof
+Case 2: Suppose 
+\begin_inset Formula $\sum_{i=1}^{n}s_{i}-c$
+\end_inset
+
+ is positive.
+\end_layout
+
+\begin_layout Proof
+\begin_inset Formula 
+\begin{eqnarray*}
+ &  & \sum_{i=1}^{m}\beta_{i}\ge\sum_{i=1}^{m}s_{i}-d\\
+ & \iff & \sum_{i=1}^{m}\beta_{i}-\sum_{i=1}^{n}\beta_{i}\ge\sum_{i=1}^{m}s_{i}-d-\sum_{i=1}^{n}s_{i}+c\\
+ & \iff & \sum_{i=n+1}^{m}\beta_{i}\ge\sum_{i=n+1}^{m}s_{i}-\left(d+c\right)
+\end{eqnarray*}
+
 \end_inset
 
 
 \end_layout
 
-\end_deeper
-\begin_layout LyX-Code
+\begin_layout Proof
+Therefore, subtracting the subset limit constraint from the superset limit
+ constraint yields a new demand constraint, implicating only the ontology
+ subsets of 
+\begin_inset Formula $L_{2}\setminus L_{1}$
+\end_inset
 
+.
 \end_layout
 
-\begin_layout Theorem
-Any integer program of the form:
-\end_layout
+\begin_layout Subsection
+Alternative Approaches
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:Alternative-Approaches"
 
-\begin_layout Theorem
-maximize 
-\begin_inset Formula $\alpha_{1}+\alpha_{2}+\cdots+\alpha_{n}+\beta_{1}+\beta_{2}+\cdots+\beta_{n}$
 \end_inset
 
 
 \end_layout
 
-\begin_layout Theorem
-subject to 
-\begin_inset Formula $ $
-\end_inset
+\begin_layout Standard
+There are several possible alternative approaches which may warrant consideratio
+n in the future.
+\end_layout
 
+\begin_layout Subsubsection
+Depth-first exploration with backtracking
+\end_layout
 
+\begin_layout Standard
+It is possible to directly evaluate program requirements.
+ This approach offers a reduced implementation complexity, more flexibility,
+ and has already been successfully prototyped.
+ Unfortunately, repeated backtracking implies a potentially-exponential
+ number of expensive queries against the input ontology, which may not be
+ reasonable in a production setting.
+\end_layout
+
+\begin_layout Subsubsection
+Integer program solver
+\end_layout
+
+\begin_layout Standard
+This model was chosen specifically to guarantee a polynomial execution time.
+ In practice, however, a general integer program solver may be superior
+ to the Edmonds-Karp solver, while simultaneously eliminating the unfortunate
+ disjoint/subset restriction on the limit constraints.
 \end_layout
 
 \begin_layout Chapter
