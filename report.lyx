@@ -78,6 +78,15 @@ Degc Language
 Jonathan Clark
 \end_layout
 
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Chapter
 Language Specification
 \end_layout
@@ -204,7 +213,7 @@ The Degc lexicon also contains the following punctuators:
 \end_layout
 
 \begin_layout Section
-Syntactic Grammar
+Syntax and Semantics
 \end_layout
 
 \begin_layout Subsection
@@ -234,6 +243,276 @@ true
 false
 \emph default
  otherwise.
+\end_layout
+
+\begin_layout Subsection
+Modules
+\end_layout
+
+\begin_layout Standard
+Degc definitions are stored inside modules.
+ Each module is a self-contained namespace.
+ In order to access a symbol from a different namespace, it must be manually
+ imported into the current module.
+\end_layout
+
+\begin_layout Subsubsection
+Module declaration
+\end_layout
+
+\begin_layout Standard
+The first line of a Degc translation unit must be a module declaration.
+\end_layout
+
+\begin_layout LyX-Code
+module ca.ualberta.science
+\end_layout
+
+\begin_layout Standard
+Module declarations are non-unique.
+ By standard convention, module names should reflect the organizational
+ structure of the authoring institution (generally, a fully-qualified domain
+ name in reverse order).
+\end_layout
+
+\begin_layout Standard
+A typical convention will be {country code}.{parent institution}.{faculty}.{departm
+ent}.
+\end_layout
+
+\begin_layout Subsubsection
+Importing symbols
+\end_layout
+
+\begin_layout Standard
+Symbols from the current module (including those defined in other translation
+ units) are automatically imported.
+ Symbols from other modules may be imported using an 
+\emph on
+import
+\emph default
+ directive.
+\end_layout
+
+\begin_layout LyX-Code
+from ca.ualberta import TakenCourse
+\end_layout
+
+\begin_layout LyX-Code
+from ca.ualberta.science import (Honors, General as BScGeneral,)
+\end_layout
+
+\begin_layout Standard
+Import directives are optional.
+ If used, they must immediately follow the module declaration (not including
+ comments and whitespace).
+\end_layout
+
+\begin_layout Subsection
+Types
+\end_layout
+
+\begin_layout Standard
+Degc is strongly and statically typed, with three distinct forms of typename.
+\end_layout
+
+\begin_layout Standard
+In the following, a type is 
+\emph on
+assignment-compatible
+\emph default
+ with a target type if that type can be transparently treated as an instance
+ of the target type (for the purposes of, for example, passing as a function
+ argument).
+\end_layout
+
+\begin_layout Subsubsection
+Boolean types
+\end_layout
+
+\begin_layout Standard
+All values of Boolean type are either 
+\emph on
+true
+\emph default
+ or 
+\emph on
+false
+\emph default
+.
+ Boolean types are assignment-compatible only with the boolean type.
+\end_layout
+
+\begin_layout Standard
+The Boolean typename is:
+\end_layout
+
+\begin_layout LyX-Code
+bool
+\end_layout
+
+\begin_layout Subsubsection
+Numeric types
+\end_layout
+
+\begin_layout Standard
+The Degc numeric type is a fixed-precision number with four decimal places
+ (
+\begin_inset Formula $\varepsilon=0.0001$
+\end_inset
+
+).
+ The number type is assignment-compatible only with the number type.
+\end_layout
+
+\begin_layout Standard
+The number type has two typenames:
+\end_layout
+
+\begin_layout LyX-Code
+number
+\end_layout
+
+\begin_layout LyX-Code
+quantity
+\end_layout
+
+\begin_layout Standard
+For the purposes of the type system, 
+\emph on
+number
+\emph default
+ and 
+\emph on
+quantity
+\emph default
+ are indistinct.
+ The 
+\emph on
+quantity
+\emph default
+ type differs semantically only when used as a record field.
+\end_layout
+
+\begin_layout Subsubsection
+Enumeration and Record types
+\end_layout
+
+\begin_layout Standard
+The enumeration and record types reference user-defined enumerations and
+ records.
+ The typenames of these types are simply the identifiers used to name or
+ import these types.
+\end_layout
+
+\begin_layout Standard
+Enumeration and record types are assignment-compatible only with their own
+ type.
+\end_layout
+
+\begin_layout Subsubsection
+Program types
+\end_layout
+
+\begin_layout Standard
+Program types reference user-defined programs.
+ The typenames of these types are the identifiers used to name or import
+ these types.
+\end_layout
+
+\begin_layout Standard
+Program types are assignment-compatible with any base program type.
+ For example, if the program 
+\emph on
+ChildProgram
+\emph default
+ inherits from 
+\emph on
+BaseProgram
+\emph default
+, then any value of type 
+\emph on
+ChildProgram
+\emph default
+ is assignment-compatible with the 
+\emph on
+BaseProgram
+\emph default
+ type.
+ However, a value of type 
+\emph on
+BaseProgram
+\emph default
+ is 
+\emph on
+not
+\emph default
+ assignment-compatible with the 
+\emph on
+ChildProgram
+\emph default
+ type.
+\end_layout
+
+\begin_layout Subsubsection
+Set types
+\end_layout
+
+\begin_layout Standard
+Set types reference subsets of the ontology.
+ All set types are specialized with a record type, denoting the element
+ type of the subset.
+\end_layout
+
+\begin_layout Standard
+Set typenames feature a record typename, in the following format:
+\end_layout
+
+\begin_layout LyX-Code
+set(TakenCourse)
+\end_layout
+
+\begin_layout Standard
+A value of a set type is assignment-compatible only with the identical set
+ type.
+\end_layout
+
+\begin_layout Subsubsection
+Function types
+\end_layout
+
+\begin_layout Standard
+Function types are normally only invoked for implementing higher-order functions.
+ All function types 
+\end_layout
+
+\begin_layout Standard
+Function typenames include argument and return typenames:
+\end_layout
+
+\begin_layout LyX-Code
+function({arg1}, {arg2}, ..., {argN})->{return typename}
+\end_layout
+
+\begin_layout LyX-Code
+function()->bool
+\end_layout
+
+\begin_layout LyX-Code
+function(number, number)->set(TakenCourse)
+\end_layout
+
+\begin_layout LyX-Code
+function(function(number, number)->bool, set(TakenCourse))->bool
+\end_layout
+
+\begin_layout Standard
+A function is assignment-compatible only with another function type, and
+ only if the return values and arguments are also assignment-compatible.
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Subsection
@@ -361,7 +640,43 @@ Example:
 \end_layout
 
 \begin_layout LyX-Code
-program ExampleProgram(Subject majorSubject):
+program ExampleProgram:
+\end_layout
+
+\begin_layout LyX-Code
+    take 6 in { TakenCourse | subject = Subject.CMPUT }
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+program ExampleChildProgram extends BaseProgram:
+\end_layout
+
+\begin_layout LyX-Code
+    take 6 in { TakenCourse | subject = Subject.CMPUT }
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+program ExampleParameterizedProgram(Subject majorSubject):
+\end_layout
+
+\begin_layout LyX-Code
+    take 6 in { TakenCourse | subject = majorSubject }
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+program ExampleChildProgram(Subject sub) extends BaseProgram(sub):
 \end_layout
 
 \begin_layout LyX-Code
@@ -497,17 +812,87 @@ exists
 \end_layout
 
 \begin_layout Subsubsection
+Selection
+\end_layout
+
+\begin_layout Standard
+The selection, or 
+\emph on
+if/else
+\emph default
+ expression, is used for predicated branching inside expressions.
+ 
+\emph on
+If/else
+\emph default
+ can only be used inside functions.
+\end_layout
+
+\begin_layout LyX-Code
+if x = 5:
+\end_layout
+
+\begin_layout LyX-Code
+    true
+\end_layout
+
+\begin_layout LyX-Code
+else if x > 10:
+\end_layout
+
+\begin_layout LyX-Code
+    true
+\end_layout
+
+\begin_layout LyX-Code
+else:
+\end_layout
+
+\begin_layout LyX-Code
+    false
+\end_layout
+
+\begin_layout Standard
+The type of the selection expression is the nearest assignment-compatible
+ type common to all branches of the expression.
+\end_layout
+
+\begin_layout Subsubsection
 Panic
 \end_layout
 
 \begin_layout Standard
 Degc supports a rudimentary exception mechanism.
- Panic will immediately cause the executing program to terminate with a
- result of 
+ A panic expression will immediately cause the executing program to terminate
+ with a result of 
 \emph on
 false
 \emph default
 .
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout LyX-Code
+function AbortIfTrue(bool predicate)->bool:
+\end_layout
+
+\begin_layout LyX-Code
+    if predicate:
+\end_layout
+
+\begin_layout LyX-Code
+        panic
+\end_layout
+
+\begin_layout LyX-Code
+    else:
+\end_layout
+
+\begin_layout LyX-Code
+        true
 \end_layout
 
 \begin_layout Subsection
@@ -1037,19 +1422,19 @@ Demand constraints are imposed by the program.
 
 .
  Then, 
-\begin_inset Formula $\alpha_{d_{1}}+\alpha_{d_{2}}+\cdots+\alpha_{d_{j}}\le c_{d}$
+\begin_inset Formula $\alpha_{d_{1}}+\alpha_{d_{2}}+\cdots+\alpha_{d_{j}}\ge c_{d}$
 \end_inset
 
-, since no more than 
+, since at least 
 \begin_inset Formula $c_{d}$
 \end_inset
 
- quantity may be consumed by such a requirement.
+ quantity must be consumed by such a requirement for it to be satisfied.
 \end_layout
 
 \begin_layout Standard
-Limit constraints are imposed by constraining the total number of quantity
- which may be consumed by some subsets.
+Limits are imposed by constraining the total amount of quantity which may
+ be consumed from some subsets.
  Suppose 
 \begin_inset Formula $L_{g}$
 \end_inset
@@ -1625,7 +2010,7 @@ Case 1: Suppose
 
  is non-positive.
  Then, 
-\begin_inset Formula $\sum_{i=1}^{m}\beta_{i}=0$
+\begin_inset Formula $\sum_{i=1}^{n}\beta_{i}=0$
 \end_inset
 
 , and the constraint is valid and applies only to 
